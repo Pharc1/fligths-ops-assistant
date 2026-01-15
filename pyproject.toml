@@ -1,0 +1,26 @@
+[project]
+name = "fligths-ops-assistant"
+version = "0.1.0"
+description = "Assistant IA for Flight Ops"
+authors = [
+    {name = "pharc1",email = "kpharci@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12,<4.0.0"
+dependencies = [
+    "fastapi (>=0.128.0,<0.129.0)",
+    "uvicorn[standard] (>=0.40.0,<0.41.0)",
+    "pydantic-settings (>=2.12.0,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.13,<0.15.0)",
+    "pytest (>=9.0.2,<10.0.0)"
+]
