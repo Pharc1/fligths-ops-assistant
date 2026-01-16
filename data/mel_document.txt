@@ -1,0 +1,487 @@
+AERONOVA 3300 - MINIMUM EQUIPMENT LIST (MEL)
+================================================================================
+DOCUMENT RÉGLEMENTAIRE - EASA/FAA APPROVED
+RÉVISION : 04 - DATE D'ENTRÉE EN VIGUEUR : 01 SEPTEMBRE 2024
+================================================================================
+
+AUTORITÉ D'APPROBATION :
+- European Union Aviation Safety Agency (EASA) - Approval Reference: EASA.MEL.21J.609
+- Federal Aviation Administration (FAA) - Approval Reference: FAA-MEL-AN3300-R04
+- Direction Générale de l'Aviation Civile (DGAC) - Référence: DGAC/DSA/MEL-2024-089
+
+ÉMIS PAR :
+AeroNova Aerospace Corporation
+Flight Operations & Airworthiness Department
+1500 Aerospace Boulevard, 31700 Blagnac, France
+
+APPROUVÉ PAR :
+Jean-Marc ROUSSEAU, Chief of Flight Operations
+Signature électronique - Date : 25 août 2024
+
+APPLICABILITÉ :
+Tous les appareils AeroNova 3300 (MSN 001 et suivants)
+Opérations commerciales sous Part-CAT (Commercial Air Transport)
+
+================================================================================
+TABLE DES MATIÈRES
+================================================================================
+
+SECTION 1 - INTRODUCTION ET DÉFINITIONS
+SECTION 2 - INSTRUCTIONS D'UTILISATION DU MEL
+SECTION 3 - LISTE DES ÉQUIPEMENTS (PAR CHAPITRE ATA)
+  - ATA 21 : Air Conditioning
+  - ATA 22 : Auto Flight
+  - ATA 27 : Flight Controls
+  - ATA 29 : Hydraulic Power (SECTION DÉTAILLÉE)
+  - ATA 32 : Landing Gear
+  - ATA 34 : Navigation
+  - ATA 49 : Airborne Auxiliary Power
+SECTION 4 - PROCÉDURES OPÉRATIONNELLES ASSOCIÉES
+SECTION 5 - ANNEXES
+
+================================================================================
+SECTION 1 - INTRODUCTION ET DÉFINITIONS
+================================================================================
+
+1.1 OBJET DU DOCUMENT
+
+Le MEL (Minimum Equipment List) définit les équipements et systèmes de l'appareil AeroNova 3300 dont le fonctionnement n'est pas strictement requis pour effectuer un vol en toute sécurité, sous certaines conditions opérationnelles définies.
+
+Le MEL permet à l'opérateur de dispatcher (autoriser le départ) un appareil présentant une défaillance d'équipement, à condition que :
+1. L'équipement défaillant soit listé dans le MEL
+2. Les conditions et limitations associées soient respectées
+3. Les procédures de maintenance et opérationnelles soient appliquées
+4. Le commandant de bord soit informé et accepte la configuration
+
+1.2 DÉFINITIONS DES CATÉGORIES
+
+CATÉGORIE A :
+Équipement dont la défaillance nécessite une action corrective AVANT le décollage.
+→ NO-GO (départ interdit)
+
+CATÉGORIE B :
+Équipement dont la défaillance nécessite une action corrective dans un délai spécifié.
+→ Délais typiques : 3 jours calendaires (3D) ou 10 jours calendaires (10D)
+
+CATÉGORIE C :
+Équipement dont la défaillance nécessite une action corrective dans un délai plus long.
+→ Délais typiques : 10 jours calendaires (10D) ou 120 jours calendaires (120D)
+
+CATÉGORIE D :
+Équipement dont la défaillance peut être tolérée indéfiniment (sous réserve de révision périodique).
+→ Pas de délai spécifique (mais réévaluation recommandée tous les 6 mois)
+
+1.3 CODES DE RÉPARATION / RECTIFICATION
+
+(M) = Maintenance action required (action maintenance obligatoire)
+(O) = Operational procedure required (procédure opérationnelle à appliquer)
+(R) = Repair interval specified (délai de réparation défini)
+
+1.4 SYMBOLES UTILISÉS
+
+*** = Équipement CRITIQUE - Aucune tolérance de panne (NO-GO absolu)
+** = Équipement ESSENTIEL - Dispatch autorisé avec restrictions sévères
+* = Équipement IMPORTANT - Dispatch autorisé avec conditions
+
+(2) = Nombre d'équipements installés
+[1] = Nombre minimum requis pour le dispatch
+
+================================================================================
+SECTION 2 - INSTRUCTIONS D'UTILISATION DU MEL
+================================================================================
+
+2.1 RÈGLE GÉNÉRALE
+
+Si un équipement ou système n'apparaît PAS dans le MEL, sa défaillance rend l'appareil NON DISPATCHABLE (NO-GO). L'appareil ne peut pas décoller tant que l'équipement n'est pas réparé ou remplacé.
+
+2.2 APPLICATION DES RESTRICTIONS
+
+Lorsqu'un dispatch est autorisé avec un équipement défaillant (selon le MEL), l'opérateur DOIT :
+1. Appliquer toutes les procédures opérationnelles listées dans la colonne "CONDITIONS/REMARKS"
+2. Respecter les délais de réparation indiqués
+3. Informer le commandant de bord via le Technical Log Book
+4. Apposer un placard "INOPERATIVE" sur le panneau de contrôle concerné (si applicable)
+5. Désactiver physiquement l'équipement si requis (pull circuit breaker, remove fuse, etc.)
+
+2.3 OPÉRATIONS ETOPS (Extended-range Twin-engine Operations)
+
+Pour les vols ETOPS (distance > 60 minutes d'un aéroport de dégagement), des restrictions supplémentaires s'appliquent. Les items MEL marqués "NO ETOPS" interdisent tout vol ETOPS tant que l'équipement n'est pas réparé.
+
+2.4 CUMUL DE PANNES
+
+En cas de pannes multiples, l'opérateur doit évaluer l'effet cumulatif sur la sécurité du vol. Certaines combinaisons de pannes peuvent rendre l'appareil non dispatchable même si chaque panne individuelle est listée dans le MEL.
+
+Exemple : Perte du circuit hydraulique VERT + Perte du circuit BLEU = NO-GO (perte de redondance critique)
+
+================================================================================
+SECTION 3 - ATA 29 : HYDRAULIC POWER (SYSTÈME HYDRAULIQUE)
+================================================================================
+
+Cette section couvre tous les équipements liés au système hydraulique de l'AeroNova 3300.
+
+RAPPEL DE L'ARCHITECTURE :
+- 3 circuits hydrauliques indépendants : VERT, BLEU, JAUNE
+- 2 pompes principales EDP (Engine Driven Pumps)
+- 3 pompes auxiliaires électriques ACMP (Auxiliary Centrifugal Motor Pumps)
+- 1 PTU (Power Transfer Unit) pour transfert VERT ↔ BLEU
+- 1 RAT (Ram Air Turbine) pour secours ultime (circuit BLEU)
+
+--------------------------------------------------------------------------------
+ITEM 29-01 : POMPES HYDRAULIQUES PRINCIPALES (EDP)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Engine Driven Pump (Pompe entraînée par moteur)
+QUANTITÉ INSTALLÉE : (2) - EDP#1 (circuit VERT) + EDP#2 (circuit BLEU)
+QUANTITÉ REQUISE : [2]
+CATÉGORIE : A (NO-GO)
+
+CONDITIONS/REMARKS :
+*** Les deux pompes principales (EDP#1 et EDP#2) doivent être OPÉRATIONNELLES pour le dispatch.
+
+Une défaillance d'une EDP rend l'appareil NON DISPATCHABLE.
+
+JUSTIFICATION :
+Les EDP fournissent la puissance hydraulique de base pour toutes les fonctions critiques de vol (surfaces de vol, train d'atterrissage, freins). La perte d'une EDP réduit significativement la redondance du système hydraulique et augmente la charge sur les pompes auxiliaires, ce qui est inacceptable pour les opérations commerciales.
+
+EXCEPTIONS : Aucune
+
+PROCÉDURES OPÉRATIONNELLES : N/A (dispatch interdit)
+
+DÉLAI DE RÉPARATION : Immédiat (avant le prochain vol)
+
+RÉFÉRENCE AMM : 29-11-00 (EDP Maintenance Procedures)
+
+--------------------------------------------------------------------------------
+ITEM 29-02 : POMPE AUXILIAIRE ÉLECTRIQUE (CIRCUIT JAUNE)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Auxiliary Centrifugal Motor Pump - Circuit JAUNE (ACMP YELLOW)
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [0]
+CATÉGORIE : C
+DÉLAI DE RÉPARATION : (R) 10 jours calendaires
+
+CONDITIONS/REMARKS :
+** Dispatch AUTORISÉ (GO) si la pompe auxiliaire électrique du circuit JAUNE est inopérante, sous les conditions suivantes :
+
+1. (O) L'APU (Auxiliary Power Unit) doit être OPÉRATIONNEL pour compenser la charge électrique
+2. (O) La pompe hydraulique APU (alimentant le circuit JAUNE) doit être OPÉRATIONNELLE
+3. (M) Vérifier que le niveau du réservoir hydraulique JAUNE est dans la plage normale (MIN-MAX)
+4. (O) Informer l'équipage : "ACMP YELLOW INOP - APU hydraulic pump required"
+5. (O) INTERDICTION vols ETOPS (marquage "NO ETOPS" applicable)
+
+JUSTIFICATION :
+La pompe auxiliaire électrique du circuit JAUNE est principalement utilisée pour suppléer la pompe APU ou en cas de défaillance de cette dernière. Si l'APU et sa pompe hydraulique sont opérationnels, la redondance est maintenue. Cependant, cette configuration réduit la flexibilité opérationnelle et ne permet pas les vols ETOPS.
+
+PROCÉDURES OPÉRATIONNELLES ADDITIONNELLES :
+- (O) Démarrage APU OBLIGATOIRE avant tout actionnement hydraulique au sol
+- (O) Maintenir l'APU en fonctionnement pendant toute la durée du vol (pas d'arrêt APU en croisière)
+- (O) En cas de panne APU en vol, activer immédiatement la PTU pour transférer puissance depuis circuit VERT ou BLEU
+
+LIMITATIONS DE VOL :
+- Pas de restriction d'altitude
+- Pas de restriction de vitesse
+- INTERDICTION vols ETOPS (distance > 60 min d'un aéroport)
+
+RÉFÉRENCE AMM : 29-14-05 (ACMP YELLOW Replacement Procedure)
+
+--------------------------------------------------------------------------------
+ITEM 29-03 : POMPE AUXILIAIRE ÉLECTRIQUE (CIRCUIT VERT)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Auxiliary Centrifugal Motor Pump - Circuit VERT (ACMP GREEN)
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [1]
+CATÉGORIE : B
+DÉLAI DE RÉPARATION : (R) 3 jours calendaires
+
+CONDITIONS/REMARKS :
+** Dispatch AUTORISÉ (GO) avec la pompe auxiliaire VERT inopérante pour un maximum de 3 jours, sous les conditions suivantes :
+
+1. (O) L'EDP#1 (pompe principale circuit VERT) doit être OPÉRATIONNELLE
+2. (O) La PTU (Power Transfer Unit) doit être OPÉRATIONNELLE pour permettre un transfert de puissance depuis le circuit BLEU en cas de défaillance EDP#1
+3. (M) Tester l'activation automatique de la PTU avant le premier vol
+4. (O) INTERDICTION vols ETOPS
+
+JUSTIFICATION :
+La pompe auxiliaire VERT fournit une redondance supplémentaire en cas de défaillance de l'EDP#1. Son inopérabilité est acceptable à court terme (3 jours) si la PTU est opérationnelle pour maintenir un niveau de redondance minimal.
+
+PROCÉDURES OPÉRATIONNELLES :
+- (O) Briefing équipage : "ACMP GREEN INOP - Rely on EDP#1 and PTU for backup"
+- (O) Surveillance renforcée de la pression circuit VERT pendant le vol
+
+DÉLAI DE RÉPARATION : Maximum 3 jours calendaires (72 heures)
+
+RÉFÉRENCE AMM : 29-14-02 (ACMP GREEN Troubleshooting & Replacement)
+
+--------------------------------------------------------------------------------
+ITEM 29-04 : POMPE AUXILIAIRE ÉLECTRIQUE (CIRCUIT BLEU)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Auxiliary Centrifugal Motor Pump - Circuit BLEU (ACMP BLUE)
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [1]
+CATÉGORIE : B
+DÉLAI DE RÉPARATION : (R) 3 jours calendaires
+
+CONDITIONS/REMARKS :
+** Dispatch AUTORISÉ (GO) avec la pompe auxiliaire BLEU inopérante pour un maximum de 3 jours, sous les conditions suivantes :
+
+1. (O) L'EDP#2 (pompe principale circuit BLEU) doit être OPÉRATIONNELLE
+2. (O) La PTU doit être OPÉRATIONNELLE
+3. (O) La RAT (Ram Air Turbine) doit être OPÉRATIONNELLE (secours d'urgence)
+4. (M) Tester la RAT avant le premier vol (deployment test au sol)
+5. (O) INTERDICTION vols ETOPS
+
+JUSTIFICATION :
+Identique à l'item 29-03. La RAT fournit un niveau de secours ultime en cas de perte totale de puissance électrique et hydraulique.
+
+PROCÉDURES OPÉRATIONNELLES :
+- (O) Briefing équipage : "ACMP BLUE INOP - RAT available as ultimate backup"
+- (O) Surveillance pression circuit BLEU
+
+DÉLAI DE RÉPARATION : Maximum 3 jours calendaires
+
+RÉFÉRENCE AMM : 29-14-03 (ACMP BLUE Maintenance Procedures)
+
+--------------------------------------------------------------------------------
+ITEM 29-05 : INDICATEURS DE PRESSION HYDRAULIQUE (ECAM DISPLAY)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Hydraulic Pressure Transducers (Capteurs de pression)
+QUANTITÉ INSTALLÉE : (3) - PT-10 (VERT), PT-20 (BLEU), PT-30 (JAUNE)
+QUANTITÉ REQUISE : [2]
+CATÉGORIE : C
+DÉLAI DE RÉPARATION : (R) 10 jours calendaires
+
+CONDITIONS/REMARKS :
+* Dispatch AUTORISÉ (GO) avec un transducteur de pression inopérant, sous les conditions suivantes :
+
+1. (O) Au moins DEUX transducteurs (un pour chaque circuit critique VERT ou BLEU) doivent être OPÉRATIONNELS
+2. (M) Installer un manomètre mécanique externe dans le compartiment hydraulique pour le circuit affecté
+3. (O) Procédure de vérification pression avant chaque vol (inspection visuelle du manomètre mécanique)
+4. (O) Limitation : Pas de vol de nuit ou en conditions IMC (Instrument Meteorological Conditions) si le transducteur VERT ou BLEU est inopérant
+
+JUSTIFICATION :
+Les transducteurs de pression fournissent une indication en temps réel de l'état du système hydraulique. La perte d'un transducteur réduit la capacité de l'équipage à détecter rapidement une anomalie, mais un manomètre mécanique peut fournir une indication de secours (vérification au sol uniquement).
+
+PROCÉDURES OPÉRATIONNELLES :
+- (O) Vérification pression hydraulique avant chaque vol (lecture manomètre mécanique)
+- (O) Briefing équipage : "HYD [CIRCUIT] pressure indication INOP on ECAM - Use mechanical gauge"
+- (M) Technicien doit vérifier le manomètre mécanique et reporter la valeur dans le Tech Log avant chaque vol
+
+LIMITATIONS :
+- Pas de vol de nuit si transducteur VERT ou BLEU inopérant (impossibilité de vérifier manomètre en vol)
+- Pas de vol IMC (conditions météo instrumentales)
+- Autorisation vols VFR (Visual Flight Rules) uniquement
+
+DÉLAI DE RÉPARATION : 10 jours calendaires maximum
+
+RÉFÉRENCE AMM : 29-15-01 (Pressure Transducers Replacement)
+
+--------------------------------------------------------------------------------
+ITEM 29-10 : SYSTÈME DE DÉTECTION DE FUITE HYDRAULIQUE
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Hydraulic Leak Detection System (capteurs flow sensors)
+QUANTITÉ INSTALLÉE : (1) par circuit - Total (3) capteurs
+QUANTITÉ REQUISE : [3]
+CATÉGORIE : A (NO-GO)
+
+CONDITIONS/REMARKS :
+*** Le système de détection de fuite hydraulique doit être OPÉRATIONNEL sur les TROIS circuits (VERT, BLEU, JAUNE) pour le dispatch.
+
+Une défaillance du système de détection sur UN SEUL circuit rend l'appareil NON DISPATCHABLE.
+
+JUSTIFICATION :
+Le système de détection de fuite est un équipement de sécurité critique. Il permet de détecter rapidement une fuite hydraulique (débit anormal > 2 L/min) et d'alerter l'équipage via ECAM. Une fuite non détectée pourrait entraîner une perte complète d'un circuit hydraulique sans préavis, compromettant gravement la sécurité du vol.
+
+EXCEPTIONS : Aucune
+
+PROCÉDURES OPÉRATIONNELLES : N/A (dispatch interdit)
+
+DÉLAI DE RÉPARATION : Immédiat (avant le prochain vol)
+
+RÉFÉRENCE AMM : 29-16-00 (Leak Detection System Testing & Maintenance)
+
+--------------------------------------------------------------------------------
+ITEM 29-11 : POWER TRANSFER UNIT (PTU)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Power Transfer Unit (PTU) - Transfert VERT ↔ BLEU
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [1]
+CATÉGORIE : B
+DÉLAI DE RÉPARATION : (R) 3 jours calendaires
+
+CONDITIONS/REMARKS :
+** Dispatch AUTORISÉ (GO) avec la PTU inopérante pour un maximum de 3 jours, sous les conditions suivantes :
+
+1. (O) Les DEUX circuits VERT et BLEU doivent être OPÉRATIONNELS (EDP#1 + EDP#2 + ACMP VERT + ACMP BLEU)
+2. (O) Vérifier le niveau des réservoirs hydrauliques VERT et BLEU (plein recommandé)
+3. (O) INTERDICTION vols ETOPS
+4. (O) Limitation : En cas de perte d'une EDP en vol, l'équipage doit réduire immédiatement la charge hydraulique (éviter utilisation excessive volets/slats)
+
+JUSTIFICATION :
+La PTU permet un transfert de puissance entre les circuits VERT et BLEU, augmentant la redondance. Son inopérabilité est acceptable si les deux circuits sont pleinement opérationnels, mais réduit la flexibilité en cas de panne en vol.
+
+PROCÉDURES OPÉRATIONNELLES :
+- (O) Briefing équipage : "PTU INOP - No power transfer capability between GREEN and BLUE"
+- (O) En cas de perte EDP en vol : limiter utilisation surfaces secondaires (volets/slats)
+- (O) Atterrissage : privilégier configuration Flaps 3 (au lieu de Flaps Full) pour réduire charge hydraulique
+
+LIMITATIONS :
+- INTERDICTION vols ETOPS
+- Limitation altitude : aucune
+- Limitation vitesse : aucune
+
+DÉLAI DE RÉPARATION : Maximum 3 jours calendaires
+
+RÉFÉRENCE AMM : 29-17-00 (PTU Functional Test & Maintenance)
+
+--------------------------------------------------------------------------------
+ITEM 29-15 : FUITE HYDRAULIQUE MINEURE
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : N/A (Condition du système)
+CATÉGORIE : B
+DÉLAI DE RÉPARATION : (R) 3 jours calendaires (si fuite identifiée)
+
+CONDITIONS/REMARKS :
+* Dispatch AUTORISÉ (GO) en présence d'une fuite hydraulique MINEURE, sous les conditions strictes suivantes :
+
+DÉFINITION FUITE MINEURE :
+- Suintement visible < 5 gouttes par minute (mesure sur 10 minutes minimum)
+- Pression du circuit affecté > 2800 PSI STABLE (pas de chute progressive)
+- Niveau du réservoir dans la plage normale (> 50% capacité)
+
+CONDITIONS DE DISPATCH :
+1. (M) Quantifier la fuite : compter les gouttes sur une période de 10 minutes minimum
+2. (M) Vérifier que la pression est STABLE (test de 5 minutes moteur en fonctionnement)
+3. (M) Localiser la source de la fuite (identification du composant)
+4. (M) Nettoyer la zone et marquer l'origine de la fuite (marqueur ou ruban)
+5. (O) Inspection pré-vol OBLIGATOIRE : vérifier que la fuite n'a pas empiré (comptage gouttes)
+6. (O) Vérification pression hydraulique avant CHAQUE vol
+7. (O) Appoint réservoir si niveau < 70% capacité
+8. (O) INTERDICTION vols ETOPS
+
+LIMITATIONS :
+- Maximum 3 vols consécutifs autorisés avec la fuite mineure
+- Délai de réparation : 3 jours calendaires maximum
+- INTERDICTION vols ETOPS (Extended-range Twin-engine Operations)
+- Vol de nuit : autorisé si fuite stable et documentée
+- Vol en conditions givrantes (icing) : INTERDIT (risque de gel du fluide Skydrol)
+
+CRITÈRES DE NO-GO (Dispatch interdit) :
+- Fuite > 5 gouttes/minute → Réparation IMMÉDIATE obligatoire
+- Pression < 2800 PSI ou chute progressive de pression → Réparation IMMÉDIATE
+- Fuite active (jet ou écoulement continu) → NO-GO absolu
+- Niveau réservoir < 50% → NO-GO
+- Incapacité à localiser la source de la fuite → NO-GO (sécurité)
+
+PROCÉDURES OPÉRATIONNELLES :
+- (M) Technicien doit remplir un "Leak Monitoring Log" (formulaire SJ-HYD-LEAK-01)
+- (O) Commandant de bord informé avant CHAQUE vol : "Minor hydraulic leak on [CIRCUIT] - X drops/min - Stable pressure"
+- (M) Inspection après chaque vol : vérifier progression de la fuite
+- (O) Si la fuite s'aggrave (> 5 gouttes/min ou pression instable) : GROUND immédiatement l'appareil
+
+JUSTIFICATION :
+Une fuite mineure (< 5 gouttes/min) avec pression stable ne compromet pas la sécurité du vol à court terme. Cependant, cette condition nécessite une surveillance renforcée et une réparation rapide pour éviter toute aggravation. Les vols ETOPS sont interdits en raison du risque accru (distance élevée des aéroports de dégagement).
+
+DÉLAI DE RÉPARATION : Maximum 3 jours calendaires OU 3 vols (le premier atteint)
+
+RÉFÉRENCE AMM : 29-00-00 (Hydraulic System General Maintenance)
+
+--------------------------------------------------------------------------------
+ITEM 29-20 : RAM AIR TURBINE (RAT)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Ram Air Turbine (turbine de secours)
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [1]
+CATÉGORIE : A (NO-GO)
+
+CONDITIONS/REMARKS :
+*** La RAT doit être OPÉRATIONNELLE pour le dispatch. Aucune exception.
+
+La RAT est le système de secours ultime en cas de perte totale de puissance électrique et hydraulique. Son inopérabilité rend l'appareil NON DISPATCHABLE.
+
+JUSTIFICATION :
+La RAT fournit une puissance hydraulique d'urgence (circuit BLEU) et une génération électrique minimale en cas de panne complète des moteurs. C'est un équipement de sécurité critique sans alternative.
+
+PROCÉDURES OPÉRATIONNELLES : N/A (dispatch interdit)
+
+DÉLAI DE RÉPARATION : Immédiat (avant le prochain vol)
+
+RÉFÉRENCE AMM : 29-18-00 (RAT Testing & Deployment Procedures)
+
+--------------------------------------------------------------------------------
+ITEM 29-25 : VALVE DE RÉGULATION PT-42 (Circuit VERT)
+--------------------------------------------------------------------------------
+
+ÉQUIPEMENT : Pressure Regulation Valve PT-42 (valve de régulation pression)
+QUANTITÉ INSTALLÉE : (1)
+QUANTITÉ REQUISE : [1]
+CATÉGORIE : A (NO-GO)
+
+CONDITIONS/REMARKS :
+*** La valve PT-42 doit être OPÉRATIONNELLE pour le dispatch.
+
+CRITÈRES DE NO-GO :
+- Valve PT-42 avec Serial Number entre 23-001 et 23-999 ET présence de vibrations/bruit → AOG (Aircraft On Ground)
+- Pression circuit VERT instable (oscillations > ± 100 PSI) → NO-GO
+- Fuite visible au niveau de la valve PT-42 → NO-GO
+- Pression circuit VERT > 3400 PSI (valve bloquée) → NO-GO
+
+RÉFÉRENCE SERVICE BULLETIN :
+Voir Service Bulletin SB-2024-08-12 pour les valves affectées par le défaut de fabrication (S/N 23-001 à 23-999).
+
+JUSTIFICATION :
+La valve PT-42 assure la régulation de pression du circuit VERT lors des transferts de charge via la PTU. Une défaillance de la PT-42 génère des oscillations hydrauliques pouvant endommager les actuateurs et créer des vibrations dangereuses pour la structure.
+
+PROCÉDURES OPÉRATIONNELLES : N/A (dispatch interdit si défaillance)
+
+DÉLAI DE RÉPARATION : Immédiat (AOG si symptômes présents)
+
+RÉFÉRENCE AMM : 29-11-05 (PT-42 Valve Maintenance & Replacement)
+
+================================================================================
+SECTION 4 - AUTRES CHAPITRES ATA (RÉSUMÉ)
+================================================================================
+
+ATA 21 - AIR CONDITIONING :
+- Item 21-01 : Pack 1 ou Pack 2 inopérant → GO (Catégorie C, 10 jours)
+- Item 21-05 : APU Bleed Air inopérant → GO (Catégorie C, 10 jours)
+
+ATA 22 - AUTO FLIGHT :
+- Item 22-01 : Autopilot inopérant → GO pour vols VFR uniquement (Catégorie B, 3 jours)
+- Item 22-10 : Autothrottle inopérant → GO (Catégorie C, 10 jours)
+
+ATA 27 - FLIGHT CONTROLS :
+- Item 27-01 : Aileron Trim inopérant → NO-GO (Catégorie A)
+- Item 27-15 : Spoiler section inopérante (1 sur 6) → GO (Catégorie B, 3 jours)
+
+ATA 32 - LANDING GEAR :
+- Item 32-01 : Brake temperature monitoring inopérant → GO (Catégorie C, 10 jours)
+- Item 32-10 : Nose wheel steering aux system inopérant → GO (Catégorie B, 3 jours)
+
+ATA 34 - NAVIGATION :
+- Item 34-01 : IRS (1 sur 3) inopérant → GO (Catégorie B, 10 jours)
+- Item 34-15 : Weather Radar inopérant → NO-GO pour vols IFR (Catégorie B, 3 jours)
+
+ATA 49 - APU :
+- Item 49-01 : APU inopérant → GO avec restrictions (Catégorie C, 10 jours)
+
+================================================================================
+FIN DU DOCUMENT - MINIMUM EQUIPMENT LIST RÉVISION 04
+================================================================================
+
+NOTES IMPORTANTES :
+1. Ce document doit être consulté AVANT chaque décision de dispatch en présence d'un équipement défaillant
+2. En cas de doute, consulter le Chief of Flight Operations ou le CAMO (Continuing Airworthiness Management Organization)
+3. Le commandant de bord a toujours l'autorité finale pour refuser un dispatch même si le MEL l'autorise
+4. Les délais de réparation commencent à partir de la découverte du défaut (inscription dans le Tech Log Book)
+
+CONTACT SUPPORT MEL 24/7 :
+Email : mel-support@aeronova-aero.com
+Tél : +33 5 61 XX XX XX (option 3)

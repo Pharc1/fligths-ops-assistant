@@ -1,0 +1,389 @@
+AERONOVA 3300 - HISTORIQUE DES INCIDENTS FLOTTE
+================================================================================
+SYSTÈME DE GESTION DE MAINTENANCE - FLEET INCIDENT LOG
+PÉRIODE : 24 DERNIERS MOIS (Janvier 2023 - Janvier 2025)
+EXTRACTEUR: Database query run on 2025-01-10 14:32 UTC
+CLASSIFICATION: Technical Records - Internal Use
+================================================================================
+
+FORMAT DES ENTRÉES:
+ID : Numéro incident unique | ACFT : Aircraft registration | DATE : JJ/MM/AAAA
+OPERATOR : Compagnie opératrice | TSN : Total Service Number (heures vol)
+ATA : Chapitre ATA concerné | PROBLÈME : Description symptômes
+DONNÉES : Paramètres techniques relevés | INSPECTION : Résultats contrôle visuel
+NOTE : Observations mécanicien | ACTION : Travail effectué | PIÈCES : Références changées
+STATUS : Résolution (CLOSED/OPEN/RECURRING)
+
+================================================================================
+
+ID : INC-8672
+ACFT : SJ-098 (F-SJBC)
+DATE : 03/03/2023
+OPERATOR : Air Charter Europe
+TSN : 12,450 FH / 8,920 FC
+ATA : 32 (Landing Gear)
+PROBLÈME : Train d'atterrissage principal droit ne se verrouille pas en position DOWN. Alerte ECAM "L/G NOT DOWN" persistent après extension.
+DONNÉES : Circuit hydraulique BLEU : 3020 PSI stable. Pas d'anomalie pression.
+INSPECTION : Inspection du système d'indication (proximity sensors). Capteur PROX-32R trouvé désaligné de 2mm.
+NOTE : Probable vibration excessive ayant déplacé le support capteur.
+ACTION : Réalignement capteur PROX-32R. Test fonctionnel OK (5 cycles extension/rétraction).
+PIÈCES : Aucune
+STATUS : CLOSED - 03/03/2023 18:45 UTC - Signed by: Tech. Martin DUBOIS (CAT B1)
+
+--------------------------------------------------------------------------------
+
+ID : INC-8754
+ACFT : SJ-102 (G-SJAA)
+DATE : 12/05/2023
+OPERATOR : Skyline Regional
+TSN : 9,875 FH / 6,120 FC
+ATA : 49 (APU - Auxiliary Power Unit)
+PROBLÈME : Échec démarrage APU au sol. Message ECAM "APU FAULT" et "APU STARTER FAULT". Aucun allumage.
+DONNÉES : Voltage batterie : 24.8V. Starter current : 0A (anormal, devrait être ~200A).
+INSPECTION : Test électrique de l'igniter (allumeur APU). Résistance mesurée : infinie (circuit ouvert). Allumeur défaillant confirmé.
+NOTE : Allumeur référence APU-IGN-49-002 installé en février 2022 (13 mois d'utilisation). Durée de vie théorique : 24 mois ou 5000 cycles APU.
+ACTION : Remplacement allumeur APU. Test démarrage APU : OK après 3 tentatives.
+PIÈCES : Allumeur P/N APU-IGN-49-002 (S/N 22-187) → Retiré et envoyé en analyse garantie
+         Allumeur P/N APU-IGN-49-002 (S/N 23-044) → Installé
+STATUS : CLOSED - 12/05/2023 21:10 UTC - Signed by: Tech. Sarah WILSON (CAT B1)
+
+--------------------------------------------------------------------------------
+
+ID : INC-8829
+ACFT : SJ-102 (G-SJAA)
+DATE : 18/06/2023
+OPERATOR : Skyline Regional
+TSN : 10,120 FH / 6,285 FC
+ATA : 34 (Navigation)
+PROBLÈME : Alerte ECAM "NAV IRS 2 FAULT" en vol de croisière FL350. Perte temporaire données IRS#2 (Inertial Reference System).
+DONNÉES : IRS#1 et IRS#3 opérationnels. Position GPS valide. Pas d'impact sécurité vol.
+INSPECTION : Test BITE (Built-In Test Equipment) IRS#2 → Code erreur E47 "Gyro drift excessive". Gyroscope laser défaillant.
+NOTE : IRS#2 âge : 18,500 heures. TBO (Time Between Overhaul) : 20,000 heures. Usure prématurée suspectée.
+ACTION : IRS#2 retiré et envoyé en atelier pour overhaul. Appareil dispatch avec MEL 34-11 (autorisation vol avec 2 IRS sur 3 opérationnels).
+PIÈCES : IRS#2 P/N NAV-IRS-34-001 (S/N 19-882) → Retiré pour overhaul
+STATUS : OPEN - En attente retour IRS#2 après overhaul (délai estimé : 6 semaines)
+
+--------------------------------------------------------------------------------
+
+ID : INC-8901
+ACFT : SJ-115 (F-SJEF)
+DATE : 22/11/2023
+OPERATOR : Air Charter Europe
+TSN : 14,780 FH / 9,640 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : Vibrations importantes rapportées par le cockpit lors de la phase d'approche (descente FL180 → FL080). Bruit sourd audible provenant de la zone centrale de l'appareil, décrit comme "low-frequency thud" répétitif (1-2 coups/seconde). Phénomène apparu lors du déploiement des volets (Flaps 1 → Flaps 5) et intensifié lors de l'extension du train d'atterrissage.
+DONNÉES : 
+  - Circuit VERT : 3050 PSI (stable, pas d'oscillation visible sur ECAM)
+  - Circuit BLEU : 3010 PSI (stable)
+  - Circuit JAUNE : 2980 PSI (stable)
+  - Température fluide VERT : 82°C (normale)
+  - Pas d'alerte ECAM hydraulique
+  - PTU activée automatiquement lors de l'extension train (normal)
+INSPECTION : 
+  - Inspection visuelle compartiment hydraulique (panneau L2) : Rien À Signaler
+  - Vérification niveau réservoirs : tous dans la plage normale (MIN-MAX)
+  - Inspection lignes rigides train d'atterrissage : pas de trace d'usure, pas de fuite
+  - Test au sol avec GPU : impossible de reproduire les vibrations (phénomène intermittent)
+  - Palpation des conduites hydrauliques : aucune vibration ressentie au sol
+NOTE : 
+  - Valve PT-42 (S/N 23-452) installée récemment lors de la visite C-Check effectuée le 05/10/2023 (6 semaines avant l'incident)
+  - Ancien PT-42 (S/N 21-088) retiré pour TBO (12,000 heures atteintes)
+  - Pas de corrélation évidente avec un composant spécifique identifié
+  - Équipage rapporte que les vibrations étaient "modérées mais clairement anormales"
+  - Passagers assis en zone centrale (rangées 12-18) ont également ressenti les vibrations
+ACTION : 
+  - Aucune action corrective immédiate (impossible de reproduire le défaut au sol)
+  - Appareil remis en service avec surveillance renforcée
+  - Consigne équipage : signaler toute récidive des vibrations
+  - Prochaine inspection détaillée planifiée à la visite A suivante (dans 120 FH)
+PIÈCES : Aucune
+STATUS : OPEN - Sous surveillance - Next review: 12/12/2023 (Visite A)
+FOLLOW-UP : Voir incident INC-9255 (récidive confirmée)
+
+--------------------------------------------------------------------------------
+
+ID : INC-8945
+ACFT : SJ-089 (N-789SJ)
+DATE : 28/11/2023
+OPERATOR : Pacific Freedom Airlines
+TSN : 11,230 FH / 7,050 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : Vibrations anormales en vol ressenties au niveau du plancher cabine (zone centrale). Bruit sourd ("clunking noise") lors des transitions hydrauliques (activation PTU, déploiement volets).
+DONNÉES :
+  - Circuit VERT : pression oscillante entre 2950 et 3100 PSI (fluctuation ± 75 PSI observée)
+  - Circuit BLEU : 3020 PSI stable
+  - Circuit JAUNE : 3000 PSI stable
+  - Température fluide VERT : 78°C
+  - Pas d'alerte ECAM
+INSPECTION :
+  - Inspection visuelle compartiment hydraulique : RAS
+  - Relevé S/N valve PT-42 : S/N 23-234 (installée en avril 2023)
+  - Test au sol (GPU) : vibrations légères reproduites lors de l'activation PTU
+NOTE :
+  - Symptômes similaires à l'incident INC-8901 (SJ-115)
+  - Valve PT-42 également fabriquée en 2023 (S/N 23-234)
+  - Équipage rapporte phénomène sporadique (pas à chaque vol)
+ACTION :
+  - Appareil mis en observation (aucune action corrective immédiate)
+  - Notification envoyée à AeroNova Engineering pour analyse de tendance
+  - Consigne de surveillance renforcée
+PIÈCES : Aucune
+STATUS : OPEN - En attente directive constructeur
+FOLLOW-UP : Service Bulletin SB-2024-08-12 publié le 14/01/2024 → Action corrective identifiée
+
+--------------------------------------------------------------------------------
+
+ID : INC-9012
+ACFT : SJ-104 (D-SJCD)
+DATE : 05/01/2024
+OPERATOR : EuroFly Express
+TSN : 8,920 FH / 5,680 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : Fuite hydraulique circuit JAUNE détectée lors de la pre-flight inspection. Gouttes de fluide Skydrol visibles sous la dérive (empennage vertical).
+DONNÉES :
+  - Circuit JAUNE : pression 2850 PSI (légèrement basse, seuil alerte ECAM : 2700 PSI)
+  - Niveau réservoir JAUNE : 65% (en baisse, était à 85% la veille)
+  - Perte estimée : ~1.5 litres en 24 heures
+INSPECTION :
+  - Localisation de la fuite : raccord flexible haute pression au niveau de l'actuateur gouverne de direction
+  - Référence raccord : HYD-FLEX-29-450 (ligne 3/4" haute pression)
+  - Trace de fluide sur le support de fixation et la structure
+  - Pas de corrosion visible sur les composants adjacents
+NOTE :
+  - Raccord flexible installé en mars 2021 (durée de vie théorique : 6 ans ou 15,000 heures)
+  - Âge du raccord : 34 mois (2,840 heures) → usure prématurée
+  - Pas de FOD visible, pas d'impact mécanique apparent
+ACTION :
+  - Remplacement du raccord flexible défectueux
+  - Nettoyage complet de la zone contaminée par le Skydrol
+  - Appoint réservoir JAUNE : +2 litres Skydrol LD-4
+  - Test pression 3000 PSI pendant 10 minutes : OK, pas de fuite
+PIÈCES :
+  - Raccord flexible P/N HYD-FLEX-29-450 (S/N 21-445) → Retiré, envoyé en analyse garantie
+  - Raccord flexible P/N HYD-FLEX-29-450 (S/N 24-012) → Installé
+  - Skydrol LD-4 : 2 litres consommés (appoint réservoir)
+STATUS : CLOSED - 05/01/2024 19:30 UTC - Signed by: Tech. Hans MÜLLER (CAT B1)
+
+--------------------------------------------------------------------------------
+
+ID : INC-9078
+ACFT : SJ-142 (EC-SJH)
+DATE : 18/01/2024
+OPERATOR : IberJet Airways
+TSN : 13,560 FH / 8,920 FC
+ATA : 27 (Flight Controls)
+PROBLÈME : Résistance anormale sur les commandes de vol (manche de pilotage) lors d'un virage serré à basse altitude. Pilote rapporte une sensation de "rigidité" temporaire puis retour à la normale.
+DONNÉES :
+  - Circuit VERT : 3040 PSI
+  - Circuit BLEU : 3030 PSI
+  - Tous les PCU (Power Control Units) des surfaces de vol opérationnels
+  - Test BITE des actuateurs : aucun code erreur
+INSPECTION :
+  - Test complet des surfaces de vol au sol : ailerons, gouvernes de profondeur, gouverne de direction
+  - Toutes les surfaces répondent normalement (pas de résistance anormale)
+  - Inspection des câbles de commande : pas d'usure, pas de frottement
+  - Inspection des roulements PCU : graissage correct
+NOTE :
+  - Phénomène impossible à reproduire au sol
+  - Hypothèse : contamination temporaire fluide hydraulique ou micro-blocage PCU
+  - Aucun antécédent similaire sur cet appareil
+ACTION :
+  - Analyse fluide hydraulique circuit VERT (comptage particulaire)
+  - Résultat : ISO Cleanliness Code 17/15/12 (conforme, < 18/16/13)
+  - Filtration préventive effectuée (remplacement filtre haute pression)
+  - Vol de contrôle effectué : aucune anomalie détectée
+PIÈCES :
+  - Filtre hydraulique haute pression P/N HF-29-001 (saturé à 80%) → Remplacé
+STATUS : CLOSED - 19/01/2024 16:00 UTC - Signed by: Tech. Carlos GARCIA (CAT B1)
+NOTE FINALE : Incident classé comme "non-reproductible, mesures préventives appliquées"
+
+--------------------------------------------------------------------------------
+
+ID : INC-9144
+ACFT : SJ-121 (C-FSJA)
+DATE : 10/02/2024
+OPERATOR : CanadaWings
+TSN : 10,780 FH / 6,940 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : Perte de pression circuit BLEU en vol de croisière FL370. Alerte ECAM "HYD BLUE PRESS LOW" (ambre) puis "HYD BLUE SYS LO" (rouge). Pression chutée de 3000 PSI à 1200 PSI en moins de 3 minutes.
+DONNÉES :
+  - Circuit BLEU : 1200 PSI (critique, seuil minimal : 1500 PSI)
+  - Circuit VERT : 3020 PSI (OK)
+  - Circuit JAUNE : 3010 PSI (OK)
+  - EDP#2 (moteur droit) : opérationnelle
+  - ACMP BLEU (pompe électrique auxiliaire) : inopérante (pas de montée en pression)
+INSPECTION (après atterrissage) :
+  - Test BITE ACMP BLEU : Code erreur E12 "Motor winding failure"
+  - Inspection visuelle pompe auxiliaire : traces de surchauffe visible sur le connecteur électrique
+  - Résistance d'isolement moteur : 0.2 MΩ (doit être > 10 MΩ) → Court-circuit confirmé
+NOTE :
+  - ACMP BLEU âge : 11,200 heures (TBO : 15,000 heures)
+  - Pas d'historique de défaut électrique sur cette pompe
+  - Court-circuit probablement causé par dégradation isolant bobinage (vieillissement thermique)
+ACTION :
+  - Remplacement de la pompe auxiliaire électrique ACMP BLEU
+  - Vérification circuit électrique 115V AC Bus 2 : OK
+  - Test fonctionnel après remplacement : montée en pression à 3000 PSI en 8 secondes (normal)
+  - Appareil remis en service après test vol réussi
+PIÈCES :
+  - ACMP BLEU P/N HYD-PUMP-29-ELEC-02 (S/N 20-334) → Retiré, envoyé en analyse
+  - ACMP BLEU P/N HYD-PUMP-29-ELEC-02 (S/N 24-089) → Installé
+STATUS : CLOSED - 11/02/2024 22:45 UTC - Signed by: Tech. Michael O'BRIEN (CAT B1)
+SAFETY NOTE : MEL 29-02 appliqué en vol (autorisation atterrissage avec pompe auxiliaire inopérante, APU utilisé pour compensation).
+
+--------------------------------------------------------------------------------
+
+ID : INC-9255
+ACFT : SJ-115 (F-SJEF)
+DATE : 15/02/2024
+OPERATOR : Air Charter Europe
+TSN : 15,020 FH / 9,875 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : RÉCIDIVE des vibrations signalées dans l'incident INC-8901. Vibrations beaucoup plus intenses que lors de la première occurrence. Bruit sourd ("thud") clairement audible depuis le cockpit et la cabine (plusieurs passagers se sont plaints). Phénomène systématique à chaque transition hydraulique (PTU, train, volets).
+DONNÉES :
+  - Circuit VERT : pression oscillante entre 2900 PSI et 3150 PSI (amplitude ± 125 PSI)
+  - Fréquence oscillation : ~2 Hz (observable sur ECAM en mode MAINT)
+  - Circuit BLEU : 3015 PSI (stable)
+  - Circuit JAUNE : 2990 PSI (stable)
+  - Température fluide VERT : 85°C (légèrement élevée)
+INSPECTION :
+  - Inspection détaillée compartiment hydraulique (panneau L2)
+  - Relevé S/N valve PT-42 : S/N 23-452 (identique à l'incident INC-8901)
+  - Palpation des conduites hydrauliques lors test GPU : vibrations clairement ressenties au toucher
+  - Test activation PTU : bruit de "claquement" sec reproduit systématiquement
+  - Comptage particules fluide : ISO 17/15/12 (conforme)
+NOTE :
+  - Corrélation confirmée avec le Service Bulletin SB-2024-08-12 publié le 14/01/2024
+  - Valve PT-42 S/N 23-452 identifiée comme affectée par le défaut de fabrication (série 23-001 à 23-999)
+  - Défaut joint téflon sous-dimensionné générant oscillations hydrauliques
+  - 235 cycles de vol depuis installation de la valve (05/10/2023) → usure progressive du joint
+ACTION :
+  - Application immédiate du SB-2024-08-12
+  - Appareil groundé (Aircraft On Ground - AOG)
+  - Commande pièce en urgence : valve PT-42 Rev D (S/N 24-012) livrée en 36 heures
+  - Remplacement valve PT-42 S/N 23-452 → S/N 24-012 (nouveau design avec joint renforcé)
+  - Test fonctionnel complet après remplacement : AUCUNE vibration, pression stable 3000 ± 20 PSI
+  - Vol de validation effectué (1h30 avec technicien embarqué) : problème résolu définitivement
+PIÈCES :
+  - Valve PT-42 P/N SJ-29-11-05-42-001 Rev C (S/N 23-452) → Retiré et retourné AeroNova (RMA-2024-0089)
+  - Valve PT-42 P/N SJ-29-11-05-42-002 Rev D (S/N 24-012) → Installé (fourni en warranty)
+STATUS : CLOSED - 18/02/2024 11:20 UTC - Signed by: Tech. Martin DUBOIS (CAT B1) + Inspector Pierre LEMOINE (CAT C)
+DOWNTIME TOTAL : 58 heures (incluant attente pièce)
+COST IMPACT : Pièce gratuite (warranty) + MH : 4.5h x 85 EUR/h = 382.50 EUR + Skydrol : 120 EUR = 502.50 EUR
+
+--------------------------------------------------------------------------------
+
+ID : INC-9301
+ACFT : SJ-133 (LN-SJN)
+DATE : 05/03/2024
+OPERATOR : Nordic Sky Airlines
+TSN : 9,450 FH / 6,120 FC
+ATA : 21 (Air Conditioning)
+PROBLÈME : Température cabine trop élevée en vol (28°C alors que sélecteur réglé sur 22°C). Plaintes passagers en zone arrière. Compresseur Pack 2 (climatisation) ne refroidit pas correctement.
+DONNÉES :
+  - Pack 1 (avant) : température sortie 15°C (normal)
+  - Pack 2 (arrière) : température sortie 26°C (anormal, devrait être ~15°C)
+  - Débit d'air : normal
+  - Pas d'alerte ECAM "AIR PACK 2 FAULT"
+INSPECTION :
+  - Test BITE Pack 2 : Code erreur E28 "Temperature sensor out of range"
+  - Sonde de température sortie Pack 2 mesurée : -5°C (alors que température réelle = 26°C)
+  - Sonde défectueuse confirmée (lecture erronée fausse la régulation automatique)
+NOTE :
+  - Sonde température référence ATA 21-50-02 installée en mai 2022 (22 mois d'utilisation)
+  - TBO sonde : 36 mois → usure prématurée
+ACTION :
+  - Remplacement sonde température sortie Pack 2
+  - Recalibration système climatisation
+  - Test fonctionnel : température cabine stable 22°C ± 1°C
+PIÈCES :
+  - Sonde température P/N TEMP-21-502 (S/N 22-156) → Retiré
+  - Sonde température P/N TEMP-21-502 (S/N 24-078) → Installé
+STATUS : CLOSED - 05/03/2024 20:15 UTC - Signed by: Tech. Sven JOHANSSON (CAT B2)
+
+--------------------------------------------------------------------------------
+
+ID : INC-9422
+ACFT : SJ-089 (N-789SJ)
+DATE : 20/03/2024
+OPERATOR : Pacific Freedom Airlines
+TSN : 11,680 FH / 7,340 FC
+ATA : 29 (Hydraulic Power)
+PROBLÈME : Application Service Bulletin SB-2024-08-12 (remplacement valve PT-42 défectueuse S/N 23-234 - voir incident INC-8945).
+DONNÉES : N/A (maintenance planifiée)
+INSPECTION :
+  - Valve PT-42 S/N 23-234 confirmée affectée par le défaut fabrication
+  - Inspection visuelle : joint téflon montre signes d'usure prématurée
+  - 340 cycles depuis installation (avril 2023)
+NOTE :
+  - Vibrations sporadiques rapportées par l'équipage depuis novembre 2023
+  - Remplacement effectué avant atteinte seuil 500 cycles (conformité SB)
+ACTION :
+  - Remplacement valve PT-42 S/N 23-234 → S/N 24-156 (nouveau design Rev D)
+  - Test leak-down : OK (chute pression 45 PSI en 2 minutes)
+  - Test régulation PTU : OK (pression stable 3000 ± 15 PSI, aucune vibration)
+PIÈCES :
+  - Valve PT-42 P/N SJ-29-11-05-42-001 Rev C (S/N 23-234) → Retiré (RMA-2024-0134)
+  - Valve PT-42 P/N SJ-29-11-05-42-002 Rev D (S/N 24-156) → Installé (warranty)
+STATUS : CLOSED - 21/03/2024 14:30 UTC - Signed by: Tech. Robert CHANG (CAT B1)
+DOWNTIME : 8 heures (maintenance planifiée lors visite A)
+
+--------------------------------------------------------------------------------
+
+ID : INC-9511
+ACFT : SJ-107 (OE-SJG)
+DATE : 12/04/2024
+OPERATOR : AlpenAir
+TSN : 7,890 FH / 5,020 FC
+ATA : 32 (Landing Gear)
+PROBLÈME : Alerte ECAM "BRAKES HOT" après atterrissage. Température freins train principal gauche : 420°C (seuil alerte : 300°C). Freins train principal droit : 280°C (normal).
+DONNÉES :
+  - Vent au sol : 15 kt (crosswind 8 kt)
+  - Piste : 2800m (suffisamment longue)
+  - Freinage normal (pas d'urgence, pas de rejected takeoff)
+  - Température ambiante : +22°C
+INSPECTION :
+  - Attente refroidissement naturel freins (45 minutes)
+  - Inspection visuelle disques frein gauche : usure asymétrique visible
+  - Épaisseur disques mesurée :
+    * Disque 1 : 28 mm (limite min : 25 mm) → OK mais proche limite
+    * Disque 2 : 31 mm (OK)
+    * Disque 3 : 29 mm (OK)
+  - Inspection étriers frein : accumulation résidus carbonisés (encrassement)
+NOTE :
+  - Dernière révision freins : il y a 1200 FH (visite C précédente)
+  - Usure prématurée probable causée par freinage asymétrique (piston étrier bloqué)
+ACTION :
+  - Nettoyage complet système freinage train principal gauche
+  - Remplacement du piston étrier frein disque 1 (grippé)
+  - Lubrification étriers avec graisse haute température
+  - Test freinage au sol (taxi) : température symétrique gauche/droite
+PIÈCES :
+  - Piston étrier frein P/N BRAKE-32-401 (S/N 21-677) → Remplacé
+  - Graisse haute température : 200g consommés
+STATUS : CLOSED - 13/04/2024 09:45 UTC - Signed by: Tech. Johann STEINER (CAT B1)
+RECOMMENDATION : Surveiller usure disques frein, remplacement prévu à la prochaine visite C (dans 1800 FH)
+
+================================================================================
+STATISTIQUES GLOBALES (24 derniers mois)
+================================================================================
+
+NOMBRE TOTAL D'INCIDENTS ENREGISTRÉS : 89
+INCIDENTS CRITIQUES (AOG) : 12 (13.5%)
+INCIDENTS ATA 29 (Hydraulique) : 18 (20.2%)
+TAUX DE RÉCIDIVE : 8.9% (8 incidents sur 89)
+
+COMPOSANTS LES PLUS DÉFAILLANTS :
+1. Pompes hydrauliques auxiliaires (ACMP) : 9 incidents
+2. Valves de régulation PT-42 (série 2023) : 5 incidents
+3. Actuateurs train d'atterrissage : 4 incidents
+4. Systèmes de freinage : 7 incidents
+5. APU (allumeurs et starters) : 6 incidents
+
+TEMPS MOYEN DE RÉSOLUTION (MTTR) : 6.2 heures
+DISPONIBILITÉ FLOTTE (Dispatch reliability) : 98.7%
+
+================================================================================
+FIN DU RAPPORT - EXTRACTEUR DATABASE v2.4.1
+GÉNÉRÉ LE : 10 janvier 2025 à 14:32:18 UTC
+================================================================================

@@ -1,0 +1,376 @@
+AERONOVA 3300 - MANUEL DE MAINTENANCE - ATA 29 (SYSTÈME HYDRAULIQUE)
+RÉVISION : 08 - DATE : 15 SEPTEMBRE 2024
+DOCUMENT PROPRIÉTAIRE - USAGE STRICTEMENT PROFESSIONNEL
+================================================================================
+
+TABLE DES MATIÈRES
+1. GÉNÉRALITÉS ET ARCHITECTURE SYSTÈME
+2. CIRCUITS HYDRAULIQUES (VERT, BLEU, JAUNE)
+3. COMPOSANTS PRINCIPAUX
+4. VALVE DE RÉGULATION PT-42 - DESCRIPTION TECHNIQUE
+5. PROCÉDURES DE MAINTENANCE
+6. DIAGNOSTIC ET TROUBLESHOOTING
+7. LIMITES OPÉRATIONNELLES
+8. RÉFÉRENCES CROISÉES
+
+================================================================================
+SECTION 1 - GÉNÉRALITÉS ET ARCHITECTURE SYSTÈME
+================================================================================
+
+1.1 PRÉSENTATION GÉNÉRALE
+Le système hydraulique de l'AeroNova 3300 est conforme aux normes ATA Chapter 29 et répond aux exigences de certification CS-25/FAR-25. Il fournit la puissance hydraulique nécessaire à l'actionnement des surfaces de vol primaires (ailerons, gouvernes de direction, gouverne de profondeur), des surfaces secondaires (volets, slats, aérofreins), du train d'atterrissage, du système de freinage, et de la porte cargo.
+
+Le système utilise un fluide hydraulique de type SKYDROL LD-4 conforme à la spécification MIL-PRF-83282D. La température de fonctionnement normale se situe entre -40°C et +135°C.
+
+1.2 ARCHITECTURE GLOBALE
+L'AeroNova 3300 dispose de TROIS circuits hydrauliques indépendants :
+- Circuit VERT (Pression nominale : 3000 PSI ± 50 PSI)
+- Circuit BLEU (Pression nominale : 3000 PSI ± 50 PSI)
+- Circuit JAUNE (Pression nominale : 3000 PSI ± 50 PSI)
+
+Chaque circuit est alimenté par :
+- Une pompe principale entraînée par moteur (EDP - Engine Driven Pump)
+- Une pompe auxiliaire électrique (ACMP - Auxiliary Centrifugal Motor Pump)
+- Une possibilité de transfert de puissance via PTU (Power Transfer Unit)
+
+La redondance complète est assurée même en cas de perte de deux circuits sur trois pour toutes les fonctions critiques de vol.
+
+1.3 SOURCES DE PRESSION
+Les sources de pression incluent :
+- EDP 1 (Circuit VERT) - Montée sur le boîtier d'accessoires moteur gauche
+- EDP 2 (Circuit BLEU) - Montée sur le boîtier d'accessoires moteur droit
+- ACMP VERT - Alimentée en 115V AC 400Hz via Bus AC1
+- ACMP BLEU - Alimentée en 115V AC 400Hz via Bus AC2
+- ACMP JAUNE - Alimentée en 115V AC 400Hz via Bus AC ESS
+- APU Hydraulic Pump - Circuit JAUNE uniquement (sol et vol)
+- PTU - Transfert bidirectionnel VERT ↔ BLEU (actionnement automatique)
+- RAT (Ram Air Turbine) - Circuit BLEU en cas d'urgence totale
+
+================================================================================
+SECTION 2 - CIRCUITS HYDRAULIQUES DÉTAILLÉS
+================================================================================
+
+2.1 CIRCUIT VERT (ATA 29-11)
+
+2.1.1 CARACTÉRISTIQUES TECHNIQUES
+- Capacité réservoir : 12.5 litres (avec expansion thermique jusqu'à 14 litres)
+- Volume utile minimal : 8 litres
+- Pression nominale : 3000 PSI
+- Pression de relâchement (relief valve) : 3625 PSI ± 75 PSI
+- Débit nominal EDP : 75 litres/minute @ 3000 PSI
+- Filtration : 3 microns absolus (élément filtrant référence HF-29-001)
+
+2.1.2 ÉQUIPEMENTS ALIMENTÉS
+Le circuit VERT alimente les systèmes suivants :
+- Gouverne de profondeur (gauche) - Actuateur principal ATA 27-21-01
+- Aileron gauche interne - Actuateur ATA 27-11-02
+- Volets gauches (inboard + outboard) - Actuateurs ATA 27-31-05/06
+- Slats sections 1, 2, 3 (côté gauche) - PCU (Power Control Unit) ATA 27-32-01
+- Train principal gauche (extension/rétraction) - Vérin ATA 32-11-10
+- Freins train principal gauche - Distributeur ATA 32-42-05
+- Porte cargo principale - Vérin ATA 52-21-01
+- Reverseur moteur gauche - Actuateur ATA 78-11-20
+
+2.1.3 INSTRUMENTATION ET CAPTEURS
+- PT-10 : Transducteur de pression principal (signal ARINC 429 vers ECAM)
+- PT-11 : Transducteur de pression redondant (backup)
+- TT-05 : Sonde de température fluide (alerte si > 125°C)
+- FS-01 : Flow Sensor (détection de fuite si débit > 2 L/min sans demande)
+- LLS-01 : Low Level Sensor (alerte réservoir si < 30% capacité)
+
+================================================================================
+SECTION 3 - COMPOSANTS PRINCIPAUX
+================================================================================
+
+3.1 POMPES PRINCIPALES EDP (ENGINE DRIVEN PUMPS)
+
+Les EDP sont des pompes à pistons axiaux à cylindrée variable de type Vickers PVQ-45. Elles sont entraînées mécaniquement par le boîtier d'accessoires moteur (AGB) via un arbre cannelé tournant à 6800 RPM au régime N2 = 100%.
+
+SPÉCIFICATIONS EDP :
+- Modèle : Vickers PVQ-45-AR-20S-11-C-30
+- Débit maximal : 85 L/min
+- Pression de compensation : 3050 PSI
+- Température maximale huile : 150°C
+- MTBF (Mean Time Between Failure) : 15,000 heures de vol
+- TBO (Time Between Overhaul) : 8,000 heures ou 6 ans
+
+Interval de maintenance :
+- Inspection visuelle : Chaque visite A (500 FH)
+- Contrôle pression de compensation : Chaque visite C (3000 FH)
+- Remplacement filtre entrée pompe : 1500 FH
+- Overhaul complet : 8000 FH
+
+3.2 POWER TRANSFER UNIT (PTU)
+
+La PTU permet un transfert de puissance hydraulique entre les circuits VERT et BLEU sans mélange de fluide. Elle est constituée d'une pompe hydraulique (côté donneur) couplée mécaniquement à un moteur hydraulique (côté receveur).
+
+LOGIQUE D'ACTIVATION AUTOMATIQUE :
+La PTU s'active automatiquement lorsque :
+- Différence de pression > 500 PSI entre VERT et BLEU
+- ET au moins un moteur en fonctionnement
+- ET train d'atterrissage non verrouillé en position atterrissage
+
+La PTU génère un bruit caractéristique ("barking dog") lors de son fonctionnement, ce qui est NORMAL et ne constitue pas un défaut.
+
+NOTE IMPORTANTE : La PTU ne doit PAS être activée au sol avec le GPU (Ground Power Unit) pour éviter une surchauffe. Respecter la limitation : activation PTU MAX 2 minutes continues au sol.
+
+================================================================================
+SECTION 4 - VALVE DE RÉGULATION PT-42 (COMPOSANT CRITIQUE)
+================================================================================
+
+4.1 DESCRIPTION GÉNÉRALE
+
+La valve de régulation PT-42 (Part Number : SJ-29-11-05-42-001 Rev C) est un composant essentiel du circuit VERT. Elle est située dans le compartiment hydraulique principal (FS 500-520), accessible par le panneau d'accès inférieur L2.
+
+FONCTION :
+La PT-42 maintient une pression différentielle stable lors des transferts de charge via la PTU. Elle évite les oscillations de pression qui pourraient endommager les actuateurs sensibles (notamment les PCU des surfaces de vol).
+
+LOCALISATION EXACTE :
+- Zone : Lower fuselage, hydraulic bay #1
+- Frame Station : FS 512
+- Stringer : S-12L (côté gauche)
+- Référence schématique : Drawing SJ-29-001 Sheet 4
+
+4.2 CARACTÉRISTIQUES TECHNIQUES PT-42
+
+Type : Valve de régulation à piston compensé
+Fabricant : Aerospace Components Inc. (ACI)
+Matériau corps : Aluminium aéronautique 7075-T6
+Joints : Téflon PTFE + Viton FKM (haute température)
+Masse : 1.8 kg
+Dimensions : 120 mm x 85 mm x 65 mm
+
+PARAMÈTRES DE FONCTIONNEMENT :
+- Pression d'ouverture nominale : 3150 PSI
+- Tolérance acceptable : +/- 50 PSI (soit 3100 à 3200 PSI)
+- Pression de fermeture : 2950 PSI
+- Hystérésis normale : 100 PSI max
+- Débit nominal traversant : 25 L/min
+- Chute de pression interne : < 50 PSI @ débit nominal
+- Temps de réponse : < 150 ms
+
+SEUILS D'ALERTE ECAM :
+- HYD VERT HI PRESS (rouge) : > 3400 PSI
+- HYD VERT LO PRESS (ambre) : < 2700 PSI
+- HYD VERT OVHT (ambre) : température fluide > 125°C
+
+4.3 CONSTRUCTION INTERNE DE LA PT-42
+
+La valve PT-42 est composée de :
+1. Corps principal en aluminium usiné (P/N SJ-42-BODY-01)
+2. Piston de régulation Ø 22mm avec ressort taré à 3150 PSI
+3. Joint torique principal (référence MS28775-236)
+4. Joint glissière en téflon PTFE (référence ACI-SEAL-42T)
+5. Bouchon de visite avec joint crush washer cuivre
+6. Raccord d'entrée B-Nut -10 (filetage 7/8"-14 UNF)
+7. Raccord de sortie B-Nut -10 (filetage 7/8"-14 UNF)
+
+Le joint en téflon (élément 4) est le composant le plus sensible à l'usure. Il assure l'étanchéité dynamique du piston pendant les cycles de régulation.
+
+4.4 NUMÉROS DE SÉRIE ET TRAÇABILITÉ
+
+ATTENTION - DÉFAUT DE SÉRIE IDENTIFIÉ :
+Les valves PT-42 fabriquées entre MARS 2023 et DÉCEMBRE 2023 (Serial Numbers 23-001 à 23-999) présentent un défaut de fabrication sur le joint téflon. Consulter obligatoirement le Service Bulletin SB-2024-08-12.
+
+Format du Serial Number : YY-NNN
+Exemple : 23-452 = Année 2023, unité n°452
+
+Le S/N est gravé au laser sur le corps de la valve, face supérieure.
+
+VALVES NON AFFECTÉES :
+- S/N < 23-001 (production 2022 et antérieure)
+- S/N ≥ 24-001 (production 2024 avec joint amélioré)
+
+4.5 INTERVALLES DE MAINTENANCE PT-42
+
+INSPECTION VISUELLE (Task 29-11-05-210-001) :
+Fréquence : Chaque visite A (500 FH)
+Durée estimée : 15 minutes
+Personnel requis : Certifié Cat B1 minimum
+
+Points à vérifier :
+- Absence de suintement au niveau des B-Nuts
+- Absence de corrosion sur le corps de valve
+- Absence de traces d'impact ou de déformation
+- Propreté générale de la zone environnante
+- Serrage correct des raccords (90-95 in-lbs)
+
+TEST FONCTIONNEL (Task 29-11-05-310-001) :
+Fréquence : Chaque visite C (3000 FH) ou après remplacement
+Durée estimée : 45 minutes
+Personnel requis : Certifié Cat B1 avec qualification hydraulique
+Équipement : Hydraulic Test Bench référence HTP-3000
+
+REMPLACEMENT PRÉVENTIF :
+TBO (Time Between Overhaul) : 12,000 FH ou 8 ans (le premier atteint)
+Pour les S/N 23-001 à 23-999 : Remplacement MANDATAIRE sous 500 cycles (voir SB-2024-08-12)
+
+================================================================================
+SECTION 5 - PROCÉDURES DE MAINTENANCE
+================================================================================
+
+5.1 PROCÉDURE DE TEST PRESSION STATIQUE - CIRCUIT VERT
+
+OBJECTIF : Vérifier l'étanchéité du circuit VERT et le bon fonctionnement de la valve PT-42
+
+PRÉREQUIS :
+- Avion au sol, calé et sécurisé
+- Circuit électrique alimenté (Ground Power ou APU)
+- Réservoir hydraulique VERT plein (niveau visible entre MIN et MAX)
+- Température ambiante entre +10°C et +35°C
+- AMM Task Card 29-11-00-810-801 disponible
+
+OUTILLAGE NÉCESSAIRE :
+- Hydraulic Test Panel (référence SJ-HTP-001)
+- Manomètre de précision 0-5000 PSI (calibré < 6 mois)
+- Chronomètre
+- Lampe d'inspection LED
+- Matériel anti-FOD (bouchons de protection)
+
+CONSOMMABLES :
+- Chiffons non pelucheux (référence SCOTT 8395)
+- Fluid Skydrol LD-4 (si appoint nécessaire)
+
+PROCÉDURE PAS À PAS :
+
+ÉTAPE 1 : PRÉPARATION
+1.1 - Consulter le LOUT (Lock-Out Tag) pour vérifier qu'aucun autre travail n'est en cours sur le système hydraulique
+1.2 - Ouvrir le panneau d'accès L2 (compartiment hydraulique)
+1.3 - Inspecter visuellement la valve PT-42 : aucun suintement visible
+1.4 - Vérifier le niveau du réservoir hydraulique VERT (sight glass)
+1.5 - S'assurer que tous les utilisateurs hydrauliques sont en position repos
+
+ÉTAPE 2 : MISE SOUS PRESSION VIA GPU
+2.1 - Connecter le GPU (Ground Power Unit) hydraulique au raccord de service circuit VERT (frame station 515, côté gauche)
+2.2 - Démarrer le GPU et monter progressivement la pression à 3000 PSI
+2.3 - Observer l'indication ECAM : "HYD VERT PRESS 3000 PSI" en vert
+2.4 - Maintenir la pression stable pendant 30 secondes
+2.5 - Vérifier visuellement l'absence de fuite au niveau du raccord B-Nut de la PT-42
+
+ÉTAPE 3 : TEST DE CHUTE DE PRESSION (LEAK-DOWN TEST)
+3.1 - Stopper la pompe du GPU (pression figée dans le circuit)
+3.2 - Noter la pression initiale P1 affichée sur ECAM (valeur attendue : ~3000 PSI)
+3.3 - Déclencher le chronomètre
+3.4 - Attendre exactement 2 minutes
+3.5 - Noter la pression finale P2 affichée sur ECAM
+3.6 - Calculer la chute de pression : ΔP = P1 - P2
+
+CRITÈRES D'ACCEPTATION :
+- ΔP < 100 PSI en 2 minutes = TEST OK (circuit étanche)
+- 100 PSI ≤ ΔP ≤ 150 PSI = ACCEPTABLE avec surveillance renforcée (retester dans 250 FH)
+- ΔP > 150 PSI = TEST NOK (fuite interne suspectée dans la PT-42 ou autre composant)
+
+ÉTAPE 4 : TEST FONCTIONNEL PT-42 (RÉGULATION)
+4.1 - Redémarrer la pompe GPU et stabiliser à 3000 PSI
+4.2 - Activer manuellement la PTU (via le panneau MAINT sur ECAM)
+4.3 - Observer l'évolution de la pression sur le circuit VERT :
+     • Doit monter temporairement à 3150-3200 PSI (ouverture PT-42)
+     • Puis se stabiliser à 3000 ± 50 PSI (régulation active)
+4.4 - Désactiver la PTU
+4.5 - Pression doit revenir à 3000 PSI nominal en moins de 5 secondes
+
+Si la pression dépasse 3400 PSI ou ne redescend pas → Dysfonctionnement PT-42
+
+ÉTAPE 5 : FIN DE TEST
+5.1 - Décharger complètement le circuit VERT (mettre ELEC PUMP OFF)
+5.2 - Déconnecter le GPU
+5.3 - Vérifier une dernière fois l'absence de suintement
+5.4 - Refermer le panneau L2
+5.5 - Compléter le log book avec résultats et signature
+
+================================================================================
+SECTION 6 - DIAGNOSTIC ET TROUBLESHOOTING
+================================================================================
+
+6.1 ARBRE DE DÉCISION : ANOMALIES LIÉES À LA PT-42
+
+SYMPTÔME : Pression circuit VERT instable (oscillations ± 200 PSI)
+
+CAUSES POSSIBLES :
+A) Valve PT-42 défectueuse (piston grippé ou joint usé)
+B) Contamination du fluide hydraulique (particules > 3 microns)
+C) Défaut du transducteur de pression PT-10
+D) Fuite interne dans un actuateur
+
+DIAGNOSTIC :
+→ Étape 1 : Vérifier indication ECAM vs manomètre externe
+   - Si écart > 100 PSI : remplacer PT-10 (capteur défaillant)
+   - Si valeurs cohérentes : passer à l'étape 2
+
+→ Étape 2 : Analyser le fluide (test de contamination par compteur de particules)
+   - ISO Cleanliness Code > 18/16/13 : filtration nécessaire
+   - ISO Cleanliness Code < 18/16/13 : passer à l'étape 3
+
+→ Étape 3 : Isoler la PT-42
+   - Installer un manomètre en amont ET en aval de la PT-42
+   - Refaire un cycle de pressurisation
+   - Si ΔP en aval oscille mais pas en amont : PT-42 défectueuse → REMPLACER
+
+6.2 SYMPTÔME : VIBRATIONS + BRUIT SOURD (DÉFAUT SÉRIE PT-42)
+
+DESCRIPTION :
+Vibrations anormales ressenties dans le compartiment central de l'avion, accompagnées d'un "bruit sourd" (thud ou knocking) audible depuis le cockpit. Le phénomène se produit principalement lors des transitions :
+- Extension/rétraction du train d'atterrissage
+- Déploiement des volets (Flaps 1 → Flaps 5)
+- Activation de la PTU
+
+CAUSE RACINE (ROOT CAUSE) :
+Les valves PT-42 fabriquées en 2023 (S/N 23-001 à 23-999) ont un joint en téflon de qualité non conforme (épaisseur 0.08mm au lieu de 0.10mm). Après environ 200-300 cycles de régulation, ce joint se déforme et génère des micro-oscillations hydrauliques à haute fréquence (80-120 Hz).
+
+Ces oscillations se propagent dans les lignes rigides et résonnent avec la structure, créant le bruit et les vibrations caractéristiques.
+
+CONFIRMATION DU DÉFAUT :
+1. Vérifier le S/N de la PT-42 installée (panneau L2, gravure laser)
+2. Si S/N = 23-XXX → Défaut confirmé (même sans vibrations actuelles)
+3. Consulter obligatoirement le Service Bulletin SB-2024-08-12
+
+ACTION CORRECTIVE :
+Remplacement immédiat de la PT-42 par une version améliorée (S/N 24-XXX ou supérieur).
+
+CLASSIFICATION :
+- Si vibrations présentes : Aircraft On Ground (AOG) - vol interdit
+- Si vibrations absentes mais S/N affecté : Remplacement sous 500 cycles max
+
+================================================================================
+SECTION 7 - LIMITES OPÉRATIONNELLES
+================================================================================
+
+7.1 LIMITATIONS DE VOL LIÉES AU SYSTÈME HYDRAULIQUE
+
+LIMITATION 1 : Perte totale du circuit VERT
+→ Vol autorisé avec restrictions : vitesse max 250 KIAS, altitude max FL250, pas de vol ETOPS
+
+LIMITATION 2 : Fuite hydraulique mineure (< 5 gouttes/minute)
+→ Vol autorisé si pression stable > 2800 PSI
+→ Interdiction pour vols ETOPS (Extended-range Twin-engine Operations)
+
+LIMITATION 3 : Valve PT-42 défectueuse (S/N série 23-XXX avec vibrations)
+→ AOG - Vol strictement interdit jusqu'au remplacement
+
+7.2 QUANTITÉS MINIMALES DE FLUIDE
+
+Circuit VERT : 8 litres minimum (indicateur "LOW LEVEL" ECAM)
+Circuit BLEU : 7.5 litres minimum
+Circuit JAUNE : 6 litres minimum
+
+En dessous de ces quantités, le vol est interdit (NO-GO).
+
+================================================================================
+SECTION 8 - RÉFÉRENCES CROISÉES
+================================================================================
+
+DOCUMENTS ASSOCIÉS :
+- Service Bulletin SB-2024-08-12 : Remplacement valve PT-42
+- AMM (Aircraft Maintenance Manual) Chapter 29-11-05
+- MEL (Minimum Equipment List) items 29-01 à 29-15
+- Wiring Diagram Manual (WDM) : schéma hydraulique chapter 29
+
+PIÈCES DE RECHANGE RECOMMANDÉES :
+- Valve PT-42 (nouveau design 2024) : P/N SJ-29-11-05-42-002 Rev D
+- Kit de joints PT-42 : P/N SJ-29-11-05-42-SK01
+- Filtre hydraulique haute pression : P/N HF-29-001
+- Fluide Skydrol LD-4 : Référence MIL-PRF-83282D (bidon 20L)
+
+================================================================================
+FIN DU DOCUMENT - RÉVISION 08
+================================================================================

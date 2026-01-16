@@ -1,0 +1,586 @@
+AERONOVA 3300 - GUIDE DE DÉPANNAGE RAPIDE (QUICK TROUBLESHOOTING GUIDE)
+================================================================================
+RÉVISION : 06 - DATE : 20 OCTOBRE 2024
+DOCUMENT TECHNIQUE - USAGE MAINTENANCE UNIQUEMENT
+================================================================================
+
+OBJECTIF DU DOCUMENT :
+Ce guide fournit des arbres de décision rapides pour diagnostiquer et corriger les défaillances les plus courantes sur l'AeroNova 3300. Il est conçu pour être utilisé en première ligne par les techniciens certifiés lors des opérations au sol (Line Maintenance).
+
+AVERTISSEMENT :
+Ce guide ne remplace PAS le Aircraft Maintenance Manual (AMM). En cas de doute ou de diagnostic complexe, toujours se référer aux procédures détaillées de l'AMM.
+
+STRUCTURE DU GUIDE :
+- Chaque section commence par un SYMPTÔME observable
+- Suivi d'un ARBRE DE DÉCISION logique (étapes numérotées)
+- Actions correctives avec références AMM
+- Pièces de rechange typiques
+
+================================================================================
+TABLE DES MATIÈRES
+================================================================================
+
+1. SYSTÈME HYDRAULIQUE (ATA 29)
+   1.1. Chute de pression circuit VERT
+   1.2. Chute de pression circuit BLEU
+   1.3. Chute de pression circuit JAUNE
+   1.4. Vibrations/Bruit sourd en phase de transition
+   1.5. Pression hydraulique trop élevée (> 3400 PSI)
+   1.6. Fuite hydraulique visible
+   1.7. Température fluide élevée
+
+2. TRAIN D'ATTERRISSAGE (ATA 32)
+   2.1. Train ne se rétracte pas
+   2.2. Train ne s'étend pas
+   2.3. Alerte "GEAR NOT DOWN AND LOCKED"
+
+3. APU - AUXILIARY POWER UNIT (ATA 49)
+   3.1. APU ne démarre pas
+   3.2. APU s'arrête en vol
+   3.3. Alerte "APU FAULT"
+
+4. SYSTÈME ÉLECTRIQUE (ATA 24)
+   4.1. Perte d'un bus AC
+   4.2. Batterie ne se charge pas
+   4.3. Generator fault
+
+5. COMMANDES DE VOL (ATA 27)
+   5.1. Résistance anormale sur les commandes
+   5.2. Alerte "FLT CTRL FAULT"
+
+6. PRESSURISATION CABINE (ATA 21)
+   6.1. Pressurisation insuffisante
+   6.2. Température cabine anormale
+
+================================================================================
+SECTION 1 - SYSTÈME HYDRAULIQUE (ATA 29)
+================================================================================
+
+--------------------------------------------------------------------------------
+1.1. SYMPTÔME : CHUTE DE PRESSION SUR LE CIRCUIT VERT (ECAM HYD VERT LO PRESS)
+--------------------------------------------------------------------------------
+
+ALERTE ECAM : "HYD VERT PRESS LO" (ambre) si pression < 2700 PSI
+                "HYD VERT SYS LO" (rouge) si pression < 1500 PSI
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : Vérifier le niveau du réservoir hydraulique VERT
+   ├─ Niveau BAS (< MIN sur le sight glass) ?
+   │  └─► HYPOTHÈSE : Fuite externe
+   │     ACTION : Passer à la section 1.6 "Fuite hydraulique visible"
+   │
+   └─ Niveau OK (entre MIN et MAX) ?
+      └─► HYPOTHÈSE : Problème de génération de pression (pompe ou PTU)
+          Passer à ÉTAPE 2
+
+ÉTAPE 2 : Identifier la source de pression active
+   Question : Quelle pompe est censée alimenter le circuit VERT ?
+   
+   ├─ Au SOL avec moteur arrêté : ACMP VERT (pompe électrique auxiliaire)
+   │  └─► Tester ACMP VERT :
+   │        1. Vérifier disjoncteur (C/B) "HYD ACMP GREEN" sur le panneau électrique → Doit être IN
+   │        2. Activer ACMP VERT via le panneau ECAM MAINT
+   │        3. Observer la montée de pression (devrait atteindre 3000 PSI en 10-15 sec)
+   │        
+   │        RÉSULTAT :
+   │        ├─ Pression monte normalement → ACMP OK, chercher ailleurs (passer ÉTAPE 3)
+   │        └─ Pression ne monte PAS ou monte lentement → ACMP DÉFECTUEUSE
+   │           ACTION : Remplacer ACMP VERT (Réf AMM 29-14-02)
+   │           PIÈCE : P/N HYD-PUMP-29-ELEC-01
+   │
+   ├─ En VOL ou au sol MOTEUR EN FONCTIONNEMENT : EDP#1 (Engine Driven Pump)
+   │  └─► Tester EDP#1 :
+   │        1. Vérifier régime moteur gauche : N2 > 60% (EDP fonctionne si N2 > 60%)
+   │        2. Observer la pression VERT sur ECAM
+   │        
+   │        RÉSULTAT :
+   │        ├─ Pression monte avec N2 > 60% → EDP#1 OK, chercher ailleurs (passer ÉTAPE 3)
+   │        └─ Pression reste basse malgré N2 > 60% → EDP#1 DÉFECTUEUSE
+   │           ACTION : Appareil AOG (Aircraft On Ground) - Remplacer EDP#1
+   │           PIÈCE : P/N HYD-PUMP-29-EDP-01
+   │           Réf AMM : 29-11-10
+   │           NOTE : MEL 29-01 interdit le dispatch avec EDP défectueuse (NO-GO)
+   │
+   └─ En cas de perte EDP#1 en vol : La PTU peut suppléer
+      └─► Vérifier activation automatique PTU :
+            Condition : Différence de pression VERT/BLEU > 500 PSI → PTU se déclenche automatiquement
+            Si PTU OK : Circuit BLEU transfère puissance vers circuit VERT
+            Si PTU NOK : Passer à la section 1.8 "PTU inopérante"
+
+ÉTAPE 3 : Si niveau OK ET pompes OK → Tester la Power Transfer Unit (PTU)
+   └─► Procédure de test PTU :
+         1. Au sol, avec GPU (Ground Power Unit) ou APU en fonctionnement
+         2. Activer manuellement la PTU via ECAM MAINT (menu HYD)
+         3. Observer les pressions VERT et BLEU :
+            - Circuit "donneur" (ex: BLEU) doit baisser légèrement (~2900 PSI)
+            - Circuit "receveur" (ex: VERT) doit monter (~3100 PSI)
+            - Bruit caractéristique ("barking dog") audible = PTU fonctionne
+         
+         RÉSULTAT :
+         ├─ PTU transfère la puissance correctement → PTU OK
+         │  └─► HYPOTHÈSE : Problème intermittent ou fuite interne valve
+         │        ACTION : Effectuer un Leak-Down Test (AMM 29-11-00-810-801)
+         │
+         └─ PTU ne transfère PAS → PTU DÉFECTUEUSE
+            ACTION : Remplacer PTU (Réf AMM 29-17-00)
+            PIÈCE : P/N PTU-29-001
+            NOTE : MEL 29-11 autorise le dispatch 3 jours avec PTU inopérante (conditions strictes)
+
+ÉTAPE 4 : Si toutes les pompes sont OK → Suspecter valve de régulation PT-42
+   └─► Indicateurs d'un problème PT-42 :
+         - Oscillations de pression VERT (±100-200 PSI)
+         - Vibrations ressenties dans le compartiment hydraulique
+         - Bruit sourd lors des transitions (train, volets, PTU)
+         
+         ACTION :
+         1. Ouvrir le panneau L2 (accès compartiment hydraulique)
+         2. Identifier le Serial Number de la valve PT-42 (gravé sur le corps)
+         3. Si S/N entre 23-001 et 23-999 → DÉFAUT CONNU (SB-2024-08-12)
+            └─► ACTION IMMÉDIATE : Remplacer valve PT-42
+                 PIÈCE : P/N SJ-29-11-05-42-002 Rev D (fourni gratuitement sous garantie)
+                 Réf AMM : 29-11-05
+                 NOTE : Si vibrations présentes → AOG (vol interdit)
+
+ÉTAPE 5 : Cas particuliers et diagnostics avancés
+   └─► Si aucune des causes ci-dessus n'explique la chute de pression :
+         1. Vérifier l'intégrité des lignes hydrauliques (fuite interne, rupture de flexible)
+         2. Inspecter les actuateurs (fuite interne dans un vérin)
+         3. Effectuer un test d'isolement : fermer les valves de sectionnement une par une pour identifier le circuit fuyant
+         4. Contacter AeroNova Technical Support pour assistance avancée
+
+RÉSUMÉ ACTIONS RAPIDES :
+┌────────────────────────────────────────────────────────────────┐
+│ PRESSION VERT BASSE → Vérifier niveau réservoir                │
+│   ├─ Niveau bas → Chercher fuite externe (section 1.6)         │
+│   └─ Niveau OK → Tester pompes (ACMP ou EDP)                   │
+│       ├─ Pompe défectueuse → Remplacer                         │
+│       └─ Pompe OK → Tester PTU puis valve PT-42                │
+└────────────────────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+1.2. SYMPTÔME : CHUTE DE PRESSION SUR LE CIRCUIT BLEU
+--------------------------------------------------------------------------------
+
+LOGIQUE IDENTIQUE AU CIRCUIT VERT (section 1.1)
+
+DIFFÉRENCES SPÉCIFIQUES CIRCUIT BLEU :
+- Pompe principale : EDP#2 (montée sur moteur DROIT)
+- Pompe auxiliaire : ACMP BLEU (P/N HYD-PUMP-29-ELEC-02)
+- Secours ultime : RAT (Ram Air Turbine) → déploiement automatique si perte totale puissance
+
+PARTICULARITÉ RAT :
+   La RAT se déploie automatiquement en vol si :
+   - Perte des 2 moteurs (double flame-out)
+   - OU perte complète génération électrique
+   
+   Test RAT au sol :
+   1. Panneau MAINT ECAM → RAT TEST
+   2. Déploiement manuel (attention : irréversible, RAT ne se rétracte pas automatiquement)
+   3. Vérifier montée de pression circuit BLEU à ~2500 PSI (normal pour RAT)
+   
+   NOTE : Ne PAS tester la RAT sauf nécessité absolue (coût élevé de réarmement)
+
+--------------------------------------------------------------------------------
+1.3. SYMPTÔME : CHUTE DE PRESSION SUR LE CIRCUIT JAUNE
+--------------------------------------------------------------------------------
+
+PARTICULARITÉS CIRCUIT JAUNE :
+- Pompe principale : APU Hydraulic Pump (uniquement si APU en fonctionnement)
+- Pompe auxiliaire : ACMP JAUNE (P/N HYD-PUMP-29-ELEC-03)
+- Pas de transfert PTU disponible (circuit isolé)
+
+ARBRE DE DÉCISION SIMPLIFIÉ :
+
+ÉTAPE 1 : Vérifier si l'APU est en fonctionnement
+   ├─ APU ON → La pompe hydraulique APU doit alimenter le circuit JAUNE
+   │  └─► Vérifier pression : devrait être ~3000 PSI
+   │        Si pression basse → Pompe APU défectueuse
+   │        ACTION : Tester la pompe APU (AMM 29-15-00)
+   │
+   └─ APU OFF → Seule l'ACMP JAUNE peut générer de la pression
+      └─► Activer ACMP JAUNE via ECAM MAINT
+            Si pression ne monte pas → ACMP JAUNE défectueuse
+            ACTION : Remplacer ACMP JAUNE (AMM 29-14-05)
+            NOTE : MEL 29-02 autorise le dispatch sans ACMP JAUNE si APU opérationnel
+
+ÉTAPE 2 : Si niveau réservoir bas → Chercher fuite (section 1.6)
+
+ÉTAPE 3 : Si pompes OK mais pression instable → Vérifier valve de décharge circuit JAUNE
+
+RÉSUMÉ ACTIONS RAPIDES :
+┌────────────────────────────────────────────────────────────────┐
+│ PRESSION JAUNE BASSE → Vérifier APU en fonctionnement ?        │
+│   ├─ APU ON → Tester pompe hydraulique APU                     │
+│   └─ APU OFF → Tester ACMP JAUNE                               │
+│       Si les deux OK → Chercher fuite externe                  │
+└────────────────────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+1.4. SYMPTÔME : VIBRATIONS / BRUIT SOURD EN PHASE DE TRANSITION
+--------------------------------------------------------------------------------
+
+DESCRIPTION DU SYMPTÔME :
+- Vibrations anormales ressenties dans le compartiment central de l'appareil
+- Bruit sourd répétitif ("thud", "clunking", ou "knocking")
+- Fréquence : 1-2 coups par seconde
+- Moments d'apparition :
+  • Extension/rétraction du train d'atterrissage
+  • Déploiement des volets (Flaps 1 → Flaps 5)
+  • Activation de la PTU (Power Transfer Unit)
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : Vérifier la pression du circuit VERT sur ECAM pendant les transitions
+   └─► Observer l'indication de pression sur le display ECAM (mode normal ou MAINT)
+   
+         RÉSULTAT :
+         ├─ Pression STABLE (3000 ± 50 PSI) sans oscillation visible
+         │  └─► Passer à ÉTAPE 2 (cause non hydraulique probable)
+         │
+         └─ Pression OSCILLE (ex: 2900 ↔ 3200 PSI avec amplitude > 100 PSI)
+            └─► HYPOTHÈSE CONFIRMÉE : Problème de régulation hydraulique
+                  Passer à ÉTAPE 3 (investigation valve PT-42)
+
+ÉTAPE 2 : Causes mécaniques non hydrauliques (si pression stable)
+   Causes possibles :
+   ├─ Usure roulement train d'atterrissage
+   ├─ Jeu excessif dans les fixations train
+   ├─ Résonance structurelle
+   └─ Composant mécanique desserré (bracket, support)
+   
+   ACTION :
+   1. Inspection visuelle complète du train d'atterrissage principal
+   2. Vérifier le serrage de toutes les fixations (torque check)
+   3. Inspecter les amortisseurs (shock struts) : niveau d'huile et pression nitrogen
+   4. Si vibrations persistent → Contacter AeroNova Structures Department
+
+ÉTAPE 3 : Investigation valve PT-42 (DÉFAUT SÉRIE CONNU)
+   └─► Procédure d'identification :
+   
+         1. Ouvrir le panneau d'accès L2 (compartiment hydraulique, Frame Station 512)
+         2. Localiser la valve PT-42 sur le collecteur de retour circuit VERT
+         3. Relever le Serial Number (S/N) gravé sur le corps de la valve
+         
+         4. Vérifier si le S/N est dans la plage AFFECTÉE par le défaut :
+            ┌─────────────────────────────────────────────────────────┐
+            │ Serial Number entre 23-001 et 23-999 ?                  │
+            │   ├─ OUI → DÉFAUT CONFIRMÉ (joint téflon défectueux)    │
+            │   │   └─► ACTION IMMÉDIATE selon SB-2024-08-12 :        │
+            │   │       • Si vibrations présentes → AOG (vol interdit) │
+            │   │       • Remplacer valve PT-42 avant prochain vol     │
+            │   │       • Pièce fournie gratuitement (warranty)        │
+            │   │       • Référence AMM 29-11-05                       │
+            │   │                                                       │
+            │   └─ NON (S/N < 23-001 ou ≥ 24-001) → Valve non affectée│
+            │       └─► Chercher autre cause (passer ÉTAPE 4)          │
+            └─────────────────────────────────────────────────────────┘
+
+ÉTAPE 4 : Test fonctionnel PT-42 (si S/N non affecté ou remplacement récent)
+   └─► Procédure de test au sol :
+         1. Connecter le GPU (Ground Power Unit) au circuit VERT
+         2. Monter la pression à 3000 PSI
+         3. Activer manuellement la PTU via ECAM MAINT
+         4. Observer la réponse de la valve PT-42 :
+            ├─ Régulation fluide (pression monte à 3150-3200 PSI puis stabilise) → PT-42 OK
+            └─ Oscillations (pression "pompe" entre 2900-3200 PSI) → PT-42 DÉFECTUEUSE
+                ACTION : Remplacer PT-42 même si S/N non affecté (usure prématurée)
+
+ÉTAPE 5 : Si PT-42 OK → Inspecter les lignes hydrauliques rigides
+   └─► Les vibrations peuvent être causées par :
+         - Supports de ligne desserrés ou cassés (clamps)
+         - Ligne rigide en contact avec la structure (vibration par frottement)
+         - Flexible hydraulique durci ou endommagé
+         
+         ACTION :
+         1. Inspection visuelle de toutes les lignes du circuit VERT (panneau L2)
+         2. Vérifier le serrage des clamps de fixation
+         3. S'assurer qu'aucune ligne ne touche la structure (espace minimum 5mm)
+         4. Remplacer tout flexible montrant des signes de durcissement ou fissures
+
+RÉSUMÉ ACTIONS RAPIDES :
+┌────────────────────────────────────────────────────────────────┐
+│ VIBRATIONS + BRUIT SOURD                                        │
+│   ↓                                                              │
+│ 1. Vérifier pression VERT sur ECAM (oscillations ?)             │
+│   ├─ Oui → Identifier S/N valve PT-42                          │
+│   │   └─ S/N 23-XXX → Appliquer SB-2024-08-12 (AOG)           │
+│   └─ Non → Inspecter train d'atterrissage et supports          │
+└────────────────────────────────────────────────────────────────┘
+
+ATTENTION - SÉCURITÉ :
+Si vibrations présentes ET valve PT-42 S/N affecté (23-001 à 23-999) :
+→ APPAREIL AOG - VOL STRICTEMENT INTERDIT
+→ Classification : Safety of Flight Issue
+→ Remplacement valve OBLIGATOIRE avant remise en service
+
+--------------------------------------------------------------------------------
+1.5. SYMPTÔME : PRESSION HYDRAULIQUE TROP ÉLEVÉE (> 3400 PSI)
+--------------------------------------------------------------------------------
+
+ALERTE ECAM : "HYD [VERT/BLEU/JAUNE] HI PRESS" (rouge) si pression > 3400 PSI
+
+DANGER : Surpression peut endommager les actuateurs et causer rupture de ligne
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : ACTION IMMÉDIATE (en vol)
+   └─► 1. Couper IMMÉDIATEMENT la pompe du circuit concerné :
+            - Circuit VERT → ELEC PUMP GREEN OFF + réduire N2 moteur gauche si possible
+            - Circuit BLEU → ELEC PUMP BLUE OFF + réduire N2 moteur droit si possible
+            - Circuit JAUNE → ELEC PUMP YELLOW OFF + APU OFF
+         2. Surveiller la pression : elle doit redescendre à 0 PSI en quelques secondes
+         3. Si pression reste élevée → Panne grave, atterrissage prioritaire
+
+ÉTAPE 2 : Diagnostic au sol (après atterrissage)
+   └─► Cause probable : Valve de régulation PT-42 (circuit VERT) ou équivalent (circuits BLEU/JAUNE) bloquée en position FERMÉE
+   
+         Test :
+         1. Inspecter visuellement la valve de régulation du circuit affecté
+         2. Vérifier l'absence de débris ou contamination bloquant le piston
+         3. Tenter de déplacer manuellement le piston (valve démontée) :
+            ├─ Piston grippé → Valve défectueuse, remplacer
+            └─ Piston libre → Ressort de rappel cassé, remplacer valve
+
+ACTION CORRECTIVE :
+- Circuit VERT : Remplacer valve PT-42 (P/N SJ-29-11-05-42-002 Rev D)
+- Circuit BLEU : Remplacer valve de régulation PT-52 (P/N similaire)
+- Circuit JAUNE : Remplacer valve de décharge PT-62
+
+IMPORTANT : Appareil AOG jusqu'au remplacement de la valve (MEL 29-25 : NO-GO)
+
+--------------------------------------------------------------------------------
+1.6. SYMPTÔME : FUITE HYDRAULIQUE VISIBLE
+--------------------------------------------------------------------------------
+
+CARACTÉRISTIQUES FLUIDE SKYDROL LD-4 :
+- Couleur : violet/mauve
+- Odeur : caractéristique (légèrement âcre)
+- Corrosif pour la peau et la peinture
+- Inflammable (point éclair : 220°C)
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : Quantifier la fuite
+   └─► Méthode de mesure :
+         1. Nettoyer complètement la zone (éliminer l'ancien fluide)
+         2. Positionner un récipient gradué sous la fuite
+         3. Activer la pompe du circuit affecté (GPU ou moteur en fonctionnement)
+         4. Mesurer la quantité de fluide récupéré sur 10 minutes
+         5. Calculer le débit : X ml / 10 min
+         
+         CLASSIFICATION :
+         ├─ < 5 gouttes/min (~2 ml/min) → FUITE MINEURE
+         │  └─► Consulter MEL 29-15 : Dispatch possible sous conditions strictes
+         │        • Pression stable > 2800 PSI
+         │        • Niveau réservoir > 50%
+         │        • Maximum 3 vols ou 3 jours (le premier atteint)
+         │        • INTERDICTION vols ETOPS
+         │
+         ├─ 5-20 gouttes/min (~2-10 ml/min) → FUITE MODÉRÉE
+         │  └─► Dispatch INTERDIT (NO-GO)
+         │        Action : Localiser et réparer avant le prochain vol
+         │
+         └─ > 20 gouttes/min ou jet visible → FUITE GRAVE
+            └─► Appareil AOG - Réparation IMMÉDIATE obligatoire
+                  Risque de perte complète du circuit en vol
+
+ÉTAPE 2 : Localiser la source de la fuite
+   └─► Zones à inspecter en priorité :
+         1. Raccords B-Nuts (connexions entre lignes et composants)
+            └─► Resserrage possible : 90-95 in-lbs (ne pas dépasser 100 in-lbs)
+         2. Flexibles hydrauliques (haute pression)
+            └─► Si flexible présente fissures ou traces d'usure → Remplacer immédiatement
+         3. Joints d'étanchéité des actuateurs
+            └─► Fuite au niveau d'un vérin → Remplacer les joints (overhaul actuateur)
+         4. Valve PT-42 ou autres valves de régulation
+            └─► Fuite au niveau du bouchon de visite → Remplacer le crush washer
+         5. Réservoir hydraulique (sight glass ou raccord de niveau)
+            └─► Remplacer le joint du sight glass
+
+ÉTAPE 3 : Action corrective selon la source
+   └─► FUITE AU NIVEAU D'UN RACCORD B-NUT :
+         1. Dépressuriser complètement le circuit
+         2. Desserrer le B-Nut
+         3. Inspecter la bague (sleeve) et le cône d'étanchéité : pas de rayure, pas de déformation
+         4. Si endommagé → Remplacer le raccord complet
+         5. Si OK → Nettoyer, remonter, resserrer à 90-95 in-lbs
+         6. Remettre sous pression et vérifier : fuite éliminée ?
+   
+   └─► FUITE SUR UN FLEXIBLE HYDRAULIQUE :
+         ACTION : Remplacement OBLIGATOIRE du flexible
+         PIÈCE : Référence selon localisation (consulter IPC - Illustrated Parts Catalog)
+         NOTE : Ne JAMAIS réparer un flexible hydraulique haute pression (risque de rupture)
+   
+   └─► FUITE INTERNE DANS UN ACTUATEUR :
+         ACTION : Dépose de l'actuateur et envoi en atelier pour overhaul
+         DÉLAI : Selon MEL (si actuateur non critique) ou AOG (si critique)
+
+ÉTAPE 4 : Test après réparation
+   └─► Procédure de validation :
+         1. Nettoyer complètement la zone réparée (éliminer traces de Skydrol)
+         2. Remplir le réservoir du circuit affecté (niveau MAX)
+         3. Mettre sous pression à 3000 PSI via GPU
+         4. Maintenir pression pendant 10 minutes
+         5. Inspecter visuellement : AUCUNE trace de fluide = Réparation OK
+         6. Effectuer un Leak-Down Test (AMM 29-11-00-810-801) : chute < 100 PSI en 2 min
+         7. Si test OK → Appareil remis en service
+         8. Si fuite persiste → Reprendre diagnostic à l'ÉTAPE 2
+
+RÉSUMÉ ACTIONS RAPIDES :
+┌────────────────────────────────────────────────────────────────┐
+│ FUITE HYDRAULIQUE                                               │
+│   ↓                                                              │
+│ 1. Quantifier (gouttes/min)                                     │
+│   ├─ < 5 gouttes/min → MEL 29-15 (dispatch conditionnel)       │
+│   └─ ≥ 5 gouttes/min → NO-GO (réparation avant vol)            │
+│ 2. Localiser la source (B-Nut, flexible, actuateur)            │
+│ 3. Réparer (resserrage, remplacement)                          │
+│ 4. Tester (leak-down test)                                      │
+└────────────────────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+1.7. SYMPTÔME : TEMPÉRATURE FLUIDE HYDRAULIQUE ÉLEVÉE
+--------------------------------------------------------------------------------
+
+ALERTE ECAM : "HYD [CIRCUIT] OVHT" (ambre) si température > 125°C
+
+TEMPÉRATURES NORMALES :
+- Au sol (idle) : 40-60°C
+- En vol (croisière) : 60-80°C
+- Maximum autorisé : 125°C
+- Température critique : > 135°C (risque de dégradation fluide Skydrol)
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : Identifier la phase de vol et la charge hydraulique
+   └─► Questions :
+         - Température observée en vol ou au sol ?
+         - Utilisation intensive du système (ex: cycles multiples train/volets) ?
+         - Température ambiante extérieure élevée (> 35°C) ?
+
+CAUSES POSSIBLES :
+├─ Utilisation intensive au sol (ex: tests répétés)
+│  └─► ACTION : Laisser refroidir 15-20 minutes, température doit redescendre
+│
+├─ Blocage partiel d'un actuateur (génère friction → chaleur)
+│  └─► ACTION : Identifier l'actuateur résistant (test individuel) et remplacer
+│
+├─ Contamination fluide (particules → friction interne)
+│  └─► ACTION : Analyse fluide (comptage particules), filtration si nécessaire
+│
+└─ Défaillance échangeur thermique (heat exchanger)
+   └─► ACTION : Inspecter l'échangeur, nettoyer ou remplacer
+
+ÉTAPE 2 : Test de refroidissement
+   └─► Procédure :
+         1. Arrêter toutes les pompes hydrauliques
+         2. Laisser l'appareil au repos pendant 30 minutes
+         3. Relever la température fluide (sight glass ou sonde)
+         4. Si température redescend < 80°C → Pas de défaut permanent
+         5. Si température reste > 100°C après refroidissement → Défaut interne circuit
+
+ACTION CORRECTIVE :
+- Température > 125°C en vol → Réduire charge hydraulique (limiter utilisation volets, privilégier Flaps 3)
+- Température > 135°C → Couper la pompe immédiatement (risque de dégradation fluide)
+- Après vol avec surchauffe : Effectuer analyse fluide pour vérifier absence de dégradation
+
+================================================================================
+SECTION 2 - TRAIN D'ATTERRISSAGE (ATA 32)
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1. SYMPTÔME : TRAIN NE SE RÉTRACTE PAS
+--------------------------------------------------------------------------------
+
+ALERTE ECAM : "L/G GEAR NOT UP" ou "L/G LEVER DISAGREE"
+
+ARBRE DE DÉCISION :
+
+ÉTAPE 1 : Vérifier les conditions de rétraction
+   └─► Prérequis pour rétraction :
+         1. Levier de train (L/G Lever) sur UP.
+         2. Landing Gear Control and Interface Unit (LGCIU) détecte "Flight Mode".
+         3. Pression circuit VERT > 2800 PSI.
+
+ÉTAPE 2 : Analyse des capteurs de proximité (Proximity Sensors)
+   ├─ Message ECAM "L/G SHOCK STRUT NOT COMPRESSED" ?
+   │  └─► HYPOTHÈSE : Capteur WoW (Weight on Wheels) défectueux ou bloqué.
+   │      ACTION : Inspecter les capteurs de proximité sur les jambes de train. Nettoyer les débris.
+   │
+   └─ Pas de message capteur ?
+      └─► HYPOTHÈSE : Défaillance hydraulique ou mécanique du verrouillage.
+          ACTION : Vérifier l'actuateur de déverrouillage (Unlock Actuator).
+          Réf AMM : 32-31-00
+
+--------------------------------------------------------------------------------
+2.2. SYMPTÔME : TRAIN NE S'ÉTEND PAS (L/G GEAR NOT DOWN)
+--------------------------------------------------------------------------------
+
+ÉTAPE 1 : Tentative d'extension par gravité (Gravity Extension)
+   1. Sortir la manivelle de secours (L/G Emergency Extension Handle).
+   2. Effectuer 3 tours complets dans le sens horaire.
+   3. Vérifier les 3 vertes sur l'indicateur de secours.
+
+ÉTAPE 2 : Si extension par gravité réussie
+   └─► HYPOTHÈSE : Perte de pression circuit VERT ou blocage de la valve de sélection.
+       ACTION : Vérifier la Gear Selector Valve (ATA 32-30-05).
+
+================================================================================
+SECTION 3 - APU - AUXILIARY POWER UNIT (ATA 49)
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1. SYMPTÔME : APU NE DÉMARRE PAS (APU FAULT / NO START)
+--------------------------------------------------------------------------------
+
+ÉTAPE 1 : Vérifier les paramètres de démarrage sur ECAM APU PAGE
+   ├─ Pas de rotation (N < 5%) ?
+   │  └─► Vérifier batterie (Tension > 24V) et démarreur APU.
+   │
+   └─ Rotation présente mais pas d'allumage (EGT n'augmente pas) ?
+      └─► HYPOTHÈSE : Système d'allumage ou alimentation carburant.
+          ACTION : 1. Vérifier la pompe d'alimentation (Fuel Feed Pump).
+                   2. Inspecter les bougies d'allumage (Igniters).
+                   NOTE : Voir INC-8829 - Remplacement standard des allumeurs.
+                   PIÈCE : P/N APU-IGN-99
+
+--------------------------------------------------------------------------------
+3.2. SYMPTÔME : ALERTE "APU HYD PUMP FAULT"
+--------------------------------------------------------------------------------
+
+ÉTAPE 1 : Vérifier l'impact sur le circuit JAUNE
+   └─► Si APU tourne mais circuit JAUNE < 500 PSI :
+       ACTION : Remplacer la pompe hydraulique entraînée par l'APU.
+       Réf AMM : 29-15-00.
+
+================================================================================
+SECTION 4 - SYSTÈME ÉLECTRIQUE (ATA 24)
+================================================================================
+
+4.1. SYMPTÔME : PERTE D'UN BUS AC (AC BUS 1/2 FAULT)
+   - ACTION 1 : Vérifier l'IDG (Integrated Drive Generator) du moteur correspondant.
+   - ACTION 2 : Si IDG déconnecté (Disc), tenter un reset au sol uniquement.
+   - NOTE : Si IDG inopérant, l'APU GEN peut reprendre la charge du bus (MEL 24-10 GO).
+
+================================================================================
+SECTION 5 - COMMANDES DE VOL (ATA 27)
+================================================================================
+
+5.1. SYMPTÔME : ALERTE "FLT CTRL FAULT" (FLAPS/SLATS)
+   - ÉTAPE 1 : Vérifier si le message survient lors d'une transition hydraulique.
+   - ÉTAPE 2 : Si accompagné de vibrations → Voir Section 1.4 (Valve PT-42).
+   - ÉTAPE 3 : Effectuer un reset des calculateurs FCDC (Flight Control Data Concentrators).
+
+================================================================================
+SECTION 6 - PRESSURISATION CABINE (ATA 21)
+================================================================================
+
+6.1. SYMPTÔME : PRESSURISATION INSUFFISANTE (EXCESS CABIN ALT)
+   - ÉTAPE 1 : Vérifier la position de la Outflow Valve (OFV).
+   - ÉTAPE 2 : Si OFV ouverte anormalement, passer en mode MANUEL et fermer la valve via le panneau overhead.
+   - ÉTAPE 3 : Si pas de réponse, suspecter le Cabin Pressure Controller (CPC) #1. Basculer sur CPC #2.
+
+================================================================================
+FIN DU DOCUMENT - AERONOVA 3300 PROPRIETARY INFORMATION
+================================================================================

@@ -9,3 +9,4 @@ htmlcov/
 dist/
 site/
 test.py
+chroma_db/

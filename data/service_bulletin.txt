@@ -1,0 +1,510 @@
+SERVICE BULLETIN (SB) - AERONOVA-SB-2024-08-12
+================================================================================
+DÉFAUT DE FABRICATION - VALVE DE RÉGULATION PT-42
+SYSTÈME HYDRAULIQUE - ATA 29-11-05
+================================================================================
+
+DOCUMENT CLASSIFICATION : MANDATORY
+STATUT : AIRWORTHINESS DIRECTIVE (AD) COMPLIANCE REQUIRED
+DATE DE PUBLICATION : 14 JANVIER 2024
+RÉVISION : 02 (dernière mise à jour : 15 MARS 2024)
+
+RÉFÉRENCE RÉGLEMENTAIRE :
+- EASA AD 2024-0089
+- FAA AD 2024-08-51
+- AERONOVA Alert Service Bulletin AASB-29-012
+
+ÉMIS PAR :
+AeroNova Aerospace Corporation
+Engineering & Airworthiness Department
+1500 Aerospace Boulevard, Toulouse, France
+Contact technique : servicedesk@aeronova-aero.com / +33 5 61 XX XX XX
+
+APPROUVÉ PAR :
+- European Union Aviation Safety Agency (EASA)
+- Federal Aviation Administration (FAA)
+- Direction Générale de l'Aviation Civile (DGAC)
+
+================================================================================
+1. RÉSUMÉ EXÉCUTIF
+================================================================================
+
+OBJET :
+Inspection et remplacement préventif OBLIGATOIRE des valves de régulation hydraulique PT-42 (Part Number SJ-29-11-05-42-001 Rev C) du circuit VERT, fabriquées entre mars 2023 et décembre 2023.
+
+URGENCE : CRITIQUE
+Classification : SAFETY-RELATED / FLIGHT SAFETY IMPACT
+
+APPAREILS AFFECTÉS :
+Tous les AeroNova 3300 équipés de valves PT-42 ayant un Serial Number compris entre 23-001 et 23-999 (inclus).
+
+ESTIMATION GLOBALE :
+Environ 347 appareils dans le monde pourraient être affectés (flotte mondiale AN3300 : ~850 appareils).
+
+DÉLAI DE CONFORMITÉ :
+- Si symptômes présents (vibrations/bruit) : ACTION IMMÉDIATE - Aircraft On Ground (AOG)
+- Si aucun symptôme : Inspection AVANT 500 cycles de vol (Flight Cycles) suivant la réception de ce bulletin
+- Date limite absolue : 31 JUILLET 2024 (quel que soit le nombre de cycles)
+
+COÛT ESTIMÉ PAR APPAREIL :
+- Pièce de remplacement (valve PT-42 Rev D) : 8,500 USD
+- Main d'œuvre (3.5 heures mécanicien + 1 heure test) : ~750 USD
+- Fluide hydraulique et consommables : ~150 USD
+TOTAL : ~9,400 USD par appareil
+
+================================================================================
+2. CONTEXTE ET DÉCOUVERTE DU DÉFAUT
+================================================================================
+
+2.1 CHRONOLOGIE DES ÉVÉNEMENTS
+
+15 NOVEMBRE 2023 :
+Un opérateur européen (Air-Charter Europe) signale des vibrations anormales sur l'appareil SJ-115 lors de la phase d'approche. Phénomène sporadique, non reproductible au sol.
+
+22 NOVEMBRE 2023 :
+Incident INC-8901 enregistré : vibrations importantes en phase d'approche accompagnées d'un "bruit sourd" (low-frequency thud) provenant de la zone centrale/train d'atterrissage.
+→ Inspection visuelle : RAS (Rien À Signaler)
+→ Paramètres hydrauliques ECAM : normaux (3050 PSI stable)
+→ Pas d'action corrective prise
+
+28 NOVEMBRE 2023 :
+Deux autres opérateurs (Skyline Regional, Pacific Freedom Airlines) rapportent des symptômes similaires sur les appareils SJ-142 et SJ-089.
+
+5 DÉCEMBRE 2023 :
+AeroNova Engineering lance une investigation technique interne (référence INT-2023-HYD-09).
+
+18 DÉCEMBRE 2023 :
+Analyse en laboratoire de la valve PT-42 retirée de l'appareil SJ-115 (S/N 23-452) :
+→ Découverte d'un joint en téflon PTFE dimensionnellement non-conforme
+→ Épaisseur mesurée : 0.078 mm (spécification : 0.100 mm ± 0.005 mm)
+→ Traces d'usure prématurée et déformation plastique du joint
+
+10 JANVIER 2024 :
+Audit du fournisseur Aerospace Components Inc. (ACI) :
+→ Confirmation d'un changement de sous-traitant pour les joints téflon en mars 2023
+→ Nouveau fournisseur (TechSeal Industries) n'a pas respecté les spécifications dimensionnelles
+→ Toutes les valves PT-42 fabriquées entre mars 2023 et décembre 2023 sont affectées
+
+14 JANVIER 2024 :
+Publication du Service Bulletin SB-2024-08-12 (présent document)
+
+2.2 ANALYSE TECHNIQUE DE LA DÉFAILLANCE
+
+ROOT CAUSE (Cause racine) :
+Joint glissière en téflon PTFE sous-dimensionné (0.078 mm au lieu de 0.100 mm).
+
+MÉCANISME DE DÉFAILLANCE :
+Le joint téflon assure l'étanchéité dynamique du piston de régulation dans la valve PT-42. Lorsque le piston effectue des micro-déplacements pour réguler la pression (cycles de 3000 à 3200 PSI), le joint sous-dimensionné permet une légère fuite interne de fluide.
+
+Cette fuite génère :
+1. Une cavitation localisée (formation de bulles de vapeur)
+2. Un phénomène de "stick-slip" du piston (glissement saccadé)
+3. Des oscillations hydrauliques à haute fréquence (80-120 Hz)
+4. Une transmission de vibrations dans les lignes rigides et la structure
+
+FACTEURS AGGRAVANTS :
+- Température fluide > 80°C (viscosité réduite, joint plus souple)
+- Cycles de pressurisation fréquents (vols courts avec multiples transitions train/volets)
+- Utilisation intensive de la PTU (transfert de puissance entre circuits)
+
+PROGRESSION DU DÉFAUT :
+- 0-100 cycles : aucun symptôme visible
+- 100-300 cycles : vibrations occasionnelles, faible intensité
+- 300-500 cycles : vibrations systématiques lors des transitions, bruit audible
+- > 500 cycles : risque de défaillance complète du joint (fuite importante, perte de régulation)
+
+================================================================================
+3. SYMPTÔMES OBSERVABLES
+================================================================================
+
+Les opérateurs et équipages peuvent constater les symptômes suivants :
+
+3.1 SYMPTÔMES EN VOL
+
+VIBRATIONS ANORMALES :
+- Localisation : compartiment central de l'appareil (zone du train d'atterrissage principal)
+- Intensité : modérée à forte, ressentie par les passagers assis en zone centrale
+- Moment d'apparition :
+  • Extension du train d'atterrissage (phase d'approche)
+  • Déploiement des volets (Flaps 1 → Flaps 5)
+  • Utilisation de la PTU (transfert VERT ↔ BLEU)
+  • Transitions hydrauliques rapides (vol en turbulences)
+
+BRUIT CARACTÉRISTIQUE :
+- Type : "bruit sourd" répétitif (thud, knocking, ou clunking)
+- Fréquence : 1-2 coups par seconde (correspond au cycle de régulation PT-42)
+- Audibilité : clairement audible depuis le cockpit, parfois perçu par les passagers
+- Comparable à : "un marteau frappant une surface métallique de manière irrégulière"
+
+IMPORTANT : Ces symptômes peuvent être intermittents et ne se manifestent pas systématiquement à chaque vol, surtout en début de vie de la valve.
+
+3.2 SYMPTÔMES AU SOL
+
+Test au sol avec Ground Power Unit (GPU) :
+- Lors de la mise sous pression du circuit VERT, observer attentivement :
+  • Pression ECAM : peut montrer de légères oscillations (± 50 PSI)
+  • Bruit audible au niveau du compartiment hydraulique (panneau L2)
+  • Vibrations palpables sur les lignes rigides hydrauliques
+
+Test PTU (panneau MAINT ECAM) :
+- Activer manuellement la PTU avec le GPU
+- Si PT-42 défectueuse : bruit de "claquement" sec au moment de l'activation
+- Peut être accompagné d'une brève surintensité sur le système électrique (observable sur ECAM ELEC page)
+
+3.3 INDICATIONS ECAM (RARES)
+
+Dans des cas extrêmes de défaillance avancée, les alertes ECAM suivantes peuvent apparaître :
+- "HYD VERT HI PRESS" (rouge) : si le piston reste bloqué en position fermée (> 3400 PSI)
+- "HYD VERT PRESS LOW" (ambre) : si fuite interne importante (< 2700 PSI)
+
+ATTENTION : L'absence d'alerte ECAM ne signifie PAS l'absence de défaut sur la PT-42.
+
+================================================================================
+4. PROCÉDURE D'INSPECTION OBLIGATOIRE
+================================================================================
+
+TASK REFERENCE : SB-2024-08-12-INSP-001
+DURÉE ESTIMÉE : 30 minutes (incluant ouverture/fermeture panneau)
+PERSONNEL REQUIS : Technicien certifié Cat B1 minimum (autorisation hydraulique requise)
+
+4.1 PRÉPARATION
+
+Outils nécessaires :
+- Lampe LED d'inspection
+- Miroir d'inspection télescopique
+- Chiffon non-pelucheux
+- Appareil photo numérique (pour documentation)
+
+Documentation requise :
+- Aircraft Maintenance Manual (AMM) 29-11-05
+- Schéma hydraulique (WDM chapter 29)
+- Historique de maintenance de l'appareil (pour identifier date installation PT-42)
+
+Conditions :
+- Appareil au sol, calé et sécurisé
+- Circuit électrique OFF (pas de pression résiduelle)
+- Température ambiante +5°C à +40°C
+
+4.2 PROCÉDURE DÉTAILLÉE
+
+ÉTAPE 1 : ACCÈS À LA VALVE PT-42
+1.1 - Ouvrir le panneau d'accès inférieur L2 (Lower fuselage, Frame Station 512)
+1.2 - Identifier la valve PT-42 sur le collecteur de retour circuit VERT
+      Localisation : Stringer S-12L, à proximité du réservoir hydraulique principal
+1.3 - Nettoyer la zone avec un chiffon non-pelucheux (éliminer poussières et projections)
+
+ÉTAPE 2 : IDENTIFICATION DU SERIAL NUMBER
+2.1 - Repérer le Serial Number gravé au laser sur la face supérieure du corps de valve
+2.2 - Format du S/N : YY-NNN (exemple : 23-452)
+      • YY = année de fabrication (20YY)
+      • NNN = numéro d'unité séquentiel (001 à 999)
+2.3 - Noter le S/N complet sur la task card et dans le log book
+2.4 - Prendre une photo nette du S/N pour archivage
+
+ÉTAPE 3 : DÉTERMINATION DE L'ACTION REQUISE
+
+Si le Serial Number est ENTRE 23-001 et 23-999 (INCLUS) :
+→ La valve PT-42 est AFFECTÉE par le défaut de fabrication
+→ Passer à la section 5 "PROCÉDURE DE REMPLACEMENT"
+
+Si le Serial Number est INFÉRIEUR à 23-001 ou SUPÉRIEUR OU ÉGAL à 24-001 :
+→ La valve PT-42 N'EST PAS affectée par le défaut
+→ Aucune action requise, refermer le panneau L2
+→ Documenter l'inspection dans le log book : "SB-2024-08-12 complied - PT-42 S/N [indiquer S/N] not affected"
+
+ÉTAPE 4 : INSPECTION VISUELLE COMPLÉMENTAIRE (Si valve affectée)
+4.1 - Vérifier l'absence de suintement au niveau des raccords B-Nuts
+4.2 - Inspecter le corps de valve : aucune trace de fissure, corrosion, ou déformation
+4.3 - Vérifier l'état des lignes hydrauliques adjacentes (pas d'usure anormale)
+
+ÉTAPE 5 : FINALISATION
+5.1 - Refermer le panneau L2
+5.2 - Compléter le rapport d'inspection (template fourni en Annexe A du présent bulletin)
+5.3 - Soumettre le rapport à l'organisme de gestion de navigabilité (CAMO)
+
+================================================================================
+5. PROCÉDURE DE REMPLACEMENT (MANDATORY)
+================================================================================
+
+TASK REFERENCE : SB-2024-08-12-REPL-001
+DURÉE ESTIMÉE : 3.5 heures (incluant dépressurisation, remplacement, test, cleanup)
+PERSONNEL REQUIS : 
+- 1 technicien certifié Cat B1 (licence hydraulique)
+- 1 inspecteur Cat C (pour signature finale release to service)
+
+5.1 MATÉRIEL REQUIS
+
+PIÈCE DE REMPLACEMENT (fournie gratuitement par AeroNova sous garantie) :
+- Valve PT-42 nouvelle version : P/N SJ-29-11-05-42-002 Rev D
+- Serial Number ≥ 24-001 (joint téflon renforcé épaisseur 0.100 mm)
+- Livrée avec certificat de conformité EASA Form 1
+
+OUTILLAGE SPÉCIFIQUE :
+- Clé dynamométrique 0-200 in-lbs (avec embout hexagonal 3/4")
+- Clé à fourche 7/8" (pour B-Nuts)
+- Bac de récupération fluide hydraulique (capacité 5 litres min)
+- Pompe à vide hydraulique (pour purge système)
+- Manomètre test 0-5000 PSI
+
+CONSOMMABLES :
+- Fluide Skydrol LD-4 (2 litres pour appoint)
+- Joint crush washer cuivre (P/N MS35769-10) x2
+- Ruban téflon pour étanchéité (usage modéré)
+- Gants nitrile (résistants Skydrol)
+- Lunettes de protection chimique
+
+5.2 PROCÉDURE DE REMPLACEMENT PAS À PAS
+
+===== PHASE 1 : DÉPRESSURISATION ET DRAINAGE =====
+
+ÉTAPE 1.1 : Sécurisation appareil
+- Verrouiller le Master Switch en position OFF
+- Installer les tags LOUT (Lock-Out) sur les disjoncteurs hydrauliques
+- Placer un panneau "WORK IN PROGRESS - HYDRAULIC SYSTEM" visible en cockpit
+
+ÉTAPE 1.2 : Dépressurisation circuit VERT
+- Ouvrir le panneau L2 (accès valve PT-42)
+- Ouvrir le panneau L5 (accès réservoir hydraulique VERT)
+- Localiser la valve de dépressurisation rapide (bleed valve) sur le réservoir
+- Ouvrir lentement la bleed valve → le fluide s'écoule dans le bac de drainage intégré
+- Attendre la dépressurisation complète (indicateur de pression ECAM = 0 PSI)
+- Durée : environ 5-8 minutes
+
+ÉTAPE 1.3 : Drainage local autour de la PT-42
+- Positionner le bac de récupération sous la valve PT-42
+- Desserrer légèrement le B-Nut d'entrée (côté réservoir) pour évacuer le fluide résiduel
+- Quantité attendue : environ 200-300 ml
+- ATTENTION : Le Skydrol est corrosif pour la peau, porter impérativement les gants
+
+===== PHASE 2 : DÉPOSE DE LA VALVE PT-42 DÉFECTUEUSE =====
+
+ÉTAPE 2.1 : Déconnexion des raccords
+- Desserrer le B-Nut d'entrée (côté réservoir) avec la clé 7/8"
+- Desserrer le B-Nut de sortie (côté collecteur) avec la clé 7/8"
+- Retirer les deux conduites hydrauliques et les protéger avec des bouchons anti-FOD
+
+ÉTAPE 2.2 : Extraction de la valve
+- Dévisser les deux boulons de fixation (M8 x 1.25) maintenant le bracket de support
+- Retirer délicatement la valve PT-42 de son logement
+- Attention à ne pas rayer la surface du collecteur
+
+ÉTAPE 2.3 : Conditionnement de la valve défectueuse
+- Installer des bouchons de protection sur les orifices d'entrée/sortie
+- Placer la valve dans un sac plastique hermétique avec une étiquette "DEFECTIVE PART - SB-2024-08-12"
+- Noter le Serial Number et la date de dépose
+- Conserver la valve pour retour au constructeur (procédure RMA - Return Material Authorization)
+
+===== PHASE 3 : INSTALLATION DE LA NOUVELLE VALVE PT-42 =====
+
+ÉTAPE 3.1 : Inspection de la nouvelle valve
+- Vérifier le Serial Number ≥ 24-001 (nouveau design)
+- Vérifier la présence du certificat EASA Form 1
+- Inspecter visuellement : aucun dommage apparent, joints propres
+- Vérifier la présence des crush washers neufs sur les B-Nuts
+
+ÉTAPE 3.2 : Préparation de l'installation
+- Nettoyer les surfaces de contact sur le collecteur (chiffon + air comprimé filtré)
+- Appliquer une fine couche de Skydrol sur les filetages des B-Nuts (lubrification)
+- NE PAS utiliser de pâte d'étanchéité type Loctite (risque de contamination fluide)
+
+ÉTAPE 3.3 : Positionnement et fixation
+- Positionner la nouvelle valve PT-42 dans son logement (repérer le marquage "TOP")
+- Installer les deux boulons de fixation M8 x 1.25
+- Serrage préliminaire : 40 in-lbs (serrage à la main ferme)
+- Serrage final : 85 in-lbs avec clé dynamométrique
+
+ÉTAPE 3.4 : Connexion des raccords hydrauliques
+- Connecter le B-Nut d'entrée (côté réservoir) :
+  • Serrage à la main jusqu'au contact (finger tight)
+  • Serrage final : 90-95 in-lbs avec clé dynamométrique
+- Connecter le B-Nut de sortie (côté collecteur) :
+  • Serrage à la main jusqu'au contact
+  • Serrage final : 90-95 in-lbs avec clé dynamométrique
+
+ATTENTION : Ne pas dépasser 100 in-lbs au risque d'endommager les filetages aluminium
+
+===== PHASE 4 : REMPLISSAGE ET PURGE DU CIRCUIT =====
+
+ÉTAPE 4.1 : Remplissage du réservoir
+- Vérifier que la bleed valve du réservoir est fermée
+- Ajouter du fluide Skydrol LD-4 neuf jusqu'au niveau MAX (sight glass)
+- Quantité typique : 1.5 à 2 litres
+
+ÉTAPE 4.2 : Purge du circuit
+- Connecter la pompe à vide sur le port de service du réservoir
+- Créer une dépression de -10 inHg pendant 5 minutes (élimination de l'air)
+- Relâcher la dépression → le fluide remplit les conduites par effet de vide
+
+ÉTAPE 4.3 : Mise sous pression progressive
+- Connecter le Ground Power Unit (GPU) hydraulique
+- Démarrer la pompe GPU et monter progressivement à 1000 PSI
+- Inspecter visuellement tous les raccords : aucune fuite visible
+- Monter à 2000 PSI → nouvelle inspection
+- Monter à 3000 PSI (pression nominale) → inspection finale
+
+===== PHASE 5 : TEST FONCTIONNEL ET VALIDATION =====
+
+ÉTAPE 5.1 : Leak-down test (conformément à l'AMM 29-11-00-810-801)
+- Pression initiale : 3000 PSI
+- Arrêt pompe GPU
+- Durée : 2 minutes
+- Chute de pression acceptable : < 100 PSI
+
+RÉSULTAT ATTENDU : TEST OK (pression > 2900 PSI après 2 minutes)
+
+ÉTAPE 5.2 : Test de régulation PT-42
+- Redémarrer la pompe GPU
+- Activer la PTU manuellement (panneau MAINT ECAM)
+- Observer la pression circuit VERT :
+  • Doit monter à 3150-3200 PSI puis réguler
+  • Aucune vibration, aucun bruit anormal
+  • Retour à 3000 PSI en < 5 secondes après désactivation PTU
+
+RÉSULTAT ATTENDU : Régulation stable, absence de symptômes
+
+ÉTAPE 5.3 : Final check
+- Vérifier une dernière fois tous les raccords (serrage, absence de suintement)
+- Vérifier le niveau du réservoir (ajuster si nécessaire)
+- Nettoyer la zone de travail (éliminer toute trace de Skydrol)
+- Refermer les panneaux L2 et L5
+
+===== PHASE 6 : DOCUMENTATION ET RELEASE TO SERVICE =====
+
+ÉTAPE 6.1 : Enregistrement dans le log book
+Inscrire :
+"SB-2024-08-12 complied. PT-42 S/N 23-XXX removed and replaced with PT-42 S/N 24-YYY. Leak-down test OK. Functional test OK. Total downtime: X.X hours."
+
+ÉTAPE 6.2 : Mise à jour des registres
+- Component tracking system (logiciel CAMP ou équivalent)
+- Aircraft Technical Log (ATL)
+- SB compliance matrix
+
+ÉTAPE 6.3 : Signature CRS (Certificate of Release to Service)
+- Technicien Cat B1 signe la partie exécution
+- Inspecteur Cat C vérifie et signe le release to service
+- Apposer le tampon "APPROVED FOR RETURN TO SERVICE"
+
+================================================================================
+6. DÉLAIS DE CONFORMITÉ ET CLASSIFICATION
+================================================================================
+
+6.1 CAS 1 : SYMPTÔMES PRÉSENTS (Vibrations ou bruit signalés)
+
+CLASSIFICATION : Aircraft On Ground (AOG)
+DÉLAI : ACTION IMMÉDIATE - Remplacement AVANT le prochain vol
+
+Procédure :
+1. Groundez immédiatement l'appareil (status : OUT OF SERVICE)
+2. Informez votre CAMO et AeroNova Technical Support
+3. Commandez la pièce en AOG expedite (livraison sous 24-48h)
+4. Effectuez le remplacement dès réception de la valve
+5. Effectuez un vol de test sans passagers avant retour en service commercial
+
+6.2 CAS 2 : AUCUN SYMPTÔME MAIS S/N AFFECTÉ (23-001 à 23-999)
+
+CLASSIFICATION : Maintenance planifiée obligatoire
+DÉLAI : AVANT 500 cycles de vol OU avant le 31 juillet 2024 (le premier atteint)
+
+Procédure :
+1. Planifiez l'intervention lors d'une visite programmée (A-Check, C-Check)
+2. Commandez la pièce avec un délai raisonnable (lead time : 2-4 semaines)
+3. Effectuez le remplacement conformément à la section 5
+4. Pas de restriction de vol jusqu'à l'intervention (surveillance des symptômes recommandée)
+
+6.3 CAS 3 : S/N NON AFFECTÉ (< 23-001 ou ≥ 24-001)
+
+CLASSIFICATION : Non applicable
+DÉLAI : Aucune action requise
+
+Procédure :
+1. Documentez l'inspection dans le log book
+2. Archivez une copie de l'inspection report
+3. Pas de restriction, appareil conforme
+
+================================================================================
+7. SUPPORT TECHNIQUE ET APPROVISIONNEMENT
+================================================================================
+
+7.1 COMMANDE DE LA PIÈCE DE REMPLACEMENT
+
+PIÈCE FOURNIE GRATUITEMENT (Warranty coverage - défaut fabricant)
+
+Procédure de commande :
+1. Contactez AeroNova Spares Department :
+   Email : spares@aeronova-aero.com
+   Tél : +33 5 61 XX XX XX (24/7 AOG hotline)
+
+2. Fournissez les informations suivantes :
+   - Aircraft Serial Number (MSN)
+   - PT-42 Serial Number affecté (à remplacer)
+   - Urgence : AOG ou routine
+   - Adresse de livraison
+
+3. AeroNova émettra un Warranty Work Order (WWO) et expédiera la pièce
+
+DÉLAIS DE LIVRAISON :
+- AOG : 24-48 heures (service express)
+- Routine : 7-14 jours (service standard)
+
+7.2 RETOUR DE LA VALVE DÉFECTUEUSE (RMA Process)
+
+Pour analyse en laboratoire, toutes les valves remplacées doivent être retournées :
+
+1. Remplissez le formulaire RMA (Return Material Authorization) disponible sur le portail AeroNova
+2. Conditionnez la valve dans un emballage sécurisé avec l'étiquette RMA
+3. Expédiez à :
+   AeroNova Engineering Lab
+   Quality Analysis Department
+   1500 Aerospace Boulevard
+   31700 Blagnac, France
+
+4. AeroNova prendra en charge les frais de retour
+
+7.3 ASSISTANCE TECHNIQUE
+
+En cas de question ou difficulté lors de l'intervention :
+
+AeroNova Technical Support 24/7 :
+- Email : tech-support@aeronova-aero.com
+- Tél : +33 5 61 XX XX XX (option 2)
+- Teams : aeronova-tech-support
+
+Support disponible en : Français, Anglais, Espagnol, Allemand
+
+================================================================================
+8. PÉNALITÉS ET CONFORMITÉ RÉGLEMENTAIRE
+================================================================================
+
+RAPPEL IMPORTANT :
+Le non-respect de ce Service Bulletin constitue une violation des Airworthiness Directives EASA AD 2024-0089 et FAA AD 2024-08-51.
+
+CONSÉQUENCES POSSIBLES :
+- Suspension du Certificat de Navigabilité (Certificate of Airworthiness)
+- Amendes réglementaires (jusqu'à 50,000 EUR par appareil non-conforme)
+- Révocation de l'AOC (Air Operator Certificate) en cas de récidive
+- Responsabilité civile en cas d'incident lié au défaut
+
+CONTRÔLES RÉGLEMENTAIRES :
+Les autorités (EASA, FAA, DGAC) effectueront des audits aléatoires pour vérifier la conformité. Conservez tous les documents justificatifs (inspection reports, RMA, CRS).
+
+================================================================================
+9. ANNEXES
+================================================================================
+
+ANNEXE A : Inspection Report Template (formulaire vierge)
+ANNEXE B : Schéma d'identification valve PT-42 (avec photos)
+ANNEXE C : Courbe de défaillance joint téflon (analyse laboratoire)
+ANNEXE D : Liste des opérateurs affectés (worldwide fleet status)
+ANNEXE E : Warranty Work Order (WWO) template
+
+================================================================================
+FIN DU SERVICE BULLETIN SB-2024-08-12 RÉVISION 02
+================================================================================
+
+DOCUMENT APPROUVÉ PAR :
+Marc ROUSSEAU, Chief Engineer Hydraulic Systems, AeroNova Aerospace Corporation
+Signature : [SIGNATURE ÉLECTRONIQUE] - Date : 15 mars 2024
+
+AUTORITÉ DE CERTIFICATION :
+EASA Principal Inspector : Dr. Klaus HERRMANN
+Référence : EASA.AD.2024.0089 - Date d'approbation : 20 janvier 2024
