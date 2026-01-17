@@ -3,7 +3,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from typing import List
 from app.core.config import settings
+from app.core.logger import get_logger
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+logger = get_logger(__name__)
 
 
 class RagService:
@@ -27,9 +30,16 @@ class RagService:
             separators=["\n\n", "\n", " ", ""]
         )
         chunks = text_splitter.split_documents(documents)
+
+
+        logger.info(f"Découpagede {len(documents)} documents en {len(chunks)} chunks")
         self.vector_store.add_documents(chunks)
+        logger.info(f"Sauvegarde terminée dans {settings.PERSIST_DIRECTORY}")
 
 
     def query(self, query_text: str, k: int = 3) -> List[Document]:
-        return self.vector_store.similarity_search(query_text, k=k)
+        logger.info(f"Recherche de {k} documents similaires à la requête: {query_text}")
+        results = self.vector_store.similarity_search(query_text, k=k)
+        logger.info(f"Résultats trouvés: {len(results)}")
+        return results
 
