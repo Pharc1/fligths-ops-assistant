@@ -37,7 +37,7 @@ class RagService:
         logger.info(f"Sauvegarde terminée dans {settings.PERSIST_DIRECTORY}")
 
 
-    def query(self, query_text: str, k: int = 3) -> List[Document]:
+    def similarity_search(self, query_text: str, k: int = 3) -> List[Document]:
         logger.info(f"Recherche de {k} documents similaires à la requête: {query_text}")
         results = self.vector_store.similarity_search(query_text, k=k)
         logger.info(f"Résultats trouvés: {len(results)}")

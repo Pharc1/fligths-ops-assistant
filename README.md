@@ -25,4 +25,3 @@ poetry install
 - Python 3.12 (Poetry)
 - Ruff / Pytest
 - Pydantic Settings
-

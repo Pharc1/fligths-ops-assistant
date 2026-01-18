@@ -2,7 +2,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage
 from app.core.config import settings
 from app.core.logger import get_logger
-from app.services.llm_service import LLMInterface 
+from app.services.llm_interface import LLMInterface 
 
 logger = get_logger(__name__)
 

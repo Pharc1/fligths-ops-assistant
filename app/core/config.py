@@ -9,9 +9,9 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Config LLM
-    LLM_MODEL: str = "google_genai:gemini-3-pro-preview"
+    LLM_MODEL: str = "gemini-3-pro-preview"
     LLM_TEMPERATURE: int = 1
-    LLM_MAX_TOKEN: int = 10000
+    LLM_MAX_TOKENS: int = 10000
 
     # Config RAG
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
