@@ -19,13 +19,10 @@ class AnalysisService:
     def analyze_incident(self, query: str) -> str:
         logger.info(f"Analyse agentique de : {query}")
         try:
-            for event in self.analyser_agent.stream(
-                {"messages": [{"role": "user", "content": query}]},
-                stream_mode="values",
-            ):
-                event["messages"][-1].pretty_print()
-            logger.info("la reponse est:",event["messages"][-1].content_blocks[0]['text'] )
-            return event["messages"][-1].content_blocks[0]['text']
+            result = self.analyser_agent.invoke(
+                {"messages": [{"role": "user", "content": f"{query}"}]}
+            )
+            return result["output"]
         except Exception as e:
             logger.error(f"Erreur Agent: {e}")
             return "Erreur lors de l'analyse"
