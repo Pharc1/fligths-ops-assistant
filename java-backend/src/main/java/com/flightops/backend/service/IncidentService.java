@@ -4,6 +4,8 @@ import com.flightops.backend.domain.Incident;
 import com.flightops.backend.repository.IncidentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.flightops.backend.kafka.KafkaProducer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,6 +15,10 @@ import java.util.UUID;
 public class IncidentService {
 
     private final IncidentRepository repository;
+
+    private final KafkaProducer kafkaProducer;
+
+    private final ObjectMapper objectMapper;
 
 
     public Incident createIncident(String flightId, String aircraft, String pilotId, String severity, String description, String status, String analysis) {
@@ -27,7 +33,14 @@ public class IncidentService {
                 .analysis(analysis)
                 .createdAt(Instant.now())
                 .build();
-        return repository.save(incident);
+        repository.save(incident)
+        try{
+            String payload = objectMapper.writeValueAsString(incident);
+            kafkaProducer.publishIncidentCreated(incident.getId(), payload);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize incident", e);
+        }
+        return incident;
     }
 
 
