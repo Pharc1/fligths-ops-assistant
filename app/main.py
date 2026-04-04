@@ -18,6 +18,10 @@ async def lifespan(app: FastAPI):
 
     from app.services.rag_service import RagService
     from app.skills.registry import skill_registry
+    from app.api.deps import get_gemini_service, get_rag_service
+    from app.services.agent_service import AgentService
+    from app.kafka.producer import IncidentKafkaProducer
+    from app.kafka.consumer import IncidentKafkaConsumer
 
     try:
         app.state.rag_service = RagService()
@@ -31,6 +35,15 @@ async def lifespan(app: FastAPI):
         logger.info("Skills loaded: %s", skill_registry.list_names())
     except Exception as exc:
         logger.warning("Skills loading failed: %s", exc)
+
+    try:
+        agent_service = AgentService(get_gemini_service(), get_rag_service(), skill_registry)
+        kafka_producer = IncidentKafkaProducer()
+        kafka_consumer = IncidentKafkaConsumer(agent_service, kafka_producer)
+        kafka_consumer.start()
+        logger.info("Kafka consumer started")
+    except Exception as exc:
+        logger.warning("Kafka unavailable at startup: %s", exc)
 
     logger.info("%s ready to serve", settings.PROJECT_NAME)
     yield
