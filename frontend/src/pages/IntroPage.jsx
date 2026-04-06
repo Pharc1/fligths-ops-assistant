@@ -265,8 +265,8 @@ export default function IntroPage() {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.04 }}
-      transition={{ duration: 0.7, ease }}
+      exit={{ opacity: 0, filter: 'blur(12px)', scale: 1.02 }}
+      transition={{ duration: 0.9, ease }}
       style={{
         width: '100vw',
         height: '100vh',
@@ -298,12 +298,12 @@ export default function IntroPage() {
 
       {/* Coordonnées */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.8 }}
-        style={{ position: 'absolute', top: '2rem', left: '2rem', fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'rgba(26,26,46,0.22)', letterSpacing: '0.1em' }}>
+        style={{ position: 'absolute', top: '2rem', left: '2rem', fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'rgba(26,26,46,0.32)', letterSpacing: '0.1em' }}>
         48°51'24"N / 02°21'03"E<br />CDG — MAINTENANCE OPS
       </motion.div>
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.8 }}
-        style={{ position: 'absolute', top: '2rem', right: '2rem', fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'rgba(26,26,46,0.18)', letterSpacing: '0.1em', textAlign: 'right' }}>
+        style={{ position: 'absolute', top: '2rem', right: '2rem', fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: 'rgba(26,26,46,0.32)', letterSpacing: '0.1em', textAlign: 'right' }}>
         BUILD 0041-ALPHA<br />RESTRICTED ACCESS
       </motion.div>
 
@@ -340,7 +340,7 @@ export default function IntroPage() {
           color: 'rgba(26,26,46,0.38)',
           letterSpacing: '0.25em',
           position: 'absolute',
-          top: '50%',
+          top: '55%',
           left: '50%',
           transform: 'translate(-50%, -10%)',
           whiteSpace: 'nowrap',
@@ -357,7 +357,7 @@ export default function IntroPage() {
         transition={{ delay: 0.15, duration: 0.4 }}
         style={{
           position: 'absolute',
-          top: '58%',
+          top: '60%',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '340px',
@@ -401,7 +401,7 @@ export default function IntroPage() {
         transition={{ delay: 0.3 }}
         style={{ position: 'absolute', bottom: '1.8rem', left: '50%', transform: 'translateX(-50%)', width: '200px' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: 'rgba(26,26,46,0.18)', letterSpacing: '0.1em', marginBottom: '5px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: 'rgba(26,26,46,0.38)', letterSpacing: '0.1em', marginBottom: '5px' }}>
           <span>BOOT SEQUENCE</span><span>0x0041</span>
         </div>
         <div style={{ height: '1px', background: 'rgba(26,26,46,0.08)', position: 'relative', overflow: 'hidden' }}>

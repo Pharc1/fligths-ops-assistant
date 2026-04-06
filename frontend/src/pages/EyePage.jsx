@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mic, Send } from 'lucide-react'
 import TheEye from '../components/eye/TheEye'
+import CitationWidget, { CITATION_MOCK } from '../components/widgets/CitationWidget'
 import { useRimeStore } from '../store/useRimeStore'
 
 const ease = [0.4, 0, 0.2, 1]
@@ -13,7 +14,7 @@ function HudCorner({ style, children }) {
       fontFamily: 'var(--font-mono)',
       fontSize: '10px',
       letterSpacing: '0.12em',
-      color: 'rgba(255,255,255,0.22)',
+      color: 'rgba(255,255,255,0.72)',
       zIndex: 20,
       ...style,
     }}>
@@ -27,11 +28,9 @@ export default function EyePage() {
   const [input, setInput] = useState('')
   const [micHover, setMicHover] = useState(false)
   const [sendHover, setSendHover] = useState(false)
-  const setRimeText = useRimeStore((s) => s.setRimeText)
+  const setRimeText  = useRimeStore((s) => s.setRimeText)
   const setThinking  = useRimeStore((s) => s.setThinking)
   const setWidget    = useRimeStore((s) => s.setWidget)
-  const setPhase     = useRimeStore((s) => s.setPhase)
-  const esRef        = useRef(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -39,44 +38,28 @@ export default function EyePage() {
 
     const question = input.trim()
     setInput('')
+
+    // Mock : "affiche" → widget citation
+    if (question.toLowerCase().includes('affiche')) {
+      setWidget('citation', CITATION_MOCK)
+      return
+    }
+
     setThinking(true)
     setRimeText('Analyse en cours...')
 
-    if (esRef.current) esRef.current.close()
-
-    const res = await fetch('http://localhost:8000/api/v1/agent/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question }),
-    })
-
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-    let buffer = ''
+    // TODO: remplacer par le vrai fetch SSE
+    const mockTokens = `Analyse du vol AF447 en cours. Anomalie détectée sur le capteur Pitot — vitesse anémométrique incohérente à FL350. Corrélation avec les données météo : zone de convection active. Recommandation : activation du mode dégradé et recalibration des sondes.`
     let finalText = ''
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split('\n')
-      buffer = lines.pop()
-
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue
-        try {
-          const event = JSON.parse(line.slice(6))
-          if (event.type === 'token') { finalText += event.content; setRimeText(finalText) }
-          if (event.type === 'widget') { setWidget(event.widget, event.data); setPhase('investigation') }
-          if (event.type === 'done') { setThinking(false); if (event.content) setRimeText(event.content) }
-          if (event.type === 'error') { setThinking(false); setRimeText(`Erreur : ${event.message}`) }
-        } catch { /* ligne incomplète */ }
-      }
+    for (const char of mockTokens) {
+      await new Promise((r) => setTimeout(r, 18))
+      finalText += char
+      setRimeText(finalText)
     }
+    setThinking(false)
   }
 
-  const iconColor = (hover) => hover ? '#00E5FF' : 'rgba(255,255,255,0.35)'
+  const iconColor = (hover) => hover ? '#00E5FF' : 'rgba(255,255,255,0.65)'
 
   return (
     <motion.div
@@ -98,11 +81,39 @@ export default function EyePage() {
       </HudCorner>
       <HudCorner style={{ top: '1.5rem', right: '2rem', textAlign: 'right' }}>
         AIRCRAFT: UNASSIGNED<br />
-        <span id="hud-clock" style={{ opacity: 0.6 }}>{new Date().toLocaleTimeString('fr-FR')}</span>
+        <span id="hud-clock" style={{ opacity: 0.95 }}>{new Date().toLocaleTimeString('fr-FR')}</span>
       </HudCorner>
+
+      {/* Équation du flux — watermark transitoire */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.09, 0.09, 0] }}
+        transition={{ duration: 3.8, times: [0, 0.12, 0.65, 1], ease: 'easeInOut' }}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 5,
+          pointerEvents: 'none',
+          textAlign: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'clamp(0.65rem, 1.2vw, 0.95rem)',
+          letterSpacing: '0.12em',
+          lineHeight: 2.2,
+          color: '#1a1a2e',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        ψ = U · (r − R²/r) · sin θ<br />
+        + Γ · θ / (2π)
+      </motion.div>
 
       {/* Streamlines + cercle */}
       <TheEye />
+
+      {/* Widget citation — overlay full screen */}
+      <CitationWidget />
 
       {/* Input en bas */}
       <form
@@ -132,7 +143,7 @@ export default function EyePage() {
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: '0.85rem',
-            color: 'rgba(255,255,255,0.35)',
+            color: 'rgba(255,255,255,0.65)',
             flexShrink: 0,
           }}>{'>'}</span>
 

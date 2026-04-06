@@ -74,7 +74,7 @@ export const streamlineFragmentShader = `
     // dt pulse legerement : les stries respirent en longueur
     float dtAnim = dt * (1.0 + 0.12 * sin(uTime * 0.4));
 
-    float timeFlow = uTime * 0.038 * U;
+    float timeFlow = uTime * 0.5 * U;
 
     float sumF = 0.0, sumB = 0.0;
     float wTotal = 0.0;
