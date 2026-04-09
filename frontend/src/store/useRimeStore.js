@@ -1,42 +1,49 @@
 import { create } from 'zustand'
 
 /**
- * Store global de RIME.
- *
  * phase :
- *   'intro'       → page d'accueil fond ivoire
- *   'eye'         → mode écoute, TheEye plein écran
- *   'investigation' → layout 2 colonnes (doc + historique)
- *   'procedure'   → layout procédure pas à pas
+ *   'intro'         → boot
+ *   'eye'           → conversation principale (TheEye plein écran)
+ *   'investigation' → layout sidebar + widgets
+ *   'procedure'     → séquenceur plein écran
  *
- * rimeText : ce que RIME dit en ce moment (affiché dans TheEye)
- * isThinking : true pendant que l'agent travaille (streamlines s'agitent)
- * widgets : map des widgets actifs { display_document: {...}, ... }
+ * widgets      : { [toolName]: data } — données chargées par le LLM
+ * activeWidget : clé du widget en premier plan (null = aucun)
  */
 export const useRimeStore = create((set) => ({
-  phase: 'intro',
-  rimeText: '',
-  isThinking: false,
-  widgets: {},
+  phase:        'intro',
+  rimeText:     '',
+  isThinking:   false,
+  widgets:      {},
+  activeWidget: null,
 
-  setPhase: (phase) => set({ phase }),
+  setPhase:    (phase) => set({ phase }),
+  setRimeText: (text)  => set({ rimeText: text }),
+  setThinking: (val)   => set({ isThinking: val }),
 
-  setRimeText: (text) => set({ rimeText: text }),
-
-  setThinking: (val) => set({ isThinking: val }),
-
-  setWidget: (name, data) =>
+  // Charge un widget + démarre le zoom TheEye
+  // EyePage appelle enterInvestigation() après le délai du zoom
+  openWidget: (name, data) =>
     set((state) => ({
-      widgets: { ...state.widgets, [name]: data },
+      widgets:      { ...state.widgets, [name]: data },
+      activeWidget: name,
     })),
 
-  clearWidgets: () => set({ widgets: {} }),
+  // Bascule vers InvestigationPage après le zoom
+  enterInvestigation: () => set({ phase: 'investigation' }),
 
-  // Transition : TheEye → layout Investigation
-  enterInvestigation: () =>
-    set({ phase: 'investigation', isThinking: false }),
+  // Depuis InvestigationPage : active un widget existant
+  setActiveWidget: (name) => set({ activeWidget: name }),
 
-  // Transition : retour à TheEye depuis un layout
-  returnToEye: () =>
-    set({ phase: 'eye', widgets: {}, rimeText: '' }),
+  // Retour à EyePage — reset complet
+  returnToEye: () => set({
+    phase:        'eye',
+    widgets:      {},
+    activeWidget: null,
+    rimeText:     '',
+    isThinking:   false,
+  }),
+
+  // Procédure plein écran
+  enterProcedure: () => set({ phase: 'procedure', activeWidget: null }),
 }))

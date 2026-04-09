@@ -1,185 +1,246 @@
-import { useRef, useMemo, Suspense } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import * as THREE from 'three'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
+import { X, FileText, ChevronRight } from 'lucide-react'
 import { useRimeStore } from '../../store/useRimeStore'
 
-// Palette ivoire — même que les streamlines
 const C = {
-  bg:      '#0c0c0a',
-  bgPanel: '#111110',
-  border:  'rgba(210,205,195,0.18)',
-  accent:  'rgba(220,215,205,0.55)',
-  text:    'rgba(225,220,210,0.85)',
-  textDim: 'rgba(200,195,185,0.45)',
-  textFaint: 'rgba(190,185,175,0.28)',
-  bar:     'rgba(220,215,205,0.7)',
-  barBg:   'rgba(220,215,205,0.1)',
-  shadow:  'rgba(220,215,205,0.15)',
+  bg:         '#0c0c0a',
+  bgPanel:    '#0f0f0d',
+  bgModal:    '#111110',
+  border:     'rgba(210,205,195,0.12)',
+  borderHover:'rgba(210,205,195,0.28)',
+  accent:     'rgba(220,215,205,0.55)',
+  text:       'rgba(225,220,210,0.85)',
+  textDim:    'rgba(200,195,185,0.45)',
+  textFaint:  'rgba(190,185,175,0.22)',
+  highlight:  'rgba(200,160,60,0.28)',   // surligné amber
+  highlightBorder: 'rgba(200,160,60,0.55)',
+  badge:      'rgba(200,160,60,0.15)',
+  badgeText:  'rgba(220,180,80,0.9)',
 }
 
-// ─── Données mock ─────────────────────────────────────────────────────────────
-
+// ─── Mock de données ──────────────────────────────────────────────────────────
 export const CITATION_MOCK = {
   subject: 'REF-447',
   title: 'AF447 — ANALYSE CAUSALE',
   confidence: 0.91,
-  timestamp: '2009-06-01T02:14:00Z',
+  // Texte principal de l'analyse RIME avec des passages à citer
+  body: [
+    { type: 'paragraph', text: "L'incident du vol AF447 résulte d'une séquence d'événements initiée par l'obstruction simultanée des trois sondes Pitot. La perte des informations de vitesse a conduit à une désactivation du pilote automatique et à un changement de loi de pilotage." },
+    { type: 'highlight', text: "Les trois sondes de vitesse se sont obstruées simultanément, privant l'équipage de l'indication de vitesse air pendant 54 secondes consécutives.", sourceId: 'BEA-2012-04', page: 42 },
+    { type: 'paragraph', text: "En réponse, l'équipage a effectué des actions de pilotage inappropriées. L'alarme de décrochage s'est déclenchée à plusieurs reprises sans action corrective de la part des pilotes." },
+    { type: 'highlight', text: "AUTO FLT AP OFF — F/CTL ALTN LAW — STALL WARNING — enregistré à 02h14 UTC. Séquence de 28 messages en 3 minutes.", sourceId: 'ACARS-AF447', page: 1 },
+    { type: 'paragraph', text: "Les données du CVR confirment que l'alarme de décrochage était active et audible tout au long de la descente finale. Aucune action de récupération coordonnée n'a été effectuée." },
+    { type: 'highlight', text: "Taux de chute confirmé −10 900 ft/min. Alarme de décrochage active 54 secondes. Aucun input correcteur enregistré.", sourceId: 'CVR-TRANSCRIPT', page: 3 },
+  ],
   sources: [
     {
       id: 'BEA-2012-04',
       label: 'RAPPORT FINAL BEA',
       date: '2012-07-29',
-      excerpt: "Les trois sondes de vitesse se sont obstruées simultanément, privant l'équipage de l'indication de vitesse air pendant 54 secondes consécutives.",
+      page: 42,
+      fullText: `BUREAU D'ENQUÊTES ET D'ANALYSES — RAPPORT FINAL
+Vol AF447 — Accident survenu le 1er juin 2009
+
+3.1 DÉFAILLANCE DES SONDES PITOT
+
+Les investigations ont établi que les trois sondes de vitesse (Pitot) se sont obstruées simultanément par des cristaux de glace. Cette obstruction, d'une durée de 54 secondes, a privé les systèmes automatiques de toute référence de vitesse fiable.
+
+Les trois sondes de vitesse se sont obstruées simultanément, privant l'équipage de l'indication de vitesse air pendant 54 secondes consécutives.
+
+En conséquence, le pilote automatique s'est déconnecté et la loi de pilotage a régressé en loi alternante. L'équipage n'était pas préparé à cette situation dégradée à cette altitude et dans ces conditions météorologiques.
+
+3.2 RÉPONSE DE L'ÉQUIPAGE
+
+Lors du passage en loi alternante, le commandant de bord était en phase de repos réglementaire. Les deux copilotes ont effectué des actions contradictoires sur les commandes de vol, aggravant la situation.`,
     },
     {
       id: 'ACARS-AF447',
       label: 'MESSAGES ACARS',
       date: '2009-06-01',
-      excerpt: 'AUTO FLT AP OFF — F/CTL ALTN LAW — STALL WARNING — enregistré à 02h14 UTC. Séquence de 28 messages en 3 minutes.',
+      page: 1,
+      fullText: `AIRBUS A330 — MESSAGES ACARS VOL AF447
+Séquence enregistrée entre 02h10 et 02h14 UTC
+
+02h10:34 — AUTO FLT AP OFF
+02h10:35 — AUTO FLT AP OFF (confirmation)
+02h10:51 — F/CTL ALTN LAW
+02h11:03 — STALL WARNING (1ère occurrence)
+02h12:02 — STALL WARNING (2ème occurrence)
+02h13:41 — STALL WARNING (3ème occurrence)
+
+AUTO FLT AP OFF — F/CTL ALTN LAW — STALL WARNING — enregistré à 02h14 UTC. Séquence de 28 messages en 3 minutes.
+
+02h14:28 — FIN DE TRANSMISSION
+Impact estimé : 02h14:28 UTC`,
     },
     {
       id: 'CVR-TRANSCRIPT',
       label: 'TRANSCRIPTION CVR',
       date: '2009-06-01',
-      excerpt: 'Taux de chute confirmé −10 900 ft/min. Alarme de décrochage active 54 secondes. Aucun input correcteur enregistré.',
+      page: 3,
+      fullText: `COCKPIT VOICE RECORDER — TRANSCRIPTION PARTIELLE
+Dernières minutes du vol AF447
+
+[02h11:37] CDB (entrant en cabine de pilotage) : "Qu'est-ce qui se passe ?"
+[02h11:43] OPL : "On a perdu les vitesses..."
+[02h12:02] GPWS : "STALL STALL STALL"
+[02h13:12] OPL : "Je suis en TOGA hein"
+[02h13:40] CDB : "Mais qu'est-ce que vous foutez ?"
+
+Taux de chute confirmé −10 900 ft/min. Alarme de décrochage active 54 secondes. Aucun input correcteur enregistré.
+
+[02h14:26] OPL : "On va taper..."
+[02h14:28] FIN D'ENREGISTREMENT`,
     },
   ],
 }
 
-// ─── Mesh STL 747-400 ─────────────────────────────────────────────────────────
-
-function AircraftMesh() {
-  const geometry = useLoader(STLLoader, '/747-400.stl')
-  const groupRef = useRef()
-
-  const { edges, scale, grainMat } = useMemo(() => {
-    geometry.computeBoundingBox()
-    const size = new THREE.Vector3()
-    geometry.boundingBox.getSize(size)
-    const maxDim = Math.max(size.x, size.y, size.z)
-    const scale  = 3.2 / maxDim
-    geometry.center()
-    geometry.computeBoundingBox()
-
-    // STL Z-up : le socle est à z_min → clipper sur Z original
-    const zMin  = geometry.boundingBox.min.z
-    const clipZ = zMin + size.z * 0.12
-
-    const edges = new THREE.EdgesGeometry(geometry, 1)
-
-    const grainMat = new THREE.ShaderMaterial({
-      vertexShader: `
-        varying float vZ;
-        varying vec3  vPos;
-        void main() {
-          vZ   = position.z;
-          vPos = position;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform float uClipZ;
-        uniform float uDensity;
-        varying float vZ;
-        varying vec3  vPos;
-
-        float rand(vec2 co) { return fract(sin(dot(co, vec2(12.9898,78.233)))*43758.5453); }
-        float rand3(vec3 p) { return fract(sin(dot(p, vec3(127.1,311.7,74.7)))*43758.5453); }
-
-        void main() {
-          if (vZ < uClipZ) discard;
-          // Densité : hash par segment (quantisation → même valeur sur toute l'arête)
-          if (rand3(floor(vPos * 6.0)) > uDensity) discard;
-          float g = rand(floor(gl_FragCoord.xy * 0.4) + fract(uTime * 0.65)) * 0.2;
-          float alpha = 0.68 - g * 0.4;
-          gl_FragColor = vec4(0.88 - g, 0.85 - g, 0.80 - g, alpha);
-        }
-      `,
-      uniforms: { uTime: { value: 0 }, uClipZ: { value: clipZ }, uDensity: { value: 0.35 } },
-      transparent: true,
-    })
-
-    return { edges, scale, grainMat }
-  }, [geometry])
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime()
-    grainMat.uniforms.uTime.value = t
-    if (!groupRef.current) return
-    // Après rotation parent -PI/2 sur X, l'axe "haut" de l'avion est Z local
-    groupRef.current.rotation.z = t * 0.22
-  })
-
+// ─── Badge citation inline ────────────────────────────────────────────────────
+function CitationBadge({ sourceId, page, onOpen }) {
+  const [hover, setHover] = useState(false)
   return (
-    <group scale={scale} rotation={[-Math.PI / 2, 0, 0]}>
-      <group ref={groupRef}>
-        <lineSegments geometry={edges} material={grainMat} />
-      </group>
-    </group>
+    <span
+      onClick={() => onOpen(sourceId)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '3px',
+        marginLeft: '6px',
+        padding: '1px 6px',
+        background: hover ? 'rgba(200,160,60,0.25)' : C.badge,
+        border: `1px solid ${hover ? 'rgba(200,160,60,0.7)' : 'rgba(200,160,60,0.3)'}`,
+        borderRadius: '2px',
+        fontFamily: 'var(--font-mono)',
+        fontSize: '0.48rem',
+        color: C.badgeText,
+        letterSpacing: '0.08em',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
+        verticalAlign: 'middle',
+        userSelect: 'none',
+      }}
+    >
+      <FileText size={8} />
+      {sourceId.split('-')[0]} p.{page}
+    </span>
   )
 }
 
-// ─── Sous-composants UI ───────────────────────────────────────────────────────
+// ─── Modal document complet ───────────────────────────────────────────────────
+function DocumentModal({ source, highlightText, onClose }) {
+  if (!source) return null
 
-function HudBracket({ top, left, right, bottom, size = 14 }) {
-  const shared = {
-    position: 'absolute', width: size, height: size,
-    borderColor: C.accent, borderStyle: 'solid',
-    borderTopWidth: 0, borderBottomWidth: 0,
-    borderLeftWidth: 0, borderRightWidth: 0,
-  }
-  const style = { ...shared }
-  if (top    !== undefined) { style.top    = top;    style.borderTopWidth    = 1 }
-  if (bottom !== undefined) { style.bottom = bottom; style.borderBottomWidth = 1 }
-  if (left   !== undefined) { style.left   = left;   style.borderLeftWidth   = 1 }
-  if (right  !== undefined) { style.right  = right;  style.borderRightWidth  = 1 }
-  return <div style={style} />
-}
+  // Découpe le fullText autour du passage à surligner
+  const parts = source.fullText.split(highlightText)
 
-function SourceCard({ source, delay }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 18 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      style={{ borderLeft: `1px solid ${C.accent}`, paddingLeft: '0.85rem', marginBottom: '1.2rem' }}
-    >
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginBottom: '0.25rem' }}>
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.48rem',
-          color: C.text, letterSpacing: '0.12em',
-          border: `1px solid ${C.border}`, padding: '1px 5px',
-        }}>{source.id}</span>
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.58rem',
-          color: C.text, letterSpacing: '0.1em', fontWeight: 600,
-        }}>{source.label}</span>
-        <span style={{
-          fontFamily: 'var(--font-mono)', fontSize: '0.44rem',
-          color: C.textDim, letterSpacing: '0.08em', marginLeft: 'auto',
-        }}>{source.date}</span>
-      </div>
-      <p style={{
-        fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
-        color: C.textDim, letterSpacing: '0.05em', lineHeight: 1.7, margin: 0,
-      }}>{source.excerpt}</p>
-    </motion.div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{
+          position: 'absolute', inset: 0, zIndex: 100,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)',
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.25 }}
+          onClick={e => e.stopPropagation()}
+          style={{
+            width: 'min(680px, 90vw)',
+            maxHeight: '75vh',
+            background: C.bgModal,
+            border: `1px solid ${C.border}`,
+            display: 'flex', flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header modal */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '0.8rem 1.2rem',
+            borderBottom: `1px solid ${C.border}`,
+            flexShrink: 0,
+          }}>
+            <div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: C.textFaint, letterSpacing: '0.14em', display: 'block', marginBottom: '2px' }}>
+                {source.id}
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: C.text, letterSpacing: '0.1em', fontWeight: 600 }}>
+                {source.label}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.1em' }}>
+                p.{source.page} — {source.date}
+              </span>
+              <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textDim, display: 'flex', alignItems: 'center', padding: '2px' }}>
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* Corps du document */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.4rem 1.6rem' }}>
+            <pre style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.58rem',
+              color: C.textDim,
+              lineHeight: 1.9,
+              letterSpacing: '0.04em',
+              whiteSpace: 'pre-wrap',
+              margin: 0,
+            }}>
+              {parts.length > 1 ? (
+                <>
+                  <span>{parts[0]}</span>
+                  <span style={{
+                    background: C.highlight,
+                    borderBottom: `1px solid ${C.highlightBorder}`,
+                    color: 'rgba(230,200,120,0.95)',
+                    padding: '0 2px',
+                  }}>{highlightText}</span>
+                  <span>{parts.slice(1).join(highlightText)}</span>
+                </>
+              ) : (
+                <span>{source.fullText}</span>
+              )}
+            </pre>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
 // ─── Widget principal ─────────────────────────────────────────────────────────
-
 export default function CitationWidget() {
   const widgets      = useRimeStore((s) => s.widgets)
   const clearWidgets = useRimeStore((s) => s.clearWidgets)
+  const [modalSourceId, setModalSourceId] = useState(null)
 
   const data = widgets.citation
   if (!data) return null
 
   const conf = Math.round((data.confidence ?? 0) * 100)
+  const sources = data.sources ?? []
+
+  const modalSource = sources.find(s => s.id === modalSourceId)
+  // Le texte à surligner dans le modal = l'excerpt de la source
+  const modalHighlight = modalSource?.excerpt ?? ''
+
+  const handleOpenModal = (sourceId) => setModalSourceId(sourceId)
+  const handleCloseModal = () => setModalSourceId(null)
 
   return (
     <AnimatePresence>
@@ -188,7 +249,7 @@ export default function CitationWidget() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: 0.55 }}
+        transition={{ duration: 0.4, delay: 0.5 }}
         style={{
           position: 'absolute', inset: 0, zIndex: 50,
           background: C.bg,
@@ -199,164 +260,187 @@ export default function CitationWidget() {
         {/* Scanlines */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 1,
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px)`,
+          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.10) 2px, rgba(0,0,0,0.10) 4px)`,
         }} />
 
         {/* ── HEADER ── */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.4 }}
-          style={{
-            borderBottom: `1px solid ${C.border}`,
-            padding: '0.9rem 1.5rem',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            zIndex: 2,
-          }}
-        >
+        <div style={{
+          borderBottom: `1px solid ${C.border}`,
+          padding: '0.85rem 1.5rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          zIndex: 2,
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-              color: C.textDim, letterSpacing: '0.18em',
-            }}>[ RIME ]</span>
-            <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-              color: C.text, letterSpacing: '0.15em',
-            }}>CITATION.MODE // SOURCE.SCAN</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: C.textFaint, letterSpacing: '0.18em' }}>[ RIME ]</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: C.text, letterSpacing: '0.15em' }}>DOCUMENT.VIEW // SOURCE.SCAN</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.1em' }}>
+              {sources.length} REF
+            </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <span style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.48rem',
-              color: C.textFaint, letterSpacing: '0.1em',
-            }}>SYS.RIME v1.0.0</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.1em' }}>
+              CONF. {conf}%
+            </span>
             <button
               onClick={clearWidgets}
               style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-                color: C.textDim, letterSpacing: '0.12em',
-                background: 'none', border: `1px solid ${C.border}`,
-                cursor: 'pointer', padding: '3px 10px', transition: 'all 0.2s ease',
+                fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: C.textDim,
+                letterSpacing: '0.12em', background: 'none',
+                border: `1px solid ${C.border}`, cursor: 'pointer', padding: '3px 10px',
+                transition: 'all 0.2s',
               }}
-              onMouseEnter={e => e.currentTarget.style.color = C.text}
-              onMouseLeave={e => e.currentTarget.style.color = C.textDim}
+              onMouseEnter={e => { e.currentTarget.style.color = C.text; e.currentTarget.style.borderColor = C.accent }}
+              onMouseLeave={e => { e.currentTarget.style.color = C.textDim; e.currentTarget.style.borderColor = C.border }}
             >
               [ CLOSE ]
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* ── CONTENU ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '45% 55%', zIndex: 2, minHeight: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', zIndex: 2, minHeight: 0 }}>
 
-          {/* ─ GAUCHE : mesh 3D ─ */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            style={{ position: 'relative', borderRight: `1px solid ${C.border}`, padding: '1rem' }}
-          >
-            <HudBracket top={8}    left={8} />
-            <HudBracket top={8}    right={8} />
-            <HudBracket bottom={8} left={8} />
-            <HudBracket bottom={8} right={8} />
-
-            <div style={{
-              position: 'absolute', top: '1.4rem', left: '1.4rem',
-              fontFamily: 'var(--font-mono)', fontSize: '0.44rem',
-              color: C.accent, letterSpacing: '0.14em', zIndex: 3,
-            }}>
-              SCAN ACTIVE
-              <span style={{ marginLeft: '0.5rem', animation: 'blink 1s step-end infinite' }}>▮</span>
-            </div>
-
-            <div style={{
-              position: 'absolute', bottom: '1.8rem', left: '1.6rem',
-              fontFamily: 'var(--font-mono)', fontSize: '0.42rem',
-              color: C.textFaint, letterSpacing: '0.1em', lineHeight: 1.8,
-            }}>0.357<br />0.085</div>
-
-            <Canvas
-              camera={{ position: [0, 0, 4], fov: 45 }}
-              style={{ width: '100%', height: '100%', background: C.bg }}
-            >
-              <Suspense fallback={null}>
-                <AircraftMesh />
-              </Suspense>
-            </Canvas>
-          </motion.div>
-
-          {/* ─ DROITE : sources ─ */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.75, duration: 0.5 }}
-            style={{ padding: '1.5rem 1.8rem', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-          >
-            <div style={{ marginBottom: '1.4rem' }}>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.48rem',
-                color: C.textDim, letterSpacing: '0.18em', marginBottom: '0.3rem',
-              }}>SUBJECT</div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.95rem',
-                color: C.text, letterSpacing: '0.12em', fontWeight: 600,
-                textShadow: `0 0 20px ${C.shadow}`,
-              }}>{data.subject}</div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.55rem',
-                color: C.textDim, letterSpacing: '0.1em', marginTop: '0.2rem',
-              }}>{data.title}</div>
+          {/* ─ GAUCHE : texte avec surligné ─ */}
+          <div style={{ padding: '2rem 2.4rem', overflowY: 'auto', borderRight: `1px solid ${C.border}` }}>
+            <div style={{ marginBottom: '1.8rem' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.18em', marginBottom: '0.3rem' }}>
+                SUJET
+              </div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.9rem', color: C.text, letterSpacing: '0.12em', fontWeight: 600 }}>
+                {data.subject}
+              </div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', color: C.textDim, letterSpacing: '0.1em', marginTop: '0.2rem' }}>
+                {data.title}
+              </div>
               <div style={{ height: '1px', background: C.border, marginTop: '0.8rem' }} />
             </div>
 
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: '0.44rem',
-                color: C.textFaint, letterSpacing: '0.16em', marginBottom: '0.8rem',
-              }}>SOURCES RÉFÉRENCÉES — {(data.sources ?? []).length} DOC.</div>
-
-              {(data.sources ?? []).map((src, i) => (
-                <SourceCard key={src.id} source={src} delay={0.85 + i * 0.12} />
-              ))}
+            {/* Corps du document avec passages surlignés */}
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: C.textDim, lineHeight: 2.0, letterSpacing: '0.04em' }}>
+              {(data.body ?? []).map((block, i) => {
+                if (block.type === 'paragraph') {
+                  return (
+                    <p key={i} style={{ margin: '0 0 1.2rem 0' }}>{block.text}</p>
+                  )
+                }
+                if (block.type === 'highlight') {
+                  return (
+                    <p key={i} style={{ margin: '0 0 1.2rem 0' }}>
+                      <span style={{
+                        background: C.highlight,
+                        borderBottom: `1px solid ${C.highlightBorder}`,
+                        color: 'rgba(230,200,120,0.95)',
+                        padding: '1px 3px',
+                      }}>
+                        {block.text}
+                      </span>
+                      <CitationBadge
+                        sourceId={block.sourceId}
+                        page={block.page}
+                        onOpen={handleOpenModal}
+                      />
+                    </p>
+                  )
+                }
+                return null
+              })}
             </div>
-          </motion.div>
+          </div>
+
+          {/* ─ DROITE : liste sources ─ */}
+          <div style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+            <div style={{
+              padding: '1rem 1.2rem 0.6rem',
+              fontFamily: 'var(--font-mono)', fontSize: '0.42rem',
+              color: C.textFaint, letterSpacing: '0.16em',
+              borderBottom: `1px solid ${C.border}`,
+            }}>
+              SOURCES — {sources.length} DOC.
+            </div>
+
+            {sources.map((src, i) => {
+              const isActive = modalSourceId === src.id
+              return (
+                <motion.div
+                  key={src.id}
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 + i * 0.1, duration: 0.3 }}
+                  onClick={() => handleOpenModal(src.id)}
+                  style={{
+                    padding: '0.9rem 1.2rem',
+                    borderBottom: `1px solid ${C.border}`,
+                    cursor: 'pointer',
+                    background: isActive ? 'rgba(200,160,60,0.05)' : 'transparent',
+                    borderLeft: isActive ? `2px solid ${C.highlightBorder}` : '2px solid transparent',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(210,205,195,0.04)' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: C.text, letterSpacing: '0.08em', fontWeight: 600 }}>
+                      {src.label}
+                    </span>
+                    <ChevronRight size={10} color={C.textFaint} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: '0.42rem', color: C.badgeText,
+                      background: C.badge, border: `1px solid rgba(200,160,60,0.3)`,
+                      padding: '0 4px', letterSpacing: '0.08em',
+                    }}>
+                      {src.id}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.42rem', color: C.textFaint, letterSpacing: '0.08em' }}>
+                      p.{src.page} · {src.date}
+                    </span>
+                  </div>
+                  <p style={{
+                    fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: C.textDim,
+                    lineHeight: 1.7, margin: 0, letterSpacing: '0.03em',
+                    display: '-webkit-box', WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>
+                    {src.excerpt}
+                  </p>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
 
         {/* ── FOOTER ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.4 }}
-          style={{
-            borderTop: `1px solid ${C.border}`,
-            padding: '0.7rem 1.5rem',
-            display: 'flex', alignItems: 'center', gap: '1.2rem', zIndex: 2,
-          }}
-        >
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.48rem',
-            color: C.textDim, letterSpacing: '0.12em',
-          }}>CONF.</span>
-          <div style={{ flex: '0 0 140px', height: '2px', background: C.barBg, position: 'relative' }}>
+        <div style={{
+          borderTop: `1px solid ${C.border}`,
+          padding: '0.6rem 1.5rem',
+          display: 'flex', alignItems: 'center', gap: '1.2rem', zIndex: 2,
+        }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.12em' }}>
+            CONF.
+          </span>
+          <div style={{ flex: '0 0 120px', height: '1px', background: 'rgba(210,205,195,0.1)', position: 'relative' }}>
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: conf / 100 }}
-              transition={{ delay: 1.0, duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-              style={{
-                position: 'absolute', inset: 0, background: C.bar,
-                transformOrigin: 'left', boxShadow: `0 0 6px ${C.shadow}`,
-              }}
+              transition={{ delay: 0.9, duration: 0.7 }}
+              style={{ position: 'absolute', inset: 0, background: C.accent, transformOrigin: 'left' }}
             />
           </div>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.52rem',
-            color: C.text, letterSpacing: '0.1em',
-          }}>{conf}%</span>
-          <span style={{
-            fontFamily: 'var(--font-mono)', fontSize: '0.44rem',
-            color: C.textFaint, letterSpacing: '0.1em', marginLeft: 'auto',
-          }}>{data.timestamp}</span>
-        </motion.div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: C.text, letterSpacing: '0.1em' }}>{conf}%</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.42rem', color: C.textFaint, letterSpacing: '0.08em', marginLeft: 'auto' }}>
+            {data.timestamp}
+          </span>
+        </div>
+
+        {/* ── MODAL document complet ── */}
+        {modalSourceId && (
+          <DocumentModal
+            source={modalSource}
+            highlightText={modalHighlight}
+            onClose={handleCloseModal}
+          />
+        )}
 
         <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
       </motion.div>
