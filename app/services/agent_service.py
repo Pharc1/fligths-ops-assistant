@@ -7,7 +7,7 @@ from app.agents.workflow import InMemoryWorkflowRepository
 from app.core.config import settings
 from app.core.exceptions import AgentError, AgentMaxIterationsError
 from app.core.logger import get_logger
-from app.services.gemini_service import GeminiService
+from app.services.llm_interface import LLMInterface
 from app.services.rag_service import RagService
 from app.skills.registry import SkillRegistry
 from app.tools.builder import build_all_tools
@@ -24,7 +24,7 @@ class AgentService:
 
     def __init__(
         self,
-        llm_service: GeminiService | None,
+        llm_service: LLMInterface | None,
         rag_service: RagService,
         skill_registry: SkillRegistry,
         workflow_repo: InMemoryWorkflowRepository,

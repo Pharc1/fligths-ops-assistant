@@ -8,6 +8,8 @@ logger = get_logger(__name__)
 
 class GeminiService(LLMInterface):
     def __init__(self):
+        if settings.GOOGLE_API_KEY is None:
+            raise RuntimeError("GOOGLE_API_KEY is required for GeminiService")
         self.llm = ChatGoogleGenerativeAI(
             model=settings.LLM_MODEL,
             google_api_key=settings.GOOGLE_API_KEY.get_secret_value(),

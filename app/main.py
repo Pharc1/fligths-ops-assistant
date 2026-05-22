@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("Starting %s v%s [%s]", settings.PROJECT_NAME, settings.VERSION, settings.ENVIRONMENT)
 
-    from app.api.deps import get_gemini_service, get_rag_service, get_workflow_repository
+    from app.api.deps import get_llm_service, get_rag_service, get_workflow_repository
     from app.kafka.consumer import IncidentKafkaConsumer
     from app.kafka.producer import IncidentKafkaProducer
     from app.services.agent_service import AgentService
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 
     try:
         agent_service = AgentService(
-            get_gemini_service(),
+            get_llm_service(),
             get_rag_service(),
             skill_registry,
             get_workflow_repository(),

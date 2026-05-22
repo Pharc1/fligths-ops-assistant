@@ -1,5 +1,5 @@
 from app.core.logger import get_logger
-from app.services.gemini_service import GeminiService
+from app.services.llm_interface import LLMInterface
 
 logger = get_logger(__name__)
 
@@ -11,7 +11,7 @@ class AnalysisService:
     for old code paths while avoiding global RAG/model side effects at import time.
     """
 
-    def __init__(self, llm_service: GeminiService):
+    def __init__(self, llm_service: LLMInterface):
         self._llm_service = llm_service
 
     def analyze_incident(self, query: str) -> str:

@@ -1,20 +1,19 @@
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.core.config import settings
 from app.core.logger import get_logger
+from app.services.ai_gateway_embeddings import AIGatewayEmbeddings
 
 logger = get_logger(__name__)
 
 
 class RagService:
     def __init__(self):
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model=settings.EMBEDDING_MODEL,
-            google_api_key=settings.GOOGLE_API_KEY,
-        )
+        self.embeddings = build_embeddings()
 
         self.vector_store = Chroma(
             collection_name=settings.COLLECTION_NAME,
@@ -46,3 +45,21 @@ class RagService:
         results = self.vector_store.similarity_search_with_score(query_text, k=k)
         logger.info("RAG scored results found: %d", len(results))
         return results
+
+
+def build_embeddings() -> Embeddings:
+    if settings.resolved_embedding_provider == "ai_gateway":
+        if settings.AI_GATEWAY_API_KEY is None:
+            raise RuntimeError("AI_GATEWAY_API_KEY is required for AI Gateway embeddings")
+        return AIGatewayEmbeddings(
+            api_key=settings.AI_GATEWAY_API_KEY.get_secret_value(),
+            base_url=settings.AI_GATEWAY_BASE_URL,
+            model=settings.AI_GATEWAY_EMBEDDING_MODEL,
+        )
+
+    if settings.GOOGLE_API_KEY is None:
+        raise RuntimeError("GOOGLE_API_KEY is required for Gemini embeddings")
+    return GoogleGenerativeAIEmbeddings(
+        model=settings.EMBEDDING_MODEL,
+        google_api_key=settings.GOOGLE_API_KEY.get_secret_value(),
+    )
