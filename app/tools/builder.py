@@ -1,34 +1,27 @@
-"""
-Point d'entrée unique pour assembler tous les tools d'une session agent.
+"""Single entrypoint for assembling RIME tools for an agent run."""
 
-agent_service.py ne connaît que cette fonction.
-Pour ajouter un tool : créer le fichier dans app/tools/ et l'importer ici.
-"""
+from typing import Any
 
-from langchain.tools import BaseTool
+from langchain_core.tools import BaseTool
 
+from app.agents.workflow import InMemoryWorkflowRepository
 from app.services.rag_service import RagService
-from app.skills.registry import SkillRegistry
+from app.tools.display_tools import build_display_tools
 from app.tools.rag_tools import build_rag_tools
 from app.tools.report_tools import build_report_tools
-from app.tools.skill_tools import build_skill_tools
-from app.tools.task_store import TaskStore
-from app.tools.task_tools import build_task_tools
-from app.tools.ui_tools import build_ui_tools
+from app.tools.workflow_tools import build_workflow_tools
 
 
 def build_all_tools(
-    task_store: TaskStore,
-    rag_service: RagService,
-    skill_registry: SkillRegistry,
+    workflow_repo: InMemoryWorkflowRepository,
+    rag_service: RagService | Any,
     include_ui: bool = True,
 ) -> list[BaseTool]:
-    tools = [
-        *build_task_tools(task_store),
+    tools: list[BaseTool] = [
+        *build_workflow_tools(workflow_repo),
         *build_rag_tools(rag_service),
-        *build_skill_tools(skill_registry),
         *build_report_tools(),
     ]
     if include_ui:
-        tools.extend(build_ui_tools())
+        tools.extend(build_display_tools())
     return tools
