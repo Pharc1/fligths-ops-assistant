@@ -47,8 +47,9 @@ class IncidentKafkaConsumer:
 
         logger.info("Processing incident_id=%s", incident_id)
 
-        from app.core.prompts import build_incident_input
         import asyncio
+
+        from app.core.prompts import build_incident_input
 
         query = build_incident_input(
             flight_id=flight_id or "unknown",

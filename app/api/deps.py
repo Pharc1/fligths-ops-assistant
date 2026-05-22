@@ -6,6 +6,7 @@ Les services lourds (RAG, LLM) sont construits une fois et réutilisés.
 """
 
 from functools import lru_cache
+from typing import Annotated
 
 from fastapi import Depends
 
@@ -32,8 +33,8 @@ def get_workflow_repository() -> InMemoryWorkflowRepository:
 
 
 def get_agent_service(
-    llm_service: GeminiService = Depends(get_gemini_service),
-    rag_service: RagService = Depends(get_rag_service),
-    workflow_repo: InMemoryWorkflowRepository = Depends(get_workflow_repository),
+    llm_service: Annotated[GeminiService, Depends(get_gemini_service)],
+    rag_service: Annotated[RagService, Depends(get_rag_service)],
+    workflow_repo: Annotated[InMemoryWorkflowRepository, Depends(get_workflow_repository)],
 ) -> AgentService:
     return AgentService(llm_service, rag_service, skill_registry, workflow_repo)

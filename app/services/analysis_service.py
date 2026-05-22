@@ -1,28 +1,23 @@
-from app.services.gemini_service import GeminiService
-from langchain.agents import create_agent
-from app.services.tools import retrieve_context
-from app.core.prompts import MAINTENANCE_PROMPT_TEMPLATE
 from app.core.logger import get_logger
+from app.services.gemini_service import GeminiService
 
 logger = get_logger(__name__)
 
+
 class AnalysisService:
+    """Legacy compatibility wrapper.
+
+    New incident analysis flows should use AgentService. This class remains import-safe
+    for old code paths while avoiding global RAG/model side effects at import time.
+    """
+
     def __init__(self, llm_service: GeminiService):
-        
-        self.llm = llm_service.llm
-        self.tools = [retrieve_context]
-
-
-        self.analyser_agent = create_agent(self.llm, self.tools, system_prompt=MAINTENANCE_PROMPT_TEMPLATE)
-
+        self._llm_service = llm_service
 
     def analyze_incident(self, query: str) -> str:
-        logger.info(f"Analyse agentique de : {query}")
+        logger.info("Legacy analysis service called")
         try:
-            result = self.analyser_agent.invoke(
-                {"messages": [{"role": "user", "content": f"{query}"}]}
-            )
-            return result["output"]
-        except Exception as e:
-            logger.error(f"Erreur Agent: {e}")
+            return self._llm_service.generate(query)
+        except Exception as exc:
+            logger.error("Legacy analysis service failed: %s", exc)
             return "Erreur lors de l'analyse"

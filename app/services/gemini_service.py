@@ -1,8 +1,8 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage
+
 from app.core.config import settings
 from app.core.logger import get_logger
-from app.services.llm_interface import LLMInterface 
+from app.services.llm_interface import LLMInterface
 
 logger = get_logger(__name__)
 
@@ -26,7 +26,7 @@ class GeminiService(LLMInterface):
 
     async def agenerate(self, prompt: str) -> str:
         try:
-            logger.info(f"Envoi du prompt asynchrone au LLM...")
+            logger.info("Envoi du prompt asynchrone au LLM...")
             response = await self.llm.ainvoke(prompt)
             return response.content
         except Exception as e:

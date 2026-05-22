@@ -6,7 +6,7 @@ en base — elles vivent le temps que l'agent résout le problème posé.
 """
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 

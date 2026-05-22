@@ -45,7 +45,7 @@ class AgentService:
             logger.info("Agent stream completed")
         except Exception as exc:
             logger.error("Agent stream error: %s", exc)
-            raise AgentError("Erreur lors de l'exécution de l'agent.", details={"cause": str(exc)})
+            raise AgentError("Erreur lors de l'exécution de l'agent.", details={"cause": str(exc)}) from exc
 
     async def run(self, query: str, session_id: str = "kafka") -> str:
         logger.info("Agent run started | query='%s'", query[:80])
@@ -71,7 +71,7 @@ class AgentService:
             raise
         except Exception as exc:
             logger.error("Agent run error: %s", exc)
-            raise AgentError("Erreur lors de l'exécution de l'agent.", details={"cause": str(exc)})
+            raise AgentError("Erreur lors de l'exécution de l'agent.", details={"cause": str(exc)}) from exc
 
     def _build_engine(self, include_ui: bool) -> RimeAgentEngine:
         tools = build_all_tools(

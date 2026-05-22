@@ -1,17 +1,14 @@
-from langchain.tools import tool
-from app.services.rag_service import RagService
+from langchain_core.tools import tool
 
 
-_rag_service = RagService()
-
-
-@tool(response_format='content_and_artifact')
+@tool(response_format="content_and_artifact")
 def retrieve_context(query: str):
-    """Récupère des information pour répondre à une question spécifique."""
+    """Legacy retrieval tool kept for compatibility with older analysis flows."""
+    from app.services.rag_service import RagService
 
-    retrieved_docs = _rag_service.similarity_search(query, k=4)
+    retrieved_docs = RagService().similarity_search(query, k=4)
     serialized = "\n\n".join(
-        (f"Source: {doc.metadata}\nContent: {doc.page_content}")
+        f"Source: {doc.metadata}\nContent: {doc.page_content}"
         for doc in retrieved_docs
     )
     return serialized, retrieved_docs

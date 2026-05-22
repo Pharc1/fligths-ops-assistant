@@ -10,7 +10,6 @@ from pydantic import BaseModel, Field
 
 from app.tools.task_store import TaskStatus, TaskStore
 
-
 # Schémas d'input pour chaque tool (LangChain les utilise pour valider les appels)
 
 class CreateTaskListInput(BaseModel):

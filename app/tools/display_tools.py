@@ -4,7 +4,6 @@ from typing import Any, Literal
 from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 
-
 PanelMode = Literal["document", "history", "telemetry", "part", "notice", "checklist"]
 PanelPriority = Literal["primary", "secondary", "inline"]
 

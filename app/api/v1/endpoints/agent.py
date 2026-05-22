@@ -1,3 +1,6 @@
+import json
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -27,7 +30,7 @@ class IncidentRequest(BaseModel):
 @router.post("/agent/ask", tags=["Agent"])
 async def ask(
     body: InteractiveRequest,
-    agent_service: AgentService = Depends(get_agent_service),
+    agent_service: Annotated[AgentService, Depends(get_agent_service)],
 ):
     """
     Mode 2 — question d'un technicien sur un dossier ouvert.
@@ -46,7 +49,6 @@ async def ask(
             async for chunk in agent_service.stream(query):
                 yield chunk
         except AgentError as exc:
-            import json
             yield f"data: {json.dumps({'type': 'error', 'message': exc.message})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -55,7 +57,7 @@ async def ask(
 @router.post("/agent/analyze", tags=["Agent"])
 async def analyze_incident(
     body: IncidentRequest,
-    agent_service: AgentService = Depends(get_agent_service),
+    agent_service: Annotated[AgentService, Depends(get_agent_service)],
 ):
     """
     Mode 1 en HTTP — analyse d'un incident, même agent que Kafka mais via REST.
