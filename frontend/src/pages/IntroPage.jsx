@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRimeStore } from '../store/useRimeStore'
 
@@ -123,9 +123,18 @@ function TypedLine({ text, speed = 120, onDone }) {
   const [displayed, setDisplayed] = useState('')
   const [done, setDone] = useState(false)
   const idx = useRef(0)
+  const notifyDone = useEffectEvent(() => {
+    onDone?.()
+  })
 
   useEffect(() => {
-    if (!text) { setDone(true); onDone?.(); return }
+    if (!text) {
+      const doneTimer = window.setTimeout(() => {
+        setDone(true)
+        notifyDone()
+      }, 0)
+      return () => window.clearTimeout(doneTimer)
+    }
     const iv = setInterval(() => {
       if (idx.current < text.length) {
         setDisplayed(text.slice(0, idx.current + 1))
@@ -133,11 +142,11 @@ function TypedLine({ text, speed = 120, onDone }) {
       } else {
         clearInterval(iv)
         setDone(true)
-        onDone?.()
+        notifyDone()
       }
     }, 1000 / speed)
     return () => clearInterval(iv)
-  }, [])
+  }, [speed, text])
 
   const isOk = text.includes('[  OK  ]')
   const isWarn = text.includes('[WARN  ]')
@@ -187,28 +196,26 @@ function BootPanel({ panel }) {
 
   return (
     <AnimatePresence>
-      {true && (
-        <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.25 }}
-          style={{
-            position: 'absolute',
-            bottom: 0, left: 0, right: 0,
-            padding: '8px 14px',
-          }}
-        >
-          {panel.lines.slice(0, currentLine + 1).map((line, i) => (
-            <TypedLine
-              key={i}
-              text={line}
-              speed={i < currentLine ? 9999 : 120}
-              onDone={() => handleLineDone(i)}
-            />
-          ))}
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.25 }}
+        style={{
+          position: 'absolute',
+          bottom: 0, left: 0, right: 0,
+          padding: '8px 14px',
+        }}
+      >
+        {panel.lines.slice(0, currentLine + 1).map((line, i) => (
+          <TypedLine
+            key={i}
+            text={line}
+            speed={i < currentLine ? 9999 : 120}
+            onDone={() => handleLineDone(i)}
+          />
+        ))}
+      </motion.div>
     </AnimatePresence>
   )
 }
@@ -260,7 +267,7 @@ export default function IntroPage() {
     timers.push(tEnd)
 
     return () => timers.forEach(clearTimeout)
-  }, [])
+  }, [setPhase])
 
   return (
     <motion.div

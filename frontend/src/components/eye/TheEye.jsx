@@ -4,6 +4,7 @@ import Typewriter from './Typewriter'
 import { useRimeStore } from '../../store/useRimeStore'
 
 const CIRCLE_RADIUS_VH = 20
+const MotionDiv = motion.div
 
 export default function TheEye({ miniaturized = false }) {
   const rimeText     = useRimeStore((s) => s.rimeText)
@@ -11,25 +12,25 @@ export default function TheEye({ miniaturized = false }) {
   const activeWidget = useRimeStore((s) => s.activeWidget)
 
   const widgetOpen = !miniaturized && !!activeWidget
-  const size       = miniaturized ? '60px' : `${CIRCLE_RADIUS_VH * 2}vh`
+  const size       = miniaturized ? '72px' : `${CIRCLE_RADIUS_VH * 2}vh`
 
   return (
     <div style={{
       position: 'relative',
-      width:    miniaturized ? '60px' : '100%',
-      height:   miniaturized ? '60px' : '100%',
+      width:    miniaturized ? '72px' : '100%',
+      height:   miniaturized ? '72px' : '100%',
     }}>
 
       {/* Streamlines */}
       {!miniaturized && (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2.2, ease: 'easeInOut' }}
           style={{ position: 'absolute', inset: 0 }}
         >
           <StreamlineCanvas />
-        </motion.div>
+        </MotionDiv>
       )}
 
       {/* Wrapper centrage */}
@@ -40,7 +41,7 @@ export default function TheEye({ miniaturized = false }) {
         transform: 'translate(-50%, -50%)',
         zIndex:    10,
       }}>
-        <motion.div
+        <MotionDiv
           initial={miniaturized ? false : { opacity: 0, scale: 0 }}
           animate={miniaturized ? false : {
             opacity: 1,
@@ -90,7 +91,7 @@ export default function TheEye({ miniaturized = false }) {
 
           {/* Pulse thinking */}
           {isThinking && !widgetOpen && (
-            <motion.div
+            <MotionDiv
               style={{
                 position:     'absolute',
                 width:        '100%',
@@ -103,7 +104,7 @@ export default function TheEye({ miniaturized = false }) {
               transition={{ duration: 2.0, repeat: Infinity, ease: 'easeOut' }}
             />
           )}
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   )

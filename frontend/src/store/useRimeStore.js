@@ -1,49 +1,93 @@
 import { create } from 'zustand'
 
-/**
- * phase :
- *   'intro'         → boot
- *   'eye'           → conversation principale (TheEye plein écran)
- *   'investigation' → layout sidebar + widgets
- *   'procedure'     → séquenceur plein écran
- *
- * widgets      : { [toolName]: data } — données chargées par le LLM
- * activeWidget : clé du widget en premier plan (null = aucun)
- */
+function createPanelId(panel) {
+  const base = [panel.mode, panel.title].filter(Boolean).join('-').toLowerCase()
+  const safe = base.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return `${safe || 'panel'}-${Date.now()}`
+}
+
+function normalizePanel(panel) {
+  const source = panel?.panel ?? panel ?? {}
+  const mode = source.mode ?? 'notice'
+  const title = source.title ?? mode.toUpperCase()
+
+  return {
+    id: source.id ?? createPanelId({ mode, title }),
+    mode,
+    title,
+    priority: source.priority ?? (mode === 'document' ? 'primary' : 'secondary'),
+    payload: source.payload ?? {},
+  }
+}
+
+function documentWidgetToPanel(data) {
+  return normalizePanel({
+    mode: 'document',
+    title: data?.title ?? 'PREUVE DOCUMENTAIRE',
+    priority: 'primary',
+    payload: data ?? {},
+  })
+}
+
 export const useRimeStore = create((set) => ({
-  phase:        'intro',
-  rimeText:     '',
-  isThinking:   false,
-  widgets:      {},
+  phase: 'intro',
+  rimeText: '',
+  isThinking: false,
+
+  widgets: {},
   activeWidget: null,
+  panels: [],
+  activePanelId: null,
 
-  setPhase:    (phase) => set({ phase }),
-  setRimeText: (text)  => set({ rimeText: text }),
-  setThinking: (val)   => set({ isThinking: val }),
+  setPhase: (phase) => set({ phase }),
+  setRimeText: (text) => set({ rimeText: text }),
+  setThinking: (value) => set({ isThinking: value }),
 
-  // Charge un widget + démarre le zoom TheEye
-  // EyePage appelle enterInvestigation() après le délai du zoom
-  openWidget: (name, data) =>
+  addPanel: (panelData) => {
+    const panel = normalizePanel(panelData)
     set((state) => ({
-      widgets:      { ...state.widgets, [name]: data },
-      activeWidget: name,
-    })),
+      panels: [...state.panels.filter((item) => item.id !== panel.id), panel],
+      activePanelId:
+        panel.priority === 'primary' || !state.activePanelId ? panel.id : state.activePanelId,
+      activeWidget: panel.id,
+    }))
+    return panel.id
+  },
 
-  // Bascule vers InvestigationPage après le zoom
+  openPanels: (panelList) => {
+    const panels = panelList.map(normalizePanel)
+    const active = panels.find((panel) => panel.priority === 'primary') ?? panels[0]
+    set({
+      panels,
+      activePanelId: active?.id ?? null,
+      activeWidget: active?.id ?? null,
+    })
+  },
+
+  openWidget: (name, data) => {
+    const panel = name === 'display_document' ? documentWidgetToPanel(data) : normalizePanel(data)
+    set((state) => ({
+      widgets: { ...state.widgets, [name]: data },
+      panels: [...state.panels.filter((item) => item.id !== panel.id), panel],
+      activePanelId: panel.id,
+      activeWidget: panel.id,
+    }))
+  },
+
   enterInvestigation: () => set({ phase: 'investigation' }),
-
-  // Depuis InvestigationPage : active un widget existant
   setActiveWidget: (name) => set({ activeWidget: name }),
+  setActivePanel: (id) => set({ activePanelId: id, activeWidget: id }),
 
-  // Retour à EyePage — reset complet
-  returnToEye: () => set({
-    phase:        'eye',
-    widgets:      {},
-    activeWidget: null,
-    rimeText:     '',
-    isThinking:   false,
-  }),
+  returnToEye: () =>
+    set({
+      phase: 'eye',
+      widgets: {},
+      activeWidget: null,
+      panels: [],
+      activePanelId: null,
+      rimeText: '',
+      isThinking: false,
+    }),
 
-  // Procédure plein écran
   enterProcedure: () => set({ phase: 'procedure', activeWidget: null }),
 }))

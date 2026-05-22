@@ -1,180 +1,113 @@
 import { motion } from 'framer-motion'
-import { useRimeStore } from '../store/useRimeStore'
-import TheEye from '../components/eye/TheEye'
+import { ArrowLeft } from 'lucide-react'
 import AircraftViewer from '../components/eye/AircraftViewer'
-import WidgetDoc from '../components/widgets/WidgetDoc'
+import TheEye from '../components/eye/TheEye'
+import PanelRenderer from '../components/widgets/PanelRenderer'
+import { useRimeStore } from '../store/useRimeStore'
 
-const C = {
-  bg:        '#080808',
-  border:    'rgba(210,205,195,0.08)',
-  text:      'rgba(225,220,210,0.75)',
-  textFaint: 'rgba(190,185,175,0.22)',
-  amber:     'rgba(220,180,80,0.85)',
-}
-
-// ─── Map tool → composant widget ─────────────────────────────────────────────
-const WIDGETS = {
-  display_document: WidgetDoc,
-}
-
-// ─── Zone widgets droite ──────────────────────────────────────────────────────
-function WidgetZone() {
-  const widgets      = useRimeStore((s) => s.widgets)
-  const activeWidget = useRimeStore((s) => s.activeWidget)
-
-  const keys = Object.keys(widgets).filter((k) => WIDGETS[k])
-  if (keys.length === 0) return (
-    <div style={{
-      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.textFaint, letterSpacing: '0.18em' }}>
-        EN ATTENTE
-      </span>
-    </div>
-  )
-
-  return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {keys.map((key) => {
-        const Component = WIDGETS[key]
-        const isActive  = activeWidget === key
-        return (
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            style={{
-              flex:     isActive ? 1 : '0 0 auto',
-              minHeight: 0,
-              position: 'relative',
-              borderBottom: `1px solid ${C.border}`,
-            }}
-          >
-            <Component />
-          </motion.div>
-        )
-      })}
-    </div>
-  )
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function InvestigationPage() {
-  const returnToEye = useRimeStore((s) => s.returnToEye)
-  const rimeText    = useRimeStore((s) => s.rimeText)
+  const panels = useRimeStore((state) => state.panels)
+  const activePanelId = useRimeStore((state) => state.activePanelId)
+  const setActivePanel = useRimeStore((state) => state.setActivePanel)
+  const returnToEye = useRimeStore((state) => state.returnToEye)
+  const rimeText = useRimeStore((state) => state.rimeText)
+
+  const activePanel = panels.find((panel) => panel.id === activePanelId) ?? panels[0]
+  const secondaryPanels = panels.filter((panel) => panel.id !== activePanel?.id)
 
   return (
     <motion.div
+      className="rime-investigation-page"
       key="investigation"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      style={{
-        width:   '100vw',
-        height:  '100vh',
-        background: C.bg,
-        display: 'flex',
-        overflow: 'hidden',
-      }}
+      transition={{ duration: 0.28 }}
     >
-
-      {/* ══ SIDEBAR GAUCHE ════════════════════════════════════════════════════ */}
-      <div style={{
-        width:    '600px',
-        flexShrink: 0,
-        position: 'relative',
-        borderRight: `1px solid ${C.border}`,
-        display:  'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
-
-        {/* Avion 3D — remplit toute la sidebar */}
-        <div style={{ flex: 1, position: 'relative' }}>
+      <aside className="rime-visual-rail">
+        <div className="rime-aircraft-stage">
           <AircraftViewer height="100%" />
-
-          {/* TheEye mini — superposé en haut à gauche sur l'avion */}
-          <div style={{
-            position: 'absolute',
-            top:      '14px',
-            left:     '14px',
-            zIndex:   10,
-            width:    '52px',
-            height:   '52px',
-          }}>
+          <div className="rime-eye-chip">
             <TheEye miniaturized />
           </div>
+          <div className="rime-aircraft-grid" />
         </div>
 
-        {/* Infos appareil + bouton retour — collés en bas */}
-        <div style={{
-          flexShrink: 0,
-          borderTop:  `1px solid ${C.border}`,
-          padding:    '0.8rem 1rem',
-          display:    'flex',
-          flexDirection: 'column',
-          gap:        '0.5rem',
-        }}>
-          {rimeText && (
-            <p style={{
-              fontFamily:   'var(--font-mono)',
-              fontSize:     '0.42rem',
-              color:        C.textFaint,
-              lineHeight:   1.6,
-              letterSpacing:'0.04em',
-              margin:       0,
-              display:      '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow:     'hidden',
-            }}>
-              {rimeText}
-            </p>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.44rem', color: C.text, letterSpacing: '0.08em' }}>
-                F-GZCP
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.38rem', color: C.textFaint, letterSpacing: '0.08em' }}>
-                A330-203
-              </div>
-            </div>
-            <button
-              onClick={returnToEye}
-              style={{
-                fontFamily:   'var(--font-mono)',
-                fontSize:     '0.38rem',
-                color:        C.textFaint,
-                letterSpacing:'0.1em',
-                background:   'none',
-                border:       `1px solid ${C.border}`,
-                padding:      '3px 8px',
-                cursor:       'pointer',
-                transition:   'all 0.2s',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = C.text }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = C.textFaint }}
-            >
-              ← EYE
-            </button>
+        <div className="rime-aircraft-status">
+          <button type="button" onClick={returnToEye}>
+            <ArrowLeft size={14} />
+            EYE
+          </button>
+          <div>
+            <span>AIRCRAFT</span>
+            <strong>F-GZCP / A330-203</strong>
           </div>
+          <p>{rimeText || 'Dossier incident charge. RIME affiche uniquement les preuves utiles a la decision.'}</p>
         </div>
-      </div>
+      </aside>
 
-      {/* ══ ZONE WIDGETS ══════════════════════════════════════════════════════ */}
-      <div style={{
-        flex:     1,
-        display:  'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        minWidth: 0,
-      }}>
-        <WidgetZone />
-      </div>
+      <main className="rime-investigation-workspace">
+        <header className="rime-workspace-header">
+          <div>
+            <span>MODE INVESTIGATION</span>
+            <h1>Verifier la piste, pas lire un dossier complet.</h1>
+          </div>
+          <div className="rime-workspace-clock">
+            <span>CDG MX OPS</span>
+            <strong>{new Date().toLocaleTimeString('fr-FR')}</strong>
+          </div>
+        </header>
 
+        <nav className="rime-panel-tabs" aria-label="Panels RIME">
+          {panels.map((panel) => (
+            <button
+              type="button"
+              key={panel.id}
+              className={panel.id === activePanel?.id ? 'active' : ''}
+              onClick={() => setActivePanel(panel.id)}
+            >
+              <span>{panel.mode}</span>
+              {panel.title}
+            </button>
+          ))}
+        </nav>
+
+        <section className="rime-workspace-grid">
+          <div className="rime-primary-panel">
+            {activePanel ? <PanelRenderer panel={activePanel} /> : <EmptyPanel />}
+          </div>
+
+          <aside className="rime-secondary-stack">
+            <div className="rime-decision-card">
+              <span>FIL CONDUCTEUR</span>
+              <p>
+                RIME ne remplace pas la documentation. Il expose la preuve, la valeur ou le log qui
+                justifie la prochaine verification.
+              </p>
+            </div>
+
+            {secondaryPanels.map((panel) => (
+              <button
+                type="button"
+                className="rime-secondary-button"
+                key={panel.id}
+                onClick={() => setActivePanel(panel.id)}
+              >
+                <PanelRenderer panel={panel} compact />
+              </button>
+            ))}
+          </aside>
+        </section>
+      </main>
     </motion.div>
+  )
+}
+
+function EmptyPanel() {
+  return (
+    <div className="rime-empty-panel">
+      <span>EN ATTENTE</span>
+      <p>Aucun panel affiche. Pose une question a RIME depuis l'ecran Eye.</p>
+    </div>
   )
 }

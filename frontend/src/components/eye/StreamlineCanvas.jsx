@@ -1,31 +1,28 @@
-import { useRef, useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import * as THREE from 'three' 
-import { streamlineVertexShader, streamlineFragmentShader } from './StreamlineShader'
+import * as THREE from 'three'
 import { useRimeStore } from '../../store/useRimeStore'
+import { streamlineFragmentShader, streamlineVertexShader } from './StreamlineShader'
 
 function StreamlineMesh() {
   const meshRef = useRef()
   const { size } = useThree()
-  const isThinking = useRimeStore((s) => s.isThinking)
+  const isThinking = useRimeStore((state) => state.isThinking)
 
   const uniforms = useMemo(() => ({
-    uTime:       { value: 0 },
-    uIntensity:  { value: 0 },
-    uResolution: { value: new THREE.Vector2(size.width, size.height) }, 
-  }), [])
+    uTime: { value: 0 },
+    uIntensity: { value: 0 },
+    uResolution: { value: new THREE.Vector2(size.width, size.height) },
+  }), [size.width, size.height])
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return
-    const mat = meshRef.current.material
-    mat.uniforms.uTime.value = clock.getElapsedTime()
+    const material = meshRef.current.material
+    material.uniforms.uTime.value = clock.getElapsedTime()
 
-    // Transition douce vers l'état thinking
     const target = isThinking ? 1.0 : 0.0
-    mat.uniforms.uIntensity.value +=
-      (target - mat.uniforms.uIntensity.value) * 0.03
-
-    mat.uniforms.uResolution.value.set(size.width, size.height)
+    material.uniforms.uIntensity.value += (target - material.uniforms.uIntensity.value) * 0.03
+    material.uniforms.uResolution.value.set(size.width, size.height)
   })
 
   return (
@@ -35,8 +32,8 @@ function StreamlineMesh() {
         vertexShader={streamlineVertexShader}
         fragmentShader={streamlineFragmentShader}
         uniforms={uniforms}
-        depthWrite={false} 
-        depthTest={false}  
+        depthWrite={false}
+        depthTest={false}
       />
     </mesh>
   )
