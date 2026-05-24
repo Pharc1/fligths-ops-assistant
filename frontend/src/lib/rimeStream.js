@@ -12,7 +12,15 @@ export async function streamAgentAsk({ question, dossierContext, signal, onEvent
   })
 
   if (!response.ok || !response.body) {
-    throw new Error(`RIME stream unavailable (${response.status})`)
+    let detail = ''
+    try {
+      const errorBody = await response.json()
+      detail = formatApiError(errorBody)
+    } catch {
+      detail = ''
+    }
+
+    throw new Error(detail || `RIME stream unavailable (${response.status})`)
   }
 
   const reader = response.body.getReader()
@@ -35,6 +43,20 @@ export async function streamAgentAsk({ question, dossierContext, signal, onEvent
 
   const tail = parseSseChunk(buffer)
   if (tail) onEvent(tail)
+}
+
+function formatApiError(errorBody) {
+  if (!errorBody?.detail) return ''
+  if (typeof errorBody.detail === 'string') return errorBody.detail
+
+  if (Array.isArray(errorBody.detail)) {
+    return errorBody.detail
+      .map((item) => item?.msg)
+      .filter(Boolean)
+      .join(' ')
+  }
+
+  return ''
 }
 
 function parseSseChunk(chunk) {

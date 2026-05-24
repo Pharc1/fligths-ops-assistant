@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 
 class InteractiveRequest(BaseModel):
-    question: str = Field(min_length=5, max_length=2000)
+    question: str = Field(min_length=1, max_length=2000)
     dossier_context: str | None = Field(default=None, max_length=5000)
 
 
