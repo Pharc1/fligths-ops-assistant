@@ -6,6 +6,8 @@ export const INVESTIGATION_MOCK_PANELS = [
     payload: {
       confidence: 0.91,
       timestamp: '03:14:22 UTC',
+      recommendation:
+        'Priorite: verifier le circuit de chauffage Pitot et confronter la chronologie ADR/ACARS avant de conclure a une obstruction.',
       entries: [
         {
           rimeNote: "Je relie votre signal Pitot a un cas documente : obstruction simultanee, perte de reference vitesse, puis degradation de loi. Ce passage est la preuve qui justifie la piste.",
@@ -15,6 +17,7 @@ export const INVESTIGATION_MOCK_PANELS = [
             label: 'RAPPORT FINAL BEA',
             date: '2012-07-29',
             page: 42,
+            url: 'https://bea.aero/fileadmin/documents/docspa/2009/f-cp090601/pdf/f-cp090601.pdf',
           },
           before: "3.1 DEFAILLANCE DES SONDES PITOT\n\nLes investigations ont etabli que les trois sondes de vitesse se sont obstruees simultanement par des cristaux de glace.\n\n",
           highlight: "Les trois sondes de vitesse se sont obstruees simultanement, privant l'equipage de l'indication de vitesse air pendant 54 secondes consecutives.",
@@ -28,6 +31,7 @@ export const INVESTIGATION_MOCK_PANELS = [
             label: 'MESSAGES ACARS',
             date: '2009-06-01',
             page: 1,
+            url: 'https://bea.aero/fileadmin/documents/docspa/2009/f-cp090601/pdf/f-cp090601.pdf',
           },
           before: 'AIRBUS A330 - MESSAGES ACARS\nSequence enregistree entre 02h10 et 02h14 UTC\n\n02h10:34 - AUTO FLT AP OFF\n02h10:51 - F/CTL ALTN LAW\n\n',
           highlight: 'AUTO FLT AP OFF - F/CTL ALTN LAW - STALL WARNING. Sequence de 28 messages en 3 minutes.',
@@ -58,15 +62,6 @@ export const INVESTIGATION_MOCK_PANELS = [
         { date: '2026-04-02', label: 'Probe heat relay replaced', severity: 'LOW' },
         { date: '2025-12-19', label: 'Intermittent air data fault', severity: 'MED' },
       ],
-    },
-  },
-  {
-    mode: 'notice',
-    title: 'POINT DE DECISION',
-    priority: 'secondary',
-    payload: {
-      text: 'La source soutient une piste de givrage/obstruction. Elle ne suffit pas seule : confronter aux valeurs ADR et au statut chauffage sondes.',
-      tone: 'amber',
     },
   },
 ]

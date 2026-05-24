@@ -1,19 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
-
-const C = {
-  bg: '#080808',
-  panel: 'rgba(255, 248, 232, 0.035)',
-  panelStrong: 'rgba(255, 248, 232, 0.06)',
-  line: 'rgba(230, 222, 202, 0.12)',
-  lineStrong: 'rgba(230, 190, 92, 0.34)',
-  text: 'rgba(238, 232, 216, 0.88)',
-  textSoft: 'rgba(238, 232, 216, 0.62)',
-  textDim: 'rgba(238, 232, 216, 0.38)',
-  amber: 'rgba(232, 184, 74, 0.98)',
-  amberSoft: 'rgba(232, 184, 74, 0.16)',
-  danger: 'rgba(242, 121, 72, 0.82)',
-}
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function PanelRenderer({ panel, compact = false }) {
   if (!panel) return null
@@ -49,6 +35,12 @@ function DocumentPanel({ panel }) {
   const source = entry.source ?? {}
   const confidence = panel.payload?.confidence
   const confLabel = typeof confidence === 'number' ? `${Math.round(confidence * 100)}%` : null
+  const recommendation =
+    panel.payload?.recommendation ??
+    entries[0]?.recommendation ??
+    entries[0]?.rimeNote ??
+    panel.payload?.reasoning ??
+    'Comparer cette source avec les donnees capteurs et l historique avant decision maintenance.'
 
   return (
     <section className="rime-panel-main rime-document-panel">
@@ -63,25 +55,48 @@ function DocumentPanel({ panel }) {
         </div>
       </header>
 
-      <div className="rime-document-layout">
-        <main className="rime-document-reader">
-          <div className="rime-reasoning-line">
-            <span>RIME</span>
-            <p>{entry.rimeNote ?? panel.payload?.reasoning ?? 'Passage retenu comme preuve documentaire.'}</p>
+      <div className="rime-document-body">
+        <div className="rime-recommendation-block">
+          <span>RECOMMANDATION</span>
+          <p>{recommendation}</p>
+        </div>
+
+        <article className="rime-excerpt">
+          {entry.before && <p className="context">{entry.before}</p>}
+          <p className="highlight">{entry.highlight ?? entry.excerpt ?? entry.text}</p>
+          {entry.after && <p className="context">{entry.after}</p>}
+        </article>
+
+        <div className="rime-document-tools">
+          <div className="rime-source-strip" aria-label="Sources documentaires">
+            {entries.map((item, entryIndex) => {
+              const itemSource = item.source ?? {}
+              const isActive = entryIndex === index
+              return (
+                <button
+                  key={`${itemSource.id ?? itemSource.label ?? 'source'}-${entryIndex}`}
+                  type="button"
+                  className={`rime-source-pill ${isActive ? 'active' : ''}`}
+                  onClick={() => setIndex(entryIndex)}
+                >
+                  <span>{itemSource.id ?? panel.payload?.sourceId ?? 'REF'}</span>
+                  <b>{itemSource.label ?? itemSource.title ?? itemSource.id ?? 'Source documentaire'}</b>
+                  <small>{formatSourceMeta(itemSource)}</small>
+                </button>
+              )
+            })}
           </div>
 
-          <article className="rime-excerpt">
-            {entry.before && <p className="context">{entry.before}</p>}
-            <p className="highlight">{entry.highlight ?? entry.excerpt ?? entry.text}</p>
-            {entry.after && <p className="context">{entry.after}</p>}
-          </article>
-        </main>
-
-        <aside className="rime-source-rail">
-          <span className="rime-kicker">SOURCE</span>
-          <h3>{source.label ?? source.title ?? source.id ?? 'Document source'}</h3>
-          <div className="rime-source-token">{source.id ?? panel.payload?.sourceId ?? 'REF'}</div>
-          <p>{formatSourceMeta(source)}</p>
+          <div className="rime-doc-actions">
+            <button type="button" className="rime-inline-action" onClick={() => setModalOpen(true)}>
+              APERCU DOCUMENT
+            </button>
+            {source.url && (
+              <a href={source.url} target="_blank" rel="noreferrer" className="rime-inline-action">
+                LIRE SOURCE
+              </a>
+            )}
+          </div>
 
           {entry.rimeAlert && (
             <div className="rime-alert">
@@ -89,12 +104,7 @@ function DocumentPanel({ panel }) {
               <p>{entry.rimeAlert}</p>
             </div>
           )}
-
-          <button className="rime-outline-button" type="button" onClick={() => setModalOpen(true)}>
-            <ExternalLink size={14} />
-            OUVRIR DOCUMENT
-          </button>
-        </aside>
+        </div>
       </div>
 
       <footer className="rime-panel-footer">
@@ -130,14 +140,16 @@ function TelemetryPanel({ panel }) {
         </div>
         <span className="rime-state-chip">{payload.trend ?? 'live'}</span>
       </header>
-      <div className="rime-metric-hero">
-        <div>
-          <strong>{payload.value ?? '--'}</strong>
-          <span>{payload.unit ?? ''}</span>
+      <div className="rime-telemetry-body">
+        <div className="rime-metric-hero">
+          <div>
+            <strong>{payload.value ?? '--'}</strong>
+            <span>{payload.unit ?? ''}</span>
+          </div>
+          <p>Nominal: {payload.nominal ?? payload.limit ?? 'non fourni'}</p>
         </div>
-        <p>Nominal: {payload.nominal ?? payload.limit ?? 'non fourni'}</p>
+        <Sparkline samples={payload.samples} large />
       </div>
-      <Sparkline samples={payload.samples} large />
     </section>
   )
 }
@@ -258,6 +270,9 @@ function CompactPanel({ panel }) {
 }
 
 function DocumentModal({ entry, source, onClose }) {
+  const previewText = [entry.before, entry.highlight ?? entry.excerpt ?? entry.text, entry.after]
+    .filter(Boolean)
+    .join('\n')
   return (
     <div className="rime-doc-modal" role="presentation" onClick={onClose}>
       <div className="rime-doc-modal-card" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
@@ -268,10 +283,15 @@ function DocumentModal({ entry, source, onClose }) {
           </div>
           <button type="button" onClick={onClose}>FERMER</button>
         </header>
+        {source.url && (
+          <div className="rime-doc-modal-link">
+            <a href={source.url} target="_blank" rel="noreferrer">
+              Ouvrir le document original dans un nouvel onglet
+            </a>
+          </div>
+        )}
         <pre>
-          <span>{entry.before}</span>
-          <mark>{entry.highlight ?? entry.excerpt ?? entry.text}</mark>
-          <span>{entry.after}</span>
+          <span>{previewText}</span>
         </pre>
       </div>
     </div>

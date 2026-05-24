@@ -45,6 +45,11 @@ button {
 }
 
 .rime-eye-input {
+  --rime-input-text: rgba(26, 26, 28, 0.86);
+  --rime-input-muted: rgba(26, 26, 28, 0.48);
+  --rime-input-placeholder: rgba(26, 26, 28, 0.42);
+  --rime-input-icon: rgba(26, 26, 28, 0.48);
+  --rime-input-icon-hover: rgba(26, 26, 28, 0.86);
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -57,17 +62,28 @@ button {
   box-shadow: 0 16px 48px rgba(20, 18, 14, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
+.rime-eye-input.tone-dark {
+  --rime-input-text: var(--rime-text);
+  --rime-input-muted: var(--rime-text-dim);
+  --rime-input-placeholder: rgba(238, 232, 216, 0.42);
+  --rime-input-icon: rgba(238, 232, 216, 0.5);
+  --rime-input-icon-hover: rgba(238, 232, 216, 0.88);
+  background: rgba(8, 8, 8, 0.68);
+  border-color: var(--rime-line);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.26), inset 0 0 0 1px rgba(238, 232, 216, 0.04);
+}
+
 .rime-eye-input > span {
   font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: rgba(26, 26, 28, 0.48);
+  color: var(--rime-input-muted);
 }
 
 .rime-eye-input input {
   flex: 1;
   background: transparent;
   border: 0;
-  color: rgba(26, 26, 28, 0.86);
+  color: var(--rime-input-text);
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.04em;
@@ -75,7 +91,7 @@ button {
 }
 
 .rime-eye-input input::placeholder {
-  color: rgba(26, 26, 28, 0.42);
+  color: var(--rime-input-placeholder);
 }
 
 .rime-eye-input button {
@@ -98,85 +114,12 @@ button {
   background:
     radial-gradient(circle at 11% 18%, rgba(232, 184, 74, 0.08), transparent 30%),
     linear-gradient(135deg, #050505 0%, #0b0a08 45%, #050505 100%);
-  display: grid;
-  grid-template-columns: clamp(460px, 40vw, 690px) minmax(0, 1fr);
+  display: block;
   overflow: hidden;
   color: var(--rime-text);
 }
 
-.rime-visual-rail {
-  border-right: 1px solid var(--rime-line);
-  min-width: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  background:
-    linear-gradient(rgba(255, 248, 232, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 248, 232, 0.035) 1px, transparent 1px),
-    rgba(255, 248, 232, 0.018);
-  background-size: 44px 44px;
-}
-
-.rime-aircraft-stage {
-  position: relative;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.rime-aircraft-stage::after {
-  content: "";
-  position: absolute;
-  inset: 12%;
-  border: 1px solid rgba(232, 184, 74, 0.16);
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(0.2px);
-}
-
-.rime-eye-chip {
-  position: absolute;
-  top: 22px;
-  left: 22px;
-  z-index: 4;
-  width: 88px;
-  height: 88px;
-  border: 1px solid rgba(238, 232, 216, 0.12);
-  background: rgba(8, 8, 8, 0.42);
-  backdrop-filter: blur(8px);
-}
-
-.rime-aircraft-grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.36) 100%);
-}
-
-.rime-aircraft-status {
-  border-top: 1px solid var(--rime-line);
-  padding: 18px 22px 20px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 14px 18px;
-  background: rgba(8, 8, 8, 0.72);
-}
-
-.rime-aircraft-status button {
-  grid-row: span 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--rime-line);
-  background: transparent;
-  color: var(--rime-text-soft);
-  font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.16em;
-  cursor: pointer;
-}
-
-.rime-aircraft-status span,
+.rime-header-topline span,
 .rime-kicker,
 .rime-workspace-header span,
 .rime-compact-head span {
@@ -188,45 +131,109 @@ button {
   text-transform: uppercase;
 }
 
-.rime-aircraft-status strong {
-  color: var(--rime-text);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-}
-
-.rime-aircraft-status p {
-  grid-column: 2;
-  color: var(--rime-text-soft);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.65;
-}
-
 .rime-investigation-workspace {
   min-width: 0;
+  height: 100%;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .rime-workspace-header {
-  padding: 24px 30px 18px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--rime-line);
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
+  background:
+    linear-gradient(90deg, rgba(255, 248, 232, 0.04) 1px, transparent 1px),
+    rgba(255, 248, 232, 0.015);
+  background-size: 44px 44px;
+}
+
+.rime-context-dock {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rime-eye-return {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  border: 1px solid var(--rime-line);
+  background: rgba(8, 8, 8, 0.42);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.rime-eye-return > span {
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  color: var(--rime-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+}
+
+.rime-aircraft-context {
+  width: 214px;
+  height: 86px;
+  border: 1px solid var(--rime-line);
+  background: rgba(255, 248, 232, 0.018);
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 6px 4px;
+}
+
+.rime-aircraft-context > div:first-child {
+  min-width: 0;
+}
+
+.rime-aircraft-context strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--rime-text);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+}
+
+.rime-header-main {
+  min-width: 0;
+  max-width: 920px;
+}
+
+.rime-header-topline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
 .rime-workspace-header h1 {
-  margin-top: 8px;
-  max-width: 760px;
+  margin-top: 5px;
   color: var(--rime-text);
   font-family: var(--font-interface);
-  font-size: clamp(1.65rem, 2.4vw, 3rem);
+  font-size: 1.55rem;
   font-weight: 520;
-  letter-spacing: -0.03em;
-  line-height: 0.98;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.rime-workspace-header p {
+  margin-top: 7px;
+  color: var(--rime-text-soft);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
 }
 
 .rime-workspace-clock {
@@ -241,64 +248,38 @@ button {
   letter-spacing: 0.08em;
 }
 
-.rime-panel-tabs {
-  display: flex;
-  gap: 8px;
-  padding: 12px 30px;
-  border-bottom: 1px solid var(--rime-line);
-  overflow-x: auto;
-}
-
-.rime-panel-tabs button {
-  flex: 0 0 auto;
-  min-width: 150px;
-  max-width: 260px;
-  text-align: left;
-  border: 1px solid var(--rime-line);
-  background: rgba(255, 248, 232, 0.025);
-  color: var(--rime-text-soft);
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-}
-
-.rime-panel-tabs button span {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--rime-text-dim);
-  font-size: 0.54rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.rime-panel-tabs button.active {
-  border-color: var(--rime-line-strong);
-  background: var(--rime-amber-soft);
-  color: var(--rime-text);
-}
-
-.rime-workspace-grid {
+.rime-adaptive-canvas {
   min-height: 0;
-  padding: 22px 30px 26px;
+  padding: 16px 24px 20px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
   gap: 18px;
+  align-content: start;
+  overflow: auto;
+}
+
+.rime-adaptive-canvas.is-solo {
+  grid-template-columns: minmax(0, 1120px);
+  justify-content: center;
+}
+
+.rime-adaptive-canvas.mode-telemetry.is-solo,
+.rime-adaptive-canvas.mode-history.is-solo {
+  grid-template-columns: minmax(0, 1240px);
 }
 
 .rime-primary-panel,
-.rime-secondary-stack {
+.rime-support-rail {
   min-height: 0;
 }
 
 .rime-panel-main {
-  height: 100%;
-  min-height: 0;
+  height: auto;
+  min-height: min(520px, calc(100vh - 224px));
   border: 1px solid var(--rime-line);
   background: var(--rime-panel);
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
 }
 
@@ -307,16 +288,16 @@ button {
   align-items: start;
   justify-content: space-between;
   gap: 18px;
-  padding: 20px 22px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--rime-line);
 }
 
 .rime-panel-header h2 {
-  margin-top: 7px;
+  margin-top: 6px;
   color: var(--rime-text);
-  font-size: clamp(1.25rem, 1.7vw, 2.1rem);
+  font-size: 1.45rem;
   font-weight: 560;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .rime-header-meta {
@@ -328,77 +309,125 @@ button {
   letter-spacing: 0.12em;
 }
 
-.rime-document-layout {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 292px;
-}
-
-.rime-document-reader {
+.rime-document-body {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  border-right: 1px solid var(--rime-line);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
 }
 
-.rime-reasoning-line {
-  padding: 20px 24px;
+.rime-recommendation-block {
+  padding: 16px 22px;
   border-bottom: 1px solid var(--rime-line);
   background: rgba(255, 248, 232, 0.018);
 }
 
-.rime-reasoning-line span {
+.rime-recommendation-block span {
   color: var(--rime-amber);
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.2em;
 }
 
-.rime-reasoning-line p {
-  margin-top: 8px;
-  color: var(--rime-text-soft);
+.rime-recommendation-block p {
+  margin-top: 7px;
+  color: var(--rime-text);
   font-family: var(--font-mono);
-  font-size: clamp(0.92rem, 1.08vw, 1.08rem);
-  line-height: 1.7;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .rime-excerpt {
-  overflow-y: auto;
-  padding: 26px 30px 34px;
+  overflow: auto;
+  padding: 22px 28px 24px;
   font-family: var(--font-mono);
-  line-height: 1.9;
+  line-height: 1.75;
 }
 
 .rime-excerpt .context {
   color: var(--rime-text-dim);
-  font-size: clamp(0.86rem, 0.95vw, 1rem);
+  font-size: 0.9rem;
   white-space: pre-wrap;
 }
 
 .rime-excerpt .highlight {
-  margin: 18px 0;
+  margin: 16px 0;
   color: var(--rime-amber);
-  font-size: clamp(1.08rem, 1.28vw, 1.34rem);
-  line-height: 1.75;
+  font-size: 1.05rem;
+  line-height: 1.65;
   background: rgba(232, 184, 74, 0.12);
   border-left: 3px solid var(--rime-amber);
-  padding: 18px 20px;
+  padding: 15px 18px;
   white-space: pre-wrap;
 }
 
-.rime-source-rail {
-  padding: 22px;
+.rime-document-tools {
+  border-top: 1px solid var(--rime-line);
+  padding: 12px 16px;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 248, 232, 0.018);
 }
 
-.rime-source-rail h3 {
+.rime-source-strip {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.rime-source-pill {
+  flex: 0 0 min(260px, 46%);
+  border: 1px solid var(--rime-line);
+  background: rgba(255, 248, 232, 0.025);
+  color: var(--rime-text-soft);
+  padding: 9px 10px;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+}
+
+.rime-source-pill.active {
+  border-color: var(--rime-line-strong);
+  background: var(--rime-amber-soft);
+}
+
+.rime-source-pill span,
+.rime-source-pill small {
+  color: var(--rime-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.rime-source-pill b {
   color: var(--rime-text);
-  font-size: 1.05rem;
-  line-height: 1.25;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.rime-doc-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rime-inline-action {
+  border: 1px solid var(--rime-line);
+  background: transparent;
+  padding: 5px 8px;
+  color: var(--rime-text-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.11em;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .rime-source-token,
@@ -411,13 +440,7 @@ button {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.1em;
-}
-
-.rime-source-rail p {
-  color: var(--rime-text-dim);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.55;
+  word-break: break-word;
 }
 
 .rime-alert {
@@ -457,6 +480,7 @@ button {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.12em;
+  text-decoration: none;
 }
 
 .rime-panel-footer {
@@ -493,38 +517,40 @@ button {
   background: var(--rime-amber);
 }
 
-.rime-secondary-stack {
+.rime-support-rail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: calc(100vh - 224px);
   display: flex;
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
 }
 
-.rime-decision-card,
+.rime-investigation-prompt {
+  padding: 0 24px 18px;
+  width: min(820px, 100%);
+  justify-self: center;
+}
+
+.rime-support-label {
+  color: var(--rime-text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
 .rime-compact-card,
 .rime-secondary-button {
   width: 100%;
 }
 
-.rime-decision-card,
 .rime-compact-card {
   border: 1px solid var(--rime-line);
   background: var(--rime-panel);
   padding: 16px;
-}
-
-.rime-decision-card span {
-  color: var(--rime-amber);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-}
-
-.rime-decision-card p {
-  margin-top: 9px;
-  color: var(--rime-text-soft);
-  font-size: 0.86rem;
-  line-height: 1.55;
 }
 
 .rime-secondary-button {
@@ -566,7 +592,7 @@ button {
   color: var(--rime-text);
   font-family: var(--font-mono);
   font-size: 2.2rem;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
 }
 
 .rime-compact-metric span,
@@ -601,9 +627,9 @@ button {
 }
 
 .rime-sparkline.large {
-  height: 180px;
-  margin: 26px;
-  width: calc(100% - 52px);
+  height: 240px;
+  margin: 0;
+  width: 100%;
 }
 
 .rime-sparkline polyline {
@@ -613,8 +639,15 @@ button {
   vector-effect: non-scaling-stroke;
 }
 
+.rime-telemetry-body {
+  padding: 34px;
+  display: grid;
+  align-content: center;
+  gap: 30px;
+}
+
 .rime-metric-hero {
-  padding: 34px 34px 0;
+  padding: 0;
 }
 
 .rime-metric-hero div {
@@ -751,6 +784,18 @@ button {
   border-bottom: 1px solid var(--rime-line);
 }
 
+.rime-doc-modal-link {
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--rime-line);
+}
+
+.rime-doc-modal-link a {
+  color: var(--rime-amber);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+
 .rime-doc-modal-card header span,
 .rime-doc-modal-card button {
   color: var(--rime-text-dim);
@@ -789,20 +834,32 @@ button {
 }
 
 @media (max-width: 1100px) {
-  .rime-investigation-page {
-    grid-template-columns: 1fr;
-  }
-
-  .rime-visual-rail {
+  .rime-aircraft-context {
     display: none;
   }
 
-  .rime-workspace-grid {
+  .rime-adaptive-canvas,
+  .rime-adaptive-canvas.is-solo,
+  .rime-adaptive-canvas.mode-telemetry.is-solo,
+  .rime-adaptive-canvas.mode-history.is-solo {
     grid-template-columns: 1fr;
   }
 
-  .rime-secondary-stack {
+  .rime-support-rail {
+    position: static;
+    max-height: none;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .rime-workspace-clock {
+    display: none;
+  }
+
+  .rime-eye-return {
+    width: 78px;
+    height: 78px;
   }
 }
