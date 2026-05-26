@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import AircraftViewer from '../components/eye/AircraftViewer'
 import TheEye from '../components/eye/TheEye'
+import AgentTrace from '../components/widgets/AgentTrace'
 import PanelRenderer from '../components/widgets/PanelRenderer'
 import RimePromptInput from '../components/widgets/RimePromptInput'
 import { useRimeAsk } from '../hooks/useRimeAsk'
@@ -84,6 +85,7 @@ export default function InvestigationPage() {
         </section>
 
         <div className="rime-investigation-prompt">
+          <AgentTrace />
           <RimePromptInput
             input={input}
             setInput={setInput}

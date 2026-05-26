@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import TheEye from '../components/eye/TheEye'
+import AgentTrace from '../components/widgets/AgentTrace'
 import RimePromptInput from '../components/widgets/RimePromptInput'
 import { useRimeAsk } from '../hooks/useRimeAsk'
 import { useRimeStore } from '../store/useRimeStore'
@@ -80,6 +81,10 @@ export default function EyePage() {
       </motion.div>
 
       <TheEye />
+
+      {!activeWidget && (
+        <AgentTrace floating />
+      )}
 
       {!activeWidget && (
         <div

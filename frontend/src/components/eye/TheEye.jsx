@@ -41,6 +41,23 @@ export default function TheEye({ miniaturized = false }) {
         transform: 'translate(-50%, -50%)',
         zIndex:    10,
       }}>
+        {isThinking && !widgetOpen && !miniaturized && (
+          <MotionDiv
+            className="rime-eye-thinking-orbit"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0.18, 0.62, 0.18],
+              scale: [1, 1.055, 1],
+            }}
+            transition={{ duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              inset: '-18px',
+              borderRadius: '50%',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
         <MotionDiv
           initial={miniaturized ? false : { opacity: 0, scale: 0 }}
           animate={miniaturized ? false : {
@@ -79,11 +96,13 @@ export default function TheEye({ miniaturized = false }) {
           {!miniaturized && rimeText && !widgetOpen && (
             <div style={{
               width:     `${CIRCLE_RADIUS_VH * 2}vh`,
-              maxWidth:  '320px',
+              maxWidth:  '390px',
               textAlign: 'center',
               color:     'rgba(255,255,255,0.85)',
-              transform: 'translateY(-30%)',
-              padding:   '0 1rem',
+              transform: 'translateY(-18%)',
+              padding:   '0 1.25rem',
+              maxHeight: '24vh',
+              overflow: 'hidden',
             }}>
               <Typewriter text={rimeText} />
             </div>

@@ -29,10 +29,16 @@ function documentWidgetToPanel(data) {
   })
 }
 
+function createTraceId(step) {
+  return `${step.kind ?? 'step'}-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
 export const useRimeStore = create((set) => ({
   phase: 'intro',
   rimeText: '',
   isThinking: false,
+  agentActivity: null,
+  agentTrace: [],
 
   widgets: {},
   activeWidget: null,
@@ -42,6 +48,20 @@ export const useRimeStore = create((set) => ({
   setPhase: (phase) => set({ phase }),
   setRimeText: (text) => set({ rimeText: text }),
   setThinking: (value) => set({ isThinking: value }),
+  setAgentActivity: (activity) => set({ agentActivity: activity }),
+  resetAgentTrace: () => set({ agentTrace: [], agentActivity: null }),
+  pushAgentTrace: (step) =>
+    set((state) => ({
+      agentTrace: [
+        {
+          id: createTraceId(step),
+          status: 'running',
+          timestamp: new Date().toLocaleTimeString('fr-FR'),
+          ...step,
+        },
+        ...state.agentTrace,
+      ].slice(0, 7),
+    })),
 
   addPanel: (panelData) => {
     const panel = normalizePanel(panelData)
@@ -87,6 +107,8 @@ export const useRimeStore = create((set) => ({
       activePanelId: null,
       rimeText: '',
       isThinking: false,
+      agentActivity: null,
+      agentTrace: [],
     }),
 
   enterProcedure: () => set({ phase: 'procedure', activeWidget: null }),

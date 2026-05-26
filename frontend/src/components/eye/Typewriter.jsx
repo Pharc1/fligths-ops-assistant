@@ -49,10 +49,10 @@ export default function Typewriter({ text, speed = 32 }) {
       style={{
         fontFamily: 'var(--font-mono)',
         fontWeight: 400,
-        fontSize: '1.35rem',
-        letterSpacing: '0.04em',
+        fontSize: 'clamp(0.76rem, 1.02vw, 0.98rem)',
+        letterSpacing: '0.035em',
         color: 'rgba(255,255,255,0.82)',
-        lineHeight: 1.7,
+        lineHeight: 1.55,
         display: 'inline-block',
       }}
     >
