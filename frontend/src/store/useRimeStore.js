@@ -30,7 +30,7 @@ function documentWidgetToPanel(data) {
 }
 
 function createTraceId(step) {
-  return `${step.kind ?? 'step'}-${Date.now()}-${Math.random().toString(16).slice(2)}`
+  return `${step.key ?? step.kind ?? 'step'}-${Date.now()}-${Math.random().toString(16).slice(2)}`
 }
 
 export const useRimeStore = create((set) => ({
@@ -39,6 +39,7 @@ export const useRimeStore = create((set) => ({
   isThinking: false,
   agentActivity: null,
   agentTrace: [],
+  agentTraceOpen: false,
 
   widgets: {},
   activeWidget: null,
@@ -49,18 +50,12 @@ export const useRimeStore = create((set) => ({
   setRimeText: (text) => set({ rimeText: text }),
   setThinking: (value) => set({ isThinking: value }),
   setAgentActivity: (activity) => set({ agentActivity: activity }),
-  resetAgentTrace: () => set({ agentTrace: [], agentActivity: null }),
-  pushAgentTrace: (step) =>
+  setAgentTraceOpen: (open) => set({ agentTraceOpen: open }),
+  toggleAgentTrace: () => set((state) => ({ agentTraceOpen: !state.agentTraceOpen })),
+  resetAgentTrace: () => set({ agentTrace: [], agentActivity: null, agentTraceOpen: false }),
+  upsertAgentTrace: (step) =>
     set((state) => ({
-      agentTrace: [
-        {
-          id: createTraceId(step),
-          status: 'running',
-          timestamp: new Date().toLocaleTimeString('fr-FR'),
-          ...step,
-        },
-        ...state.agentTrace,
-      ].slice(0, 7),
+      agentTrace: upsertTraceStep(state.agentTrace, step),
     })),
 
   addPanel: (panelData) => {
@@ -109,7 +104,30 @@ export const useRimeStore = create((set) => ({
       isThinking: false,
       agentActivity: null,
       agentTrace: [],
+      agentTraceOpen: false,
     }),
 
   enterProcedure: () => set({ phase: 'procedure', activeWidget: null }),
 }))
+
+function upsertTraceStep(steps, step) {
+  const key = step.key ?? step.kind ?? createTraceId(step)
+  const existingIndex = steps.findIndex((item) => item.key === key)
+  const nextStep = {
+    id: existingIndex >= 0 ? steps[existingIndex].id : createTraceId({ ...step, key }),
+    key,
+    status: 'running',
+    timestamp: new Date().toLocaleTimeString('fr-FR'),
+    ...step,
+  }
+
+  if (existingIndex < 0) {
+    return [nextStep, ...steps].slice(0, 4)
+  }
+
+  return steps.map((item, index) => (
+    index === existingIndex
+      ? { ...item, ...nextStep, id: item.id, timestamp: nextStep.timestamp }
+      : item
+  ))
+}

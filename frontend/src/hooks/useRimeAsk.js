@@ -6,11 +6,12 @@ import { useRimeStore } from '../store/useRimeStore'
 export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
   const [input, setInput] = useState('')
   const hasEnteredInvestigation = useRef(false)
+  const clearTraceTimer = useRef(null)
 
   const setRimeText = useRimeStore((state) => state.setRimeText)
   const setThinking = useRimeStore((state) => state.setThinking)
   const setAgentActivity = useRimeStore((state) => state.setAgentActivity)
-  const pushAgentTrace = useRimeStore((state) => state.pushAgentTrace)
+  const upsertAgentTrace = useRimeStore((state) => state.upsertAgentTrace)
   const resetAgentTrace = useRimeStore((state) => state.resetAgentTrace)
   const addPanel = useRimeStore((state) => state.addPanel)
   const openPanels = useRimeStore((state) => state.openPanels)
@@ -29,17 +30,20 @@ export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
 
     setInput('')
     hasEnteredInvestigation.current = false
+    window.clearTimeout(clearTraceTimer.current)
     resetAgentTrace()
 
     if (question.toLowerCase().includes('affiche') || question.toLowerCase().includes('demo')) {
       setRimeText("J'ai isole une preuve documentaire, une valeur capteur et un historique court.")
-      setAgentActivity({ label: 'Panneaux de demonstration', phase: 'done' })
-      pushAgentTrace({
+      setAgentActivity({ label: 'Panneaux demo', phase: 'tool' })
+      upsertAgentTrace({
+        key: 'demo-panel',
         kind: 'panel',
         label: 'Demo panels',
         detail: 'document + telemetry + history',
         status: 'done',
       })
+      scheduleTraceClear(resetAgentTrace, clearTraceTimer)
       openPanels(INVESTIGATION_MOCK_PANELS)
       scheduleInvestigation()
       return
@@ -47,19 +51,13 @@ export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
 
     setThinking(true)
     setRimeText('')
-    setAgentActivity({ label: 'Analyse en cours', phase: 'thinking' })
-    pushAgentTrace({
-      kind: 'question',
-      label: 'Question recue',
-      detail: question,
-      status: 'done',
-    })
+    setAgentActivity({ label: 'Raisonnement', phase: 'thinking' })
 
     try {
       await streamAgentAsk({
         question,
         onEvent: (streamEvent) => {
-          trackStreamEvent(streamEvent, { setAgentActivity, pushAgentTrace })
+          trackStreamEvent(streamEvent, { setAgentActivity, upsertAgentTrace })
 
           if (streamEvent.type === 'assistant_delta') {
             setRimeText(streamEvent.content ?? streamEvent.data?.content ?? '')
@@ -76,15 +74,16 @@ export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
 
           if (streamEvent.type === 'result') {
             setThinking(false)
-            setAgentActivity({ label: 'Analyse prete', phase: 'done' })
             const content = streamEvent.content ?? streamEvent.data?.content
             if (content) setRimeText(content)
+            scheduleTraceClear(resetAgentTrace, clearTraceTimer)
           }
 
           if (streamEvent.type === 'error') {
             setThinking(false)
             setAgentActivity({ label: 'Erreur agent', phase: 'error' })
             setRimeText(streamEvent.message ?? 'Erreur agent RIME.')
+            scheduleTraceClear(resetAgentTrace, clearTraceTimer, 2600)
           }
         },
       })
@@ -92,6 +91,7 @@ export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
       setThinking(false)
       setAgentActivity({ label: 'Backend indisponible', phase: 'error' })
       setRimeText(`Backend indisponible: ${error.message}`)
+      scheduleTraceClear(resetAgentTrace, clearTraceTimer, 2600)
     }
   }
 
@@ -102,23 +102,18 @@ export function useRimeAsk({ enterInvestigationOnPanel = false } = {}) {
   }
 }
 
-function trackStreamEvent(streamEvent, { setAgentActivity, pushAgentTrace }) {
+function trackStreamEvent(streamEvent, { setAgentActivity, upsertAgentTrace }) {
   if (streamEvent.type === 'system_init') {
-    setAgentActivity({ label: 'Selection skill / tools', phase: 'thinking' })
-    pushAgentTrace({
-      kind: 'system',
-      label: 'Initialisation agent',
-      detail: [streamEvent.intent, ...(streamEvent.skills ?? [])].filter(Boolean).join(' / '),
-      status: 'done',
-    })
+    setAgentActivity({ label: 'Skills / tools', phase: 'thinking' })
   }
 
   if (streamEvent.type === 'message_start') {
     setAgentActivity({ label: 'Raisonnement', phase: 'thinking' })
-    pushAgentTrace({
+    upsertAgentTrace({
+      key: 'reasoning',
       kind: 'reasoning',
       label: 'Raisonnement',
-      detail: streamEvent.message_id ?? 'tour agent',
+      detail: streamEvent.message_id ?? 'tour courant',
       status: 'running',
     })
   }
@@ -130,7 +125,8 @@ function trackStreamEvent(streamEvent, { setAgentActivity, pushAgentTrace }) {
   if (streamEvent.type === 'tool_use') {
     const toolLabel = labelTool(streamEvent.toolName)
     setAgentActivity({ label: toolLabel, phase: 'tool' })
-    pushAgentTrace({
+    upsertAgentTrace({
+      key: toolKey(streamEvent),
       kind: 'tool',
       label: toolLabel,
       detail: summarizeToolInput(streamEvent.input),
@@ -140,34 +136,29 @@ function trackStreamEvent(streamEvent, { setAgentActivity, pushAgentTrace }) {
 
   if (streamEvent.type === 'tool_result') {
     const toolLabel = labelTool(streamEvent.toolName)
-    pushAgentTrace({
-      kind: 'tool_result',
-      label: streamEvent.isError ? `${toolLabel} echoue` : `${toolLabel} termine`,
-      detail: streamEvent.isError ? 'erreur tool' : 'resultat recu',
+    upsertAgentTrace({
+      key: toolKey(streamEvent),
+      kind: 'tool',
+      label: toolLabel,
+      ...(streamEvent.isError ? { detail: 'echec tool' } : {}),
       status: streamEvent.isError ? 'error' : 'done',
     })
   }
 
   if (streamEvent.type === 'panel') {
-    const panel = streamEvent.panel ?? streamEvent.data?.panel
     setAgentActivity({ label: 'Preuve preparee', phase: 'tool' })
-    pushAgentTrace({
-      kind: 'panel',
-      label: `Panel ${panel?.mode ?? 'UI'}`,
-      detail: panel?.title ?? 'affichage decision',
-      status: 'done',
-    })
   }
 
   if (streamEvent.type === 'workflow') {
     setAgentActivity({ label: 'Plan mis a jour', phase: 'tool' })
-    pushAgentTrace({
-      kind: 'workflow',
-      label: 'Planner',
-      detail: 'sequence actualisee',
-      status: 'done',
-    })
   }
+}
+
+function scheduleTraceClear(resetAgentTrace, clearTraceTimer, delay = 1500) {
+  window.clearTimeout(clearTraceTimer.current)
+  clearTraceTimer.current = window.setTimeout(() => {
+    resetAgentTrace()
+  }, delay)
 }
 
 function labelTool(toolName) {
@@ -188,4 +179,8 @@ function summarizeToolInput(input) {
   if (input.mode) return `${input.mode}${input.title ? ` / ${input.title}` : ''}`
   if (input.action) return input.action
   return Object.keys(input).slice(0, 3).join(', ')
+}
+
+function toolKey(streamEvent) {
+  return `tool:${streamEvent.toolUseId ?? streamEvent.toolName ?? 'unknown'}`
 }

@@ -125,11 +125,6 @@ button {
   animation: rime-orbit-spin 8s linear infinite;
 }
 
-.rime-agent-trace {
-  width: min(300px, 24vw);
-  pointer-events: none;
-}
-
 .rime-agent-trace.is-floating {
   position: absolute;
   top: calc(50% - 220px);
@@ -142,166 +137,238 @@ button {
   margin-bottom: 10px;
 }
 
-.rime-agent-activity {
-  display: grid;
-  grid-template-columns: 10px minmax(0, 1fr);
-  gap: 12px;
+.rime-agent-trace {
+  width: auto;
+  pointer-events: auto;
+}
+
+.rime-agent-trace.is-floating {
+  width: auto;
+}
+
+.rime-agent-trace-toggle {
+  height: 30px;
+  min-width: 30px;
+  display: inline-grid;
+  grid-template-columns: 6px 0 12px;
   align-items: center;
-  padding: 12px 13px;
-  border: 1px solid rgba(26, 26, 28, 0.12);
-  background: rgba(240, 237, 232, 0.24);
+  gap: 7px;
+  padding: 0 8px;
+  border: 1px solid rgba(26, 26, 28, 0.14);
+  border-left-color: rgba(26, 26, 28, 0.42);
+  background:
+    linear-gradient(135deg, rgba(240, 237, 232, 0.2), rgba(240, 237, 232, 0.06)),
+    rgba(240, 237, 232, 0.08);
   backdrop-filter: blur(10px);
-  color: rgba(26, 26, 28, 0.66);
+  color: rgba(26, 26, 28, 0.56);
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    grid-template-columns 220ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease;
 }
 
-.rime-agent-activity i {
-  width: 8px;
-  height: 8px;
+.rime-agent-trace.is-open .rime-agent-trace-toggle,
+.rime-agent-trace-toggle:hover,
+.rime-agent-trace-toggle:focus-visible {
+  grid-template-columns: 6px minmax(102px, auto) 12px;
+  background:
+    linear-gradient(135deg, rgba(240, 237, 232, 0.3), rgba(240, 237, 232, 0.08)),
+    rgba(240, 237, 232, 0.1);
+  border-color: rgba(26, 26, 28, 0.24);
+}
+
+.rime-agent-trace-toggle i {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(26, 26, 28, 0.38);
-  box-shadow: 0 0 0 0 rgba(26, 26, 28, 0.24);
+  background: rgba(26, 26, 28, 0.46);
 }
 
-.rime-agent-activity.phase-thinking i,
-.rime-agent-activity.phase-tool i {
-  background: rgba(26, 26, 28, 0.78);
+.rime-agent-trace-toggle.phase-thinking i,
+.rime-agent-trace-toggle.phase-tool i {
+  background: rgba(26, 26, 28, 0.82);
   animation: rime-status-pulse 1.5s ease-out infinite;
 }
 
-.rime-agent-activity.phase-done i {
-  background: rgba(92, 122, 82, 0.72);
-}
-
-.rime-agent-activity.phase-error i {
+.rime-agent-trace-toggle.phase-error i {
   background: rgba(168, 70, 48, 0.86);
 }
 
-.rime-agent-activity span,
-.rime-agent-step span {
-  display: block;
+.rime-agent-trace-toggle span {
+  min-width: 0;
+  max-width: 220px;
+  color: rgba(26, 26, 28, 0.58);
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.54rem;
   letter-spacing: 0.18em;
+  line-height: 1;
   text-transform: uppercase;
-  color: rgba(26, 26, 28, 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.rime-agent-activity strong {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  color: rgba(26, 26, 28, 0.68);
+.rime-agent-trace-toggle svg {
+  opacity: 0.58;
+  transition: transform 180ms ease;
 }
 
-.rime-agent-steps {
-  margin-top: 8px;
-  display: grid;
-  gap: 6px;
+.rime-agent-trace.is-open .rime-agent-trace-toggle svg {
+  transform: rotate(90deg);
 }
 
-.rime-agent-step {
-  position: relative;
-  padding: 9px 11px 9px 15px;
-  border-left: 1px solid rgba(26, 26, 28, 0.16);
-  background: rgba(240, 237, 232, 0.14);
+.rime-agent-drawer {
+  width: min(280px, 22vw);
+  margin-top: 6px;
+  padding: 9px 0 8px 11px;
+  border-left: 1px solid rgba(26, 26, 28, 0.18);
+  background: linear-gradient(90deg, rgba(240, 237, 232, 0.12), rgba(240, 237, 232, 0));
   backdrop-filter: blur(8px);
 }
 
-.rime-agent-step::before {
+.rime-agent-drawer .rime-agent-activity {
+  display: block;
+  padding: 0 0 8px;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.rime-agent-drawer .rime-agent-activity span,
+.rime-agent-drawer .rime-agent-step span {
+  color: rgba(26, 26, 28, 0.32);
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.rime-agent-drawer .rime-agent-activity strong,
+.rime-agent-drawer .rime-agent-step strong {
+  display: block;
+  margin-top: 3px;
+  color: rgba(26, 26, 28, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.07em;
+}
+
+.rime-agent-drawer .rime-agent-steps {
+  margin-top: 0;
+  display: grid;
+  gap: 0;
+}
+
+.rime-agent-drawer .rime-agent-step {
+  position: relative;
+  padding: 6px 0 6px 12px;
+  border-left: 1px solid rgba(26, 26, 28, 0.14);
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.rime-agent-drawer .rime-agent-step::before {
   content: "";
   position: absolute;
-  top: 14px;
-  left: -4px;
-  width: 7px;
-  height: 7px;
+  top: 12px;
+  left: -3px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: rgba(26, 26, 28, 0.28);
 }
 
-.rime-agent-step.status-running::before {
-  background: rgba(26, 26, 28, 0.74);
+.rime-agent-drawer .rime-agent-step.status-running::before {
+  background: rgba(26, 26, 28, 0.78);
   animation: rime-status-pulse 1.4s ease-out infinite;
 }
 
-.rime-agent-step.status-done::before {
+.rime-agent-drawer .rime-agent-step.status-done::before {
   background: rgba(92, 122, 82, 0.72);
 }
 
-.rime-agent-step.status-error::before {
+.rime-agent-drawer .rime-agent-step.status-error::before {
   background: rgba(168, 70, 48, 0.86);
 }
 
-.rime-agent-step strong {
-  display: block;
-  margin-top: 4px;
-  color: rgba(26, 26, 28, 0.64);
+.rime-agent-drawer .rime-agent-step p {
+  margin-top: 3px;
+  color: rgba(26, 26, 28, 0.38);
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-}
-
-.rime-agent-step p {
-  margin-top: 4px;
-  color: rgba(26, 26, 28, 0.4);
-  font-family: var(--font-mono);
-  font-size: 0.61rem;
-  line-height: 1.45;
+  font-size: 0.54rem;
+  line-height: 1.35;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.rime-agent-trace.is-dock .rime-agent-activity {
+.rime-agent-trace.is-dock .rime-agent-trace-toggle {
   border-color: var(--rime-line);
-  background: rgba(8, 8, 8, 0.62);
+  border-left-color: var(--rime-amber);
+  background:
+    linear-gradient(135deg, rgba(232, 184, 74, 0.12), rgba(255, 248, 232, 0.02)),
+    rgba(8, 8, 8, 0.58);
 }
 
-.rime-agent-trace.is-dock .rime-agent-activity i {
-  background: rgba(238, 232, 216, 0.46);
+.rime-agent-trace.is-dock .rime-agent-trace-toggle span,
+.rime-agent-trace.is-dock .rime-agent-trace-toggle svg {
+  color: var(--rime-text-soft);
 }
 
-.rime-agent-trace.is-dock .rime-agent-activity.phase-thinking i,
-.rime-agent-trace.is-dock .rime-agent-activity.phase-tool i {
+.rime-agent-trace.is-dock .rime-agent-trace-toggle i {
+  background: var(--rime-text-dim);
+}
+
+.rime-agent-trace.is-dock .rime-agent-trace-toggle.phase-thinking i,
+.rime-agent-trace.is-dock .rime-agent-trace-toggle.phase-tool i {
   background: var(--rime-amber);
   animation: rime-status-pulse-dark 1.5s ease-out infinite;
 }
 
-.rime-agent-trace.is-dock .rime-agent-activity span,
-.rime-agent-trace.is-dock .rime-agent-step span {
+.rime-agent-trace.is-dock .rime-agent-drawer {
+  width: 100%;
+  border-left-color: var(--rime-line);
+  background: linear-gradient(90deg, rgba(8, 8, 8, 0.46), rgba(8, 8, 8, 0.04));
+}
+
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-activity span,
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step span {
   color: var(--rime-text-dim);
 }
 
-.rime-agent-trace.is-dock .rime-agent-activity strong,
-.rime-agent-trace.is-dock .rime-agent-step strong {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-activity strong,
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step strong {
   color: var(--rime-text-soft);
 }
 
-.rime-agent-trace.is-dock .rime-agent-step {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step {
   border-left-color: var(--rime-line);
-  background: rgba(255, 248, 232, 0.025);
 }
 
-.rime-agent-trace.is-dock .rime-agent-step::before {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step::before {
   background: var(--rime-text-dim);
 }
 
-.rime-agent-trace.is-dock .rime-agent-step.status-running::before {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step.status-running::before {
   background: var(--rime-amber);
   animation: rime-status-pulse-dark 1.4s ease-out infinite;
 }
 
-.rime-agent-trace.is-dock .rime-agent-step.status-done::before {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step.status-done::before {
   background: rgba(132, 174, 112, 0.82);
 }
 
-.rime-agent-trace.is-dock .rime-agent-step.status-error::before {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step.status-error::before {
   background: rgba(242, 121, 72, 0.86);
 }
 
-.rime-agent-trace.is-dock .rime-agent-step p {
+.rime-agent-trace.is-dock .rime-agent-drawer .rime-agent-step p {
   color: var(--rime-text-dim);
 }
 
@@ -1062,10 +1129,17 @@ button {
 }
 
 @media (max-width: 980px) {
-  .rime-agent-trace {
-    width: min(420px, calc(100vw - 2rem));
+  .rime-agent-trace.is-floating {
     top: 5.2rem;
     left: 1rem;
+  }
+
+  .rime-agent-drawer {
+    width: min(300px, calc(100vw - 2rem));
+  }
+
+  .rime-agent-trace.is-dock .rime-agent-drawer {
+    width: 100%;
   }
 }
 
