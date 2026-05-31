@@ -180,14 +180,16 @@ def _parse_tool_call(call: dict[str, Any]) -> dict[str, Any]:
 
 
 def _string_content(content: Any) -> str:
+    if content is None:
+        return ""
     if isinstance(content, str):
         return content
     if isinstance(content, list):
         parts: list[str] = []
         for item in content:
             if isinstance(item, dict) and item.get("type") == "text":
-                parts.append(str(item.get("text", "")))
+                parts.append(_string_content(item.get("text", "")))
             else:
-                parts.append(str(item))
+                parts.append(_string_content(item))
         return "".join(parts)
     return str(content)

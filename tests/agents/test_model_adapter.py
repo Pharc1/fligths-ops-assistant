@@ -1,7 +1,7 @@
 from langchain_core.messages import HumanMessage
 
 from app.agents.events import AgentEvent
-from app.agents.model_adapter import AgentModelResponse, FakeModelAdapter, ToolCall
+from app.agents.model_adapter import AgentModelResponse, FakeModelAdapter, ToolCall, _string_content
 
 
 def test_agent_event_serializes_to_sse_payload():
@@ -23,3 +23,7 @@ async def test_fake_model_adapter_returns_scripted_responses():
     assert response.content == "Je vérifie."
     assert response.tool_calls[0].name == "rag_search"
     assert response.tool_calls[0].args == {"query": "PT-42"}
+
+
+def test_model_adapter_string_content_does_not_render_none():
+    assert _string_content(None) == ""

@@ -15,6 +15,13 @@ def _registry() -> SkillRegistry:
     return registry
 
 
+def test_engine_system_prompt_requires_brief_tool_progress_messages():
+    prompt = RimeAgentEngine._build_system_prompt("interactive_investigation", "")
+
+    assert "Avant d'appeler un tool" in prompt
+    assert "phrase courte" in prompt
+
+
 @pytest.mark.asyncio
 async def test_engine_stops_when_model_has_no_tool_calls():
     engine = RimeAgentEngine(

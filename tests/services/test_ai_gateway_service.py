@@ -121,3 +121,40 @@ async def test_ai_gateway_chat_model_serializes_tool_history() -> None:
         },
         {"role": "tool", "content": '{"ok":true}', "tool_call_id": "call_doc"},
     ]
+
+
+async def test_ai_gateway_chat_model_keeps_null_tool_content_empty() -> None:
+    def post_json(url: str, api_key: str, payload: dict[str, object]) -> dict[str, object]:
+        return {
+            "choices": [
+                {
+                    "message": {
+                        "content": None,
+                        "tool_calls": [
+                            {
+                                "id": "call_doc",
+                                "type": "function",
+                                "function": {
+                                    "name": "display_panel",
+                                    "arguments": '{"mode":"document","title":"AMM"}',
+                                },
+                            }
+                        ],
+                    }
+                }
+            ]
+        }
+
+    model = AIGatewayChatModel(
+        api_key="vgw_test",
+        base_url="https://ai-gateway.vercel.sh/v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.2,
+        max_tokens=1024,
+        post_json=post_json,
+    ).bind_tools([display_panel])
+
+    response = await model.ainvoke([HumanMessage(content="Montre la source.")])
+
+    assert response.content == ""
+    assert response.tool_calls[0]["name"] == "display_panel"
