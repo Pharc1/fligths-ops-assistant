@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 
     try:
         app.state.rag_service = RagService()
-        logger.info("RAG service ready (collection=%s)", settings.COLLECTION_NAME)
+        logger.info("RAG service ready (collection=%s)", app.state.rag_service.collection_name)
     except Exception as exc:
         logger.warning("RAG service unavailable at startup: %s", exc)
         app.state.rag_service = None

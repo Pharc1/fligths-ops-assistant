@@ -1,10 +1,12 @@
+import re
+
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from app.core.config import settings
+from app.core.config import Settings, settings
 from app.core.logger import get_logger
 from app.services.ai_gateway_embeddings import AIGatewayEmbeddings
 
@@ -14,11 +16,19 @@ logger = get_logger(__name__)
 class RagService:
     def __init__(self):
         self.embeddings = build_embeddings()
+        self.collection_name = resolve_collection_name(settings)
 
         self.vector_store = Chroma(
-            collection_name=settings.COLLECTION_NAME,
+            collection_name=self.collection_name,
             embedding_function=self.embeddings,
             persist_directory=settings.PERSIST_DIRECTORY,
+        )
+        logger.info(
+            "RAG collection ready | collection=%s provider=%s model=%s count=%d",
+            self.collection_name,
+            settings.resolved_embedding_provider,
+            current_embedding_model(settings),
+            self.vector_store._collection.count(),
         )
 
     def add_documents(self, documents: list[Document]) -> None:
@@ -63,3 +73,22 @@ def build_embeddings() -> Embeddings:
         model=settings.EMBEDDING_MODEL,
         google_api_key=settings.GOOGLE_API_KEY.get_secret_value(),
     )
+
+
+def resolve_collection_name(config: Settings) -> str:
+    if not config.COLLECTION_BY_EMBEDDING:
+        return config.COLLECTION_NAME
+
+    provider = config.resolved_embedding_provider
+    model = current_embedding_model(config)
+    return f"{config.COLLECTION_NAME}__{_slug(provider)}__{_slug(model)}"
+
+
+def current_embedding_model(config: Settings) -> str:
+    if config.resolved_embedding_provider == "ai_gateway":
+        return config.AI_GATEWAY_EMBEDDING_MODEL
+    return config.EMBEDDING_MODEL
+
+
+def _slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")

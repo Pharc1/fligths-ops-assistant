@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     PERSIST_DIRECTORY: str = "./chroma_db"
     COLLECTION_NAME: str = "flight_ops_documents"
+    COLLECTION_BY_EMBEDDING: bool = True
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 200
     RAG_TOP_K: int = 4
