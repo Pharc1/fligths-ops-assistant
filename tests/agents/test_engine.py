@@ -24,6 +24,9 @@ def test_engine_system_prompt_requires_brief_tool_progress_messages():
     assert "payload.spoken" in prompt
     assert "payload.results" in prompt
     assert "payload.value" in prompt
+    assert "history pour les pannes datées" in prompt
+    assert "telemetry pour une valeur" in prompt
+    assert "panel checklist" in prompt
 
 
 @pytest.mark.asyncio

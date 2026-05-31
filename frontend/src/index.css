@@ -998,6 +998,27 @@ button {
   padding: 14px;
 }
 
+.rime-panel-empty-state {
+  border: 1px dashed var(--rime-line);
+  background: linear-gradient(135deg, rgba(255, 248, 232, 0.028), rgba(255, 248, 232, 0.006));
+  padding: 20px;
+  color: var(--rime-text-dim);
+  font-family: var(--font-mono);
+}
+
+.rime-panel-empty-state span {
+  color: var(--rime-amber);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+}
+
+.rime-panel-empty-state p {
+  margin-top: 8px;
+  color: var(--rime-text-soft);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
 .rime-history-row {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr) 58px;

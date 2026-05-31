@@ -44,6 +44,8 @@ def test_display_panel_payload_schema_mentions_spoken_context():
     assert "spoken" in description
     assert "results" in description
     assert "highlight" in description
+    assert "history" in description
+    assert "telemetry" in description
     assert "recommendation" in description
 
 
@@ -73,3 +75,78 @@ def test_display_panel_normalizes_rag_results_into_document_entries():
     assert payload["entries"][0]["text"] == "Flow Sensor FS-01 leak detection threshold is 2 L/min."
     assert payload["entries"][0]["source"]["label"] == "hydraulic_manual.txt"
     assert payload["entries"][0]["source"]["startIndex"] == 3189
+
+
+def test_display_panel_normalizes_rag_results_into_history_rows():
+    tool = build_display_tools()[0]
+
+    result = tool.invoke({
+        "mode": "history",
+        "title": "Pannes recentes train atterrissage",
+        "priority": "primary",
+        "payload": {
+            "results": [
+                {
+                    "snippet": "2026-05-14 - Train landing gear pressure high - valve inspected.",
+                    "title": "incident_history.txt",
+                    "metadata": {"source": "data/incident_history.txt", "date": "2026-05-14"},
+                    "score": 0.18,
+                }
+            ],
+        },
+    })
+
+    payload = json.loads(result)["payload"]
+    assert payload["rows"] == [
+        {
+            "date": "2026-05-14",
+            "label": "2026-05-14 - Train landing gear pressure high - valve inspected.",
+            "severity": "LOG",
+            "source": "incident_history.txt",
+            "score": 0.18,
+        }
+    ]
+
+
+def test_display_panel_extracts_history_date_from_rag_snippet():
+    tool = build_display_tools()[0]
+
+    result = tool.invoke({
+        "mode": "history",
+        "title": "Pannes recentes train atterrissage",
+        "priority": "primary",
+        "payload": {
+            "results": [
+                {
+                    "snippet": "2026/05/14 - Pression hydraulique train trop elevee avant inspection vanne.",
+                    "title": "incident_history.txt",
+                    "metadata": {"source": "data/incident_history.txt"},
+                }
+            ],
+        },
+    })
+
+    payload = json.loads(result)["payload"]
+    assert payload["rows"][0]["date"] == "2026-05-14"
+
+
+def test_display_panel_normalizes_telemetry_value_aliases():
+    tool = build_display_tools()[0]
+
+    result = tool.invoke({
+        "mode": "telemetry",
+        "title": "Pression hydraulique train",
+        "priority": "primary",
+        "payload": {
+            "current_value": 3150,
+            "unit": "PSI",
+            "min_limit": 2800,
+            "max_limit": 3200,
+            "status": "nominal",
+        },
+    })
+
+    payload = json.loads(result)["payload"]
+    assert payload["value"] == 3150
+    assert payload["limit"] == "2800-3200 PSI"
+    assert payload["trend"] == "nominal"

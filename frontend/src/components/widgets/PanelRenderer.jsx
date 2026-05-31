@@ -170,13 +170,17 @@ function HistoryPanel({ panel }) {
         </div>
       </header>
       <div className="rime-history-list">
-        {rows.map((row, index) => (
-          <div className="rime-history-row" key={`${row.date ?? index}-${row.label ?? index}`}>
-            <span>{row.date ?? row.timestamp ?? '--'}</span>
-            <p>{row.label ?? row.description ?? row.text}</p>
-            <b>{row.severity ?? row.status ?? 'LOG'}</b>
-          </div>
-        ))}
+        {rows.length > 0 ? (
+          rows.map((row, index) => (
+            <div className="rime-history-row" key={`${row.date ?? index}-${row.label ?? index}`}>
+              <span>{row.date ?? row.timestamp ?? '--'}</span>
+              <p>{row.label ?? row.description ?? row.text}</p>
+              <b>{row.severity ?? row.status ?? 'LOG'}</b>
+            </div>
+          ))
+        ) : (
+          <PanelEmptyState label="AUCUNE LIGNE" text="Le panel historique est ouvert, mais aucune ligne exploitable n'a ete fournie." />
+        )}
       </div>
     </section>
   )
@@ -213,14 +217,27 @@ function ChecklistPanel({ panel }) {
         </div>
       </header>
       <div className="rime-check-list">
-        {items.map((item, index) => (
-          <div key={`${index}-${item.label ?? item}`}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <p>{item.label ?? item.text ?? item}</p>
-          </div>
-        ))}
+        {items.length > 0 ? (
+          items.map((item, index) => (
+            <div key={`${index}-${item.label ?? item}`}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <p>{item.label ?? item.text ?? item}</p>
+            </div>
+          ))
+        ) : (
+          <PanelEmptyState label="SEQUENCE VIDE" text="Aucune etape exploitable n'a ete fournie pour cette procedure." />
+        )}
       </div>
     </section>
+  )
+}
+
+function PanelEmptyState({ label, text }) {
+  return (
+    <div className="rime-panel-empty-state">
+      <span>{label}</span>
+      <p>{text}</p>
+    </div>
   )
 }
 

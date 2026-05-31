@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 from typing import Any, Literal
 
@@ -10,7 +11,12 @@ PanelPriority = Literal["primary", "secondary", "inline"]
 
 
 class DisplayPanelInput(BaseModel):
-    mode: PanelMode = Field(description="Panel type to render in the frontend")
+    mode: PanelMode = Field(
+        description=(
+            "Panel type to render: document for cited text, history for dated maintenance failures, "
+            "telemetry for numeric values/limits, part for component identity, checklist for procedure steps."
+        )
+    )
     title: str = Field(description="Short panel title")
     priority: PanelPriority = Field(default="secondary", description="Panel layout priority")
     payload: dict[str, Any] = Field(
@@ -20,6 +26,8 @@ class DisplayPanelInput(BaseModel):
             "spoken/commentary is the short sentence RIME says to the MRO outside the panel. "
             "For document panels, pass rag_search results in payload.results and the exact value or "
             "phrase to emphasize in payload.value or payload.highlight. "
+            "For history panels, pass dated rows in payload.rows or raw rag_search rows in payload.results. "
+            "For telemetry panels, pass payload.value/unit/limit or current_value/min_limit/max_limit. "
             "Use recommendation only when the MRO explicitly asks for a recommendation or decision support."
         ),
     )
@@ -54,6 +62,8 @@ def build_display_tools() -> list[StructuredTool]:
                 "comment in payload.spoken or payload.commentary, not in the document description. "
                 "For mode=document, include the rag_search result rows in payload.results so source "
                 "metadata is preserved, and put the exact highlighted value in payload.value or payload.highlight. "
+                "Use mode=history with payload.rows for dated failures; use mode=telemetry for measured values, "
+                "limits, pressure/temperature/current readings or compact numeric blocks. "
                 "Do not add a generic recommendation when the user only asked for a value or source."
             ),
         )
@@ -61,9 +71,13 @@ def build_display_tools() -> list[StructuredTool]:
 
 
 def _normalize_payload(mode: PanelMode, payload: dict[str, Any]) -> dict[str, Any]:
-    if mode != "document":
-        return payload
-    return _normalize_document_payload(payload)
+    if mode == "document":
+        return _normalize_document_payload(payload)
+    if mode == "history":
+        return _normalize_history_payload(payload)
+    if mode == "telemetry":
+        return _normalize_telemetry_payload(payload)
+    return payload
 
 
 def _normalize_document_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -74,6 +88,34 @@ def _normalize_document_payload(payload: dict[str, Any]) -> dict[str, Any]:
     evidence_items = _extract_evidence_items(normalized)
     if evidence_items:
         normalized["entries"] = [_evidence_to_entry(item, normalized) for item in evidence_items]
+    return normalized
+
+
+def _normalize_history_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(payload)
+    if normalized.get("rows") or normalized.get("events"):
+        return normalized
+
+    evidence_items = _extract_evidence_items(normalized)
+    if evidence_items:
+        normalized["rows"] = [_evidence_to_history_row(item) for item in evidence_items]
+    return normalized
+
+
+def _normalize_telemetry_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(payload)
+    if "value" not in normalized and "current_value" in normalized:
+        normalized["value"] = normalized["current_value"]
+
+    unit = str(normalized.get("unit") or "")
+    min_limit = normalized.get("min_limit")
+    max_limit = normalized.get("max_limit")
+    if "limit" not in normalized and (min_limit is not None or max_limit is not None):
+        normalized["limit"] = f"{min_limit if min_limit is not None else '--'}-{max_limit if max_limit is not None else '--'} {unit}".strip()
+    if "nominal" not in normalized and "limit" in normalized:
+        normalized["nominal"] = normalized["limit"]
+    if "trend" not in normalized and "status" in normalized:
+        normalized["trend"] = normalized["status"]
     return normalized
 
 
@@ -99,6 +141,19 @@ def _evidence_to_entry(evidence: dict[str, Any], payload: dict[str, Any]) -> dic
         "after": evidence.get("after") or "",
         "score": evidence.get("score"),
         "source": _source_from_evidence(evidence),
+    }
+
+
+def _evidence_to_history_row(evidence: dict[str, Any]) -> dict[str, Any]:
+    metadata = dict(evidence.get("metadata") or {})
+    title = str(evidence.get("title") or "")
+    label = str(evidence.get("label") or evidence.get("snippet") or evidence.get("text") or "")
+    return {
+        "date": evidence.get("date") or metadata.get("date") or metadata.get("timestamp") or _extract_date(label) or "--",
+        "label": label,
+        "severity": str(evidence.get("severity") or evidence.get("status") or "LOG"),
+        "source": title or Path(str(metadata.get("source") or "")).name,
+        "score": evidence.get("score"),
     }
 
 
@@ -132,3 +187,8 @@ def _first_present(data: dict[str, Any], *keys: str) -> Any:
         if value not in (None, ""):
             return value
     return None
+
+
+def _extract_date(text: str) -> str | None:
+    match = re.search(r"\b(20\d{2}[-/]\d{2}[-/]\d{2})\b", text)
+    return match.group(1).replace("/", "-") if match else None
