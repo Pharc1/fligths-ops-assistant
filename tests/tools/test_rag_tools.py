@@ -27,4 +27,10 @@ def test_rag_search_returns_structured_json_evidence():
     assert result["results"][0]["sourceId"] == "data/hydraulic_manual.txt"
     assert result["results"][0]["title"] == "hydraulic_manual.txt"
     assert result["results"][0]["snippet"] == "Closing pressure must be 3000 PSI before valve removal."
+    assert result["results"][0]["source"] == {
+        "id": "data/hydraulic_manual.txt",
+        "label": "hydraulic_manual.txt",
+        "title": "hydraulic_manual.txt",
+        "startIndex": 42,
+    }
     assert result["results"][0]["score"] == 0.12

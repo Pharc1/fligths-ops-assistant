@@ -62,7 +62,13 @@ function DocumentPanel({ panel }) {
 
         <article className="rime-excerpt">
           {entry.before && <p className="context">{entry.before}</p>}
-          <p className="highlight">{entry.highlight ?? entry.excerpt ?? entry.text}</p>
+          {entry.text && <p className="context source-text">{entry.text}</p>}
+          {entry.highlight && (
+            <p className="highlight">
+              <span>PASSAGE CLE</span>
+              {entry.highlight}
+            </p>
+          )}
           {entry.after && <p className="context">{entry.after}</p>}
         </article>
 
@@ -334,8 +340,12 @@ function getDocumentEntries(panel) {
         label: entry.label ?? entry.title,
         page: entry.page,
         date: entry.date,
+        startIndex: entry.startIndex ?? entry.start_index,
+        section: entry.section,
+        ata: entry.ata,
       },
-      highlight: entry.highlight ?? entry.excerpt ?? entry.text,
+      text: entry.text ?? entry.snippet ?? (entry.highlight ? entry.excerpt : null),
+      highlight: entry.highlight ?? entry.value ?? entry.limit ?? entry.threshold ?? entry.keyValue ?? null,
     }))
   }
 
@@ -348,9 +358,13 @@ function getDocumentEntries(panel) {
         label: payload.sourceLabel ?? payload.document,
         page: payload.page,
         date: payload.date,
+        startIndex: payload.startIndex ?? payload.start_index,
+        section: payload.section,
+        ata: payload.ata,
       },
       before: payload.before ?? '',
-      highlight: payload.highlight ?? payload.excerpt ?? payload.text ?? panel.title,
+      text: payload.text ?? payload.snippet ?? payload.excerpt ?? '',
+      highlight: payload.highlight ?? payload.value ?? payload.limit ?? payload.threshold ?? payload.keyValue ?? null,
       after: payload.after ?? '',
     },
   ]
@@ -358,5 +372,6 @@ function getDocumentEntries(panel) {
 
 function formatSourceMeta(source) {
   const page = source.page ? `p.${source.page}` : null
-  return [page, source.date].filter(Boolean).join(' / ') || 'metadata source non fournie'
+  const startIndex = source.startIndex ? `idx ${source.startIndex}` : null
+  return [page, source.date, source.ata, source.section, startIndex].filter(Boolean).join(' / ') || 'source locale'
 }

@@ -47,10 +47,30 @@ def build_rag_tools(rag_service: RagService) -> list[StructuredTool]:
 def _document_to_evidence(doc: Document, score: float | None) -> dict[str, Any]:
     metadata = dict(doc.metadata or {})
     source = str(metadata.get("source") or "unknown")
+    title = Path(source).name if source != "unknown" else "unknown"
     return {
         "sourceId": source,
-        "title": Path(source).name if source != "unknown" else "unknown",
+        "title": title,
         "snippet": doc.page_content,
         "metadata": metadata,
+        "source": _source_metadata(source, title, metadata),
         "score": score,
     }
+
+
+def _source_metadata(source: str, title: str, metadata: dict[str, Any]) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "id": source,
+        "label": title,
+        "title": title,
+    }
+    optional_fields = {
+        "page": metadata.get("page"),
+        "date": metadata.get("date"),
+        "section": metadata.get("section"),
+        "ata": metadata.get("ata"),
+        "url": metadata.get("url"),
+        "startIndex": metadata.get("start_index"),
+    }
+    result.update({key: value for key, value in optional_fields.items() if value is not None})
+    return result

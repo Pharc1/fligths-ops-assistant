@@ -22,6 +22,8 @@ def test_engine_system_prompt_requires_brief_tool_progress_messages():
     assert "phrase courte" in prompt
     assert "payload.headline" in prompt
     assert "payload.spoken" in prompt
+    assert "payload.results" in prompt
+    assert "payload.value" in prompt
 
 
 @pytest.mark.asyncio
