@@ -33,3 +33,13 @@ def test_display_panel_rejects_unknown_mode():
         assert "unknown" in str(exc)
     else:
         raise AssertionError("display_panel accepted an unknown mode")
+
+
+def test_display_panel_payload_schema_mentions_spoken_context():
+    tool = build_display_tools()[0]
+    schema = tool.args_schema.model_json_schema()
+
+    description = schema["properties"]["payload"]["description"]
+    assert "headline" in description
+    assert "spoken" in description
+    assert "recommendation" in description

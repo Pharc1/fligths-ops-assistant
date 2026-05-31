@@ -35,12 +35,9 @@ function DocumentPanel({ panel }) {
   const source = entry.source ?? {}
   const confidence = panel.payload?.confidence
   const confLabel = typeof confidence === 'number' ? `${Math.round(confidence * 100)}%` : null
-  const recommendation =
-    panel.payload?.recommendation ??
-    entries[0]?.recommendation ??
-    entries[0]?.rimeNote ??
-    panel.payload?.reasoning ??
-    'Comparer cette source avec les donnees capteurs et l historique avant decision maintenance.'
+  const guidance = panel.payload?.guidance ?? entries[index]?.guidance ?? null
+  const note = guidance ?? panel.payload?.recommendation ?? entries[index]?.recommendation ?? null
+  const noteLabel = panel.payload?.noteLabel ?? (guidance ? 'LECTURE RIME' : 'POINT D ATTENTION')
 
   return (
     <section className="rime-panel-main rime-document-panel">
@@ -55,11 +52,13 @@ function DocumentPanel({ panel }) {
         </div>
       </header>
 
-      <div className="rime-document-body">
-        <div className="rime-recommendation-block">
-          <span>RECOMMANDATION</span>
-          <p>{recommendation}</p>
-        </div>
+      <div className={`rime-document-body ${note ? 'has-note' : 'no-note'}`}>
+        {note && (
+          <div className="rime-recommendation-block">
+            <span>{noteLabel}</span>
+            <p>{note}</p>
+          </div>
+        )}
 
         <article className="rime-excerpt">
           {entry.before && <p className="context">{entry.before}</p>}

@@ -20,6 +20,8 @@ def test_engine_system_prompt_requires_brief_tool_progress_messages():
 
     assert "Avant d'appeler un tool" in prompt
     assert "phrase courte" in prompt
+    assert "payload.headline" in prompt
+    assert "payload.spoken" in prompt
 
 
 @pytest.mark.asyncio

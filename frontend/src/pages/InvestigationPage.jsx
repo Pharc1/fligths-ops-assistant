@@ -21,6 +21,16 @@ export default function InvestigationPage() {
     .filter((panel) => panel.mode !== 'notice')
   const canvasMode = activePanel?.mode ? `mode-${activePanel.mode}` : 'mode-empty'
   const canvasDensity = supportPanels.length > 0 ? 'has-support' : 'is-solo'
+  const workspaceTitle =
+    activePanel?.payload?.headline ??
+    activePanel?.payload?.investigationTitle ??
+    activePanel?.payload?.contextTitle ??
+    'Investigation active'
+  const spokenText =
+    activePanel?.payload?.spoken ??
+    activePanel?.payload?.commentary ??
+    activePanel?.payload?.assistantMessage ??
+    rimeText
 
   return (
     <motion.div
@@ -53,12 +63,20 @@ export default function InvestigationPage() {
               <span>CDG MX OPS / INVESTIGATION ACTIVE</span>
             </div>
             <span>MODE INVESTIGATION</span>
-            <h1>Verifier la piste, pas lire un dossier complet.</h1>
-            <p>{rimeText || 'RIME affiche uniquement les preuves utiles a la decision.'}</p>
+            <h1>{workspaceTitle}</h1>
+            {spokenText && (
+              <div className="rime-voice-line" aria-live="polite">
+                <span>RIME / COMMS</span>
+                <p>{spokenText}</p>
+              </div>
+            )}
           </div>
-          <div className="rime-workspace-clock">
-            <span>CDG MX OPS</span>
-            <strong>{new Date().toLocaleTimeString('fr-FR')}</strong>
+          <div className="rime-header-systems">
+            <div className="rime-workspace-clock">
+              <span>CDG MX OPS</span>
+              <strong>{new Date().toLocaleTimeString('fr-FR')}</strong>
+            </div>
+            <AgentTrace />
           </div>
         </header>
 
@@ -85,7 +103,6 @@ export default function InvestigationPage() {
         </section>
 
         <div className="rime-investigation-prompt">
-          <AgentTrace />
           <RimePromptInput
             input={input}
             setInput={setInput}

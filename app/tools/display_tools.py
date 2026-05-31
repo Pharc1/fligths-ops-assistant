@@ -12,7 +12,14 @@ class DisplayPanelInput(BaseModel):
     mode: PanelMode = Field(description="Panel type to render in the frontend")
     title: str = Field(description="Short panel title")
     priority: PanelPriority = Field(default="secondary", description="Panel layout priority")
-    payload: dict[str, Any] = Field(default_factory=dict, description="Mode-specific panel data")
+    payload: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Mode-specific panel data. Optional UI keys: headline sets the investigation screen title; "
+            "spoken/commentary is the short sentence RIME says to the MRO outside the panel. "
+            "Use recommendation only when the MRO explicitly asks for a recommendation or decision support."
+        ),
+    )
 
 
 def build_display_tools() -> list[StructuredTool]:
@@ -40,7 +47,9 @@ def build_display_tools() -> list[StructuredTool]:
             description=(
                 "Display a structured UI panel for the MRO. Use mode=document for source excerpts, "
                 "history for maintenance logs, telemetry for values and limits, part for component "
-                "identity, notice for warnings, and checklist for non-stateful lists."
+                "identity, notice for warnings, and checklist for non-stateful lists. Put RIME's spoken "
+                "comment in payload.spoken or payload.commentary, not in the document description. "
+                "Do not add a generic recommendation when the user only asked for a value or source."
             ),
         )
     ]
