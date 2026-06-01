@@ -109,6 +109,18 @@ class RimeAgentEngine:
                 if not is_error:
                     async for event in self._semantic_events(call.name, output):
                         yield event
+                    if call.name == "complete_response":
+                        completion = _completion_payload(output)
+                        yield AgentEvent(
+                            type="result",
+                            data={
+                                "reason": completion["reason"],
+                                "content": completion["content"],
+                                "confidence": completion.get("confidence"),
+                                "next_action": completion.get("next_action"),
+                            },
+                        )
+                        return
                 messages.append(ToolMessage(content=_stringify_output(output), tool_call_id=call.id))
 
         yield AgentEvent(
@@ -156,12 +168,16 @@ Règles permanentes:
 - Utilise les tools pour rechercher, planifier, afficher les preuves et piloter les procédures.
 - Avant d'appeler un tool, écris une phrase courte pour dire ce que tu vérifies.
 - Après un résultat tool, si tu dois appeler un autre tool, écris une phrase courte sur la suite.
+- display_panel affiche une preuve ou une mesure, mais ne termine jamais le tour agentique.
+- Quand tu as terminé toutes les recherches et affichages utiles, appelle complete_response avec une raison concrète.
 - N'expose pas ton raisonnement interne détaillé; affiche seulement l'avancement utile au MRO.
 - Quand une valeur, une limite ou une procédure est citée, fournis une preuve via display_panel si l'UI est disponible.
 - En mode investigation, mets le titre d'écran dans payload.headline et ton commentaire opérateur dans payload.spoken ou payload.commentary.
 - Pour un panel document, transmets les lignes rag_search dans payload.results et la valeur exacte à mettre en avant dans payload.value ou payload.highlight.
 - Si la demande combine plusieurs besoins, affiche plusieurs panels: history pour les pannes datées, telemetry pour une valeur ou limite, document pour la source.
-- Pour un remplacement/procédure, utilise workflow_apply pour suivre le plan et affiche aussi un panel checklist avec les étapes utiles.
+- Si le MRO demande un historique de valeur mesurée (pression, température, débit, courant), affiche une série numérique/courbe via telemetry ou payload.series; n'affiche pas une simple liste de logs.
+- N'utilise history seul que pour des événements de panne datés; pour des mesures, chaque ligne doit contenir value + unit.
+- Pour un remplacement/procédure, utilise workflow_apply pour suivre le plan, affiche aussi un panel checklist avec les étapes utiles, puis termine ou mets en pause via workflow_apply avant complete_response.
 - N'ajoute pas de recommandation générique si le MRO demande seulement une valeur, une source ou une vérification.
 - Si les preuves sont insuffisantes, dis-le clairement.
 
@@ -192,3 +208,15 @@ def _stringify_output(output: Any) -> str:
     if isinstance(output, str):
         return output
     return json.dumps(output, ensure_ascii=False)
+
+
+def _completion_payload(output: Any) -> dict[str, Any]:
+    parsed = _maybe_json(output)
+    if not isinstance(parsed, dict):
+        return {"reason": "answered", "content": str(output)}
+    return {
+        "reason": str(parsed.get("reason") or "answered"),
+        "content": str(parsed.get("summary") or parsed.get("content") or ""),
+        "confidence": parsed.get("confidence"),
+        "next_action": parsed.get("next_action"),
+    }

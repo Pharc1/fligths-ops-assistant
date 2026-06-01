@@ -990,6 +990,43 @@ button {
   overflow-y: auto;
 }
 
+.rime-history-chart {
+  margin: 26px 26px 0;
+  border: 1px solid rgba(246, 181, 55, 0.3);
+  background:
+    linear-gradient(180deg, rgba(246, 181, 55, 0.06), rgba(246, 181, 55, 0.015)),
+    repeating-linear-gradient(90deg, rgba(255, 248, 232, 0.035) 0 1px, transparent 1px 72px);
+  padding: 18px;
+}
+
+.rime-history-chart-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  font-family: var(--font-mono);
+}
+
+.rime-history-chart-head span,
+.rime-history-chart-axis {
+  color: var(--rime-text-dim);
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+}
+
+.rime-history-chart-head strong {
+  color: var(--rime-amber);
+  font-size: clamp(1.35rem, 3vw, 2.35rem);
+  letter-spacing: -0.04em;
+}
+
+.rime-history-chart-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+}
+
 .rime-history-row,
 .rime-check-list div,
 .rime-info-cell {
@@ -1021,7 +1058,7 @@ button {
 
 .rime-history-row {
   display: grid;
-  grid-template-columns: 120px minmax(0, 1fr) 58px;
+  grid-template-columns: 120px minmax(0, 1fr) minmax(80px, max-content) minmax(0, max-content);
   gap: 14px;
   align-items: center;
   margin-bottom: 10px;
@@ -1042,6 +1079,14 @@ button {
   color: var(--rime-text-soft);
   font-family: var(--font-mono);
   line-height: 1.45;
+}
+
+.rime-history-value {
+  color: var(--rime-amber);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .rime-part-grid {

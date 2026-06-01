@@ -15,7 +15,7 @@ def test_build_all_tools_includes_workflow_rag_and_display_panel():
     )
 
     names = {tool.name for tool in tools}
-    assert {"workflow_get", "workflow_apply", "rag_search", "display_panel"}.issubset(names)
+    assert {"workflow_get", "workflow_apply", "rag_search", "display_panel", "complete_response"}.issubset(names)
     assert "activate_skill" not in names
     assert "create_task_list" not in names
 
@@ -30,3 +30,4 @@ def test_build_all_tools_excludes_display_panel_when_ui_disabled():
     names = {tool.name for tool in tools}
     assert "display_panel" not in names
     assert "rag_search" in names
+    assert "complete_response" in names

@@ -6,6 +6,7 @@ from langchain_core.tools import BaseTool
 
 from app.agents.workflow import InMemoryWorkflowRepository
 from app.services.rag_service import RagService
+from app.tools.completion_tools import build_completion_tools
 from app.tools.display_tools import build_display_tools
 from app.tools.rag_tools import build_rag_tools
 from app.tools.report_tools import build_report_tools
@@ -21,6 +22,7 @@ def build_all_tools(
         *build_workflow_tools(workflow_repo),
         *build_rag_tools(rag_service),
         *build_report_tools(),
+        *build_completion_tools(),
     ]
     if include_ui:
         tools.extend(build_display_tools())

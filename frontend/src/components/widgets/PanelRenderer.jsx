@@ -161,21 +161,38 @@ function TelemetryPanel({ panel }) {
 
 function HistoryPanel({ panel }) {
   const rows = panel.payload?.rows ?? panel.payload?.events ?? []
+  const series = getSeries(panel.payload, rows)
+  const latest = series[series.length - 1]
+
   return (
     <section className="rime-panel-main">
       <header className="rime-panel-header">
         <div>
-          <span className="rime-kicker">HISTORIQUE</span>
+          <span className="rime-kicker">{series.length > 1 ? 'SERIE HISTORIQUE' : 'HISTORIQUE'}</span>
           <h2>{panel.title}</h2>
         </div>
       </header>
+      {series.length > 1 && (
+        <div className="rime-history-chart">
+          <div className="rime-history-chart-head">
+            <span>DERNIERE VALEUR</span>
+            <strong>{formatSeriesPoint(latest)}</strong>
+          </div>
+          <Sparkline samples={series.map((point) => point.value)} large />
+          <div className="rime-history-chart-axis">
+            <span>{series[0]?.date ?? '--'}</span>
+            <span>{latest?.date ?? '--'}</span>
+          </div>
+        </div>
+      )}
       <div className="rime-history-list">
         {rows.length > 0 ? (
           rows.map((row, index) => (
             <div className="rime-history-row" key={`${row.date ?? index}-${row.label ?? index}`}>
               <span>{row.date ?? row.timestamp ?? '--'}</span>
-              <p>{row.label ?? row.description ?? row.text}</p>
-              <b>{row.severity ?? row.status ?? 'LOG'}</b>
+              <p>{row.label ?? row.description ?? row.text ?? 'Evenement historique'}</p>
+              {formatMeasurement(row) && <strong className="rime-history-value">{formatMeasurement(row)}</strong>}
+              {(row.severity ?? row.status) && <b>{row.severity ?? row.status}</b>}
             </div>
           ))
         ) : (
@@ -259,6 +276,7 @@ function NoticePanel({ panel }) {
 
 function CompactPanel({ panel }) {
   const payload = panel.payload ?? {}
+  const historySeries = panel.mode === 'history' ? getSeries(payload, payload.rows ?? payload.events ?? []) : []
   return (
     <article className={`rime-compact-card mode-${panel.mode}`}>
       <div className="rime-compact-head">
@@ -275,14 +293,23 @@ function CompactPanel({ panel }) {
         </>
       )}
       {panel.mode === 'history' && (
-        <div className="rime-compact-list">
-          {(payload.rows ?? payload.events ?? []).slice(0, 3).map((row, index) => (
-            <p key={`${row.date ?? index}-${row.label ?? index}`}>
-              <span>{row.date ?? '--'}</span>
-              {row.label ?? row.description ?? row.text}
-            </p>
-          ))}
-        </div>
+        historySeries.length > 1 ? (
+          <>
+            <div className="rime-compact-metric">
+              <strong>{formatSeriesPoint(historySeries[historySeries.length - 1])}</strong>
+            </div>
+            <Sparkline samples={historySeries.map((point) => point.value)} />
+          </>
+        ) : (
+          <div className="rime-compact-list">
+            {(payload.rows ?? payload.events ?? []).slice(0, 3).map((row, index) => (
+              <p key={`${row.date ?? index}-${row.label ?? index}`}>
+                <span>{row.date ?? '--'}</span>
+                {row.label ?? row.description ?? row.text}
+              </p>
+            ))}
+          </div>
+        )
       )}
       {panel.mode !== 'telemetry' && panel.mode !== 'history' && (
         <p className="rime-compact-text">{payload.text ?? payload.message ?? payload.reference ?? 'Voir detail.'}</p>
@@ -321,7 +348,7 @@ function DocumentModal({ entry, source, onClose }) {
 }
 
 function Sparkline({ samples = [], large = false }) {
-  const values = samples.length ? samples : [0.45, 0.48, 0.46, 0.52, 0.5, 0.54]
+  const values = normalizeSparkValues(samples.length ? samples : [0.45, 0.48, 0.46, 0.52, 0.5, 0.54])
   const points = values
     .map((value, index) => {
       const x = (index / Math.max(values.length - 1, 1)) * 100
@@ -385,6 +412,41 @@ function getDocumentEntries(panel) {
       after: payload.after ?? '',
     },
   ]
+}
+
+function normalizeSparkValues(samples) {
+  const numeric = samples
+    .map((value) => Number(value))
+    .filter((value) => Number.isFinite(value))
+  if (numeric.length === 0) return [0.5]
+  if (numeric.every((value) => value >= 0 && value <= 1)) return numeric
+  const min = Math.min(...numeric)
+  const max = Math.max(...numeric)
+  if (min === max) return numeric.map(() => 0.5)
+  return numeric.map((value) => 0.12 + ((value - min) / (max - min)) * 0.76)
+}
+
+function getSeries(payload = {}, rows = []) {
+  const series = payload.series ?? payload.samplesWithDates
+  if (Array.isArray(series) && series.length > 0) return series
+
+  return rows
+    .filter((row) => row.value !== undefined && row.value !== null && row.value !== '')
+    .map((row) => ({
+      date: row.date ?? row.timestamp ?? '--',
+      value: row.value,
+      unit: row.unit ?? payload.unit ?? '',
+    }))
+}
+
+function formatSeriesPoint(point) {
+  if (!point) return '--'
+  return `${point.value ?? '--'}${point.unit ? ` ${point.unit}` : ''}`
+}
+
+function formatMeasurement(row) {
+  if (row.value === undefined || row.value === null || row.value === '') return ''
+  return `${row.value}${row.unit ? ` ${row.unit}` : ''}`
 }
 
 function formatSourceMeta(source) {

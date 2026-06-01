@@ -24,8 +24,12 @@ def test_engine_system_prompt_requires_brief_tool_progress_messages():
     assert "payload.spoken" in prompt
     assert "payload.results" in prompt
     assert "payload.value" in prompt
+    assert "display_panel affiche une preuve" in prompt
+    assert "complete_response" in prompt
     assert "history pour les pannes datées" in prompt
     assert "telemetry pour une valeur" in prompt
+    assert "historique de valeur mesurée" in prompt
+    assert "value + unit" in prompt
     assert "panel checklist" in prompt
 
 
@@ -119,6 +123,62 @@ async def test_engine_emits_panel_event_for_display_panel_tool():
 
     panel_events = [event for event in events if event.type == "panel"]
     assert panel_events[0].data["panel"]["mode"] == "document"
+
+
+@pytest.mark.asyncio
+async def test_engine_stops_on_explicit_completion_tool_after_display():
+    def display_panel(mode: str, title: str, priority: str, payload: dict) -> str:
+        return json.dumps({"mode": mode, "title": title, "priority": priority, "payload": payload})
+
+    def complete_response(reason: str, summary: str) -> str:
+        return json.dumps({"ok": True, "reason": reason, "summary": summary})
+
+    engine = RimeAgentEngine(
+        model=FakeModelAdapter([
+            AgentModelResponse(
+                content="J'affiche la courbe puis je clôture.",
+                tool_calls=[
+                    ToolCall(
+                        id="call_panel",
+                        name="display_panel",
+                        args={
+                            "mode": "history",
+                            "title": "Pression train",
+                            "priority": "primary",
+                            "payload": {"series": [{"date": "2023-03-03", "value": 2840, "unit": "PSI"}]},
+                        },
+                    ),
+                    ToolCall(
+                        id="call_done",
+                        name="complete_response",
+                        args={
+                            "reason": "answered",
+                            "summary": "Historique pression affiché avec valeurs exploitables.",
+                        },
+                    ),
+                ],
+            ),
+            AgentModelResponse(content="Ne doit pas être appelé.", tool_calls=[]),
+        ]),
+        tools=[
+            StructuredTool.from_function(func=display_panel, name="display_panel", description="Display a panel."),
+            StructuredTool.from_function(func=complete_response, name="complete_response", description="Complete."),
+        ],
+        skill_registry=_registry(),
+        workflow_repo=InMemoryWorkflowRepository(),
+        max_turns=3,
+    )
+
+    events = [event async for event in engine.stream("Historique pression")]
+
+    assert [event.type for event in events].count("panel") == 1
+    assert events[-1].type == "result"
+    assert events[-1].data == {
+        "reason": "answered",
+        "content": "Historique pression affiché avec valeurs exploitables.",
+        "confidence": None,
+        "next_action": None,
+    }
 
 
 @pytest.mark.asyncio

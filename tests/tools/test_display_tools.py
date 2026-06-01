@@ -101,7 +101,6 @@ def test_display_panel_normalizes_rag_results_into_history_rows():
         {
             "date": "2026-05-14",
             "label": "2026-05-14 - Train landing gear pressure high - valve inspected.",
-            "severity": "LOG",
             "source": "incident_history.txt",
             "score": 0.18,
         }
@@ -128,6 +127,39 @@ def test_display_panel_extracts_history_date_from_rag_snippet():
 
     payload = json.loads(result)["payload"]
     assert payload["rows"][0]["date"] == "2026-05-14"
+
+
+def test_display_panel_extracts_numeric_pressure_history_series():
+    tool = build_display_tools()[0]
+
+    result = tool.invoke({
+        "mode": "history",
+        "title": "Historique pression train",
+        "priority": "primary",
+        "payload": {
+            "results": [
+                {
+                    "snippet": "2023-03-03 - Pression hydraulique train relevee a 2840 PSI apres inspection.",
+                    "title": "incident_history.txt",
+                    "metadata": {"source": "data/incident_history.txt"},
+                },
+                {
+                    "snippet": "2023-11-22 - Pression hydraulique train relevee a 3180 PSI, limite haute proche.",
+                    "title": "incident_history.txt",
+                    "metadata": {"source": "data/incident_history.txt"},
+                },
+            ],
+        },
+    })
+
+    payload = json.loads(result)["payload"]
+    assert payload["rows"][0]["value"] == 2840
+    assert payload["rows"][0]["unit"] == "PSI"
+    assert payload["rows"][1]["value"] == 3180
+    assert payload["series"] == [
+        {"date": "2023-03-03", "value": 2840, "unit": "PSI"},
+        {"date": "2023-11-22", "value": 3180, "unit": "PSI"},
+    ]
 
 
 def test_display_panel_normalizes_telemetry_value_aliases():
